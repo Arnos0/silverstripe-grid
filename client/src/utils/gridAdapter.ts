@@ -5,7 +5,6 @@ import type { GridSettingsOption } from '@/types/gridSettings';
 
 let cachedConfig: AdapterConfig | null = null;
 let cachedWidthOptions: readonly GridSettingsOption[] | null = null;
-let cachedOffsetOptions: readonly GridSettingsOption[] | null = null;
 
 function config(): AdapterConfig {
   if (cachedConfig === null) {
@@ -54,19 +53,16 @@ export function getWidthOptions(): readonly GridSettingsOption[] {
   return cachedWidthOptions;
 }
 
-export function getOffsetOptions(): readonly GridSettingsOption[] {
-  if (cachedOffsetOptions === null) {
-    const columnCount = config().columnCount;
-    const options: GridSettingsOption[] = [];
+export function getOffsetOptions(currentWidth?: number): readonly GridSettingsOption[] {
+  const columnCount = config().columnCount;
+  const maxOffset = currentWidth !== undefined ? columnCount - currentWidth : columnCount - 1;
+  const options: GridSettingsOption[] = [];
 
-    for (let n = 0; n < columnCount; n++) {
-      options.push({ value: n, label: n === 0 ? 'none' : `+${n}` });
-    }
-
-    cachedOffsetOptions = options;
+  for (let n = 0; n <= maxOffset; n++) {
+    options.push({ value: n, label: n === 0 ? 'none' : `+${n}` });
   }
 
-  return cachedOffsetOptions;
+  return options;
 }
 
 /**

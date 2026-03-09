@@ -79,12 +79,25 @@ describe('gridAdapter', () => {
     expect(options[12]).toEqual({ value: 'hidden', label: 'hidden' });
   });
 
-  it('returns offset options with columnCount entries', () => {
+  it('returns all offset options when no width is provided', () => {
     const options = getOffsetOptions();
     expect(options).toHaveLength(12);
     expect(options[0]).toEqual({ value: 0, label: 'none' });
     expect(options[1]).toEqual({ value: 1, label: '+1' });
     expect(options[11]).toEqual({ value: 11, label: '+11' });
+  });
+
+  it('constrains offset options based on current width', () => {
+    const options = getOffsetOptions(8);
+    expect(options).toHaveLength(5);
+    expect(options[0]).toEqual({ value: 0, label: 'none' });
+    expect(options[4]).toEqual({ value: 4, label: '+4' });
+  });
+
+  it('returns only zero offset when width equals column count', () => {
+    const options = getOffsetOptions(12);
+    expect(options).toHaveLength(1);
+    expect(options[0]).toEqual({ value: 0, label: 'none' });
   });
 });
 

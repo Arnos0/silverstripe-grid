@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import ColumnBlock from '@/components/ColumnBlock/ColumnBlock';
 import type { EnrichedColumnNode } from '@/types/enriched';
 import { createDndWrapper } from '@/tests/helpers/dndTestUtils';
-import { getWidthClass, getOffsetClass, getColumnCount } from '@/utils/gridAdapter';
+import { getWidthClass, getOffsetClass, getColumnCount, getOffsetOptions } from '@/utils/gridAdapter';
 
 const { getIsOver, setIsOver } = vi.hoisted(() => {
   let value = false;
@@ -14,10 +14,12 @@ const { getIsOver, setIsOver } = vi.hoisted(() => {
   };
 });
 
+const mockUpdateGridSettings = vi.fn().mockResolvedValue(undefined);
+
 vi.mock('@/api/endpoints', () => ({
   createElement: vi.fn(),
   createContentElement: vi.fn(),
-  updateGridSettings: vi.fn(),
+  updateGridSettings: (...args: unknown[]) => mockUpdateGridSettings(...args),
 }));
 
 vi.mock('@dnd-kit/sortable', async (importOriginal) => {
@@ -69,9 +71,10 @@ vi.mock('@/utils/gridAdapter', () => ({
     ...Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `${i + 1}/12` })),
     { value: 'hidden', label: 'hidden' },
   ]),
-  getOffsetOptions: vi.fn(() =>
-    Array.from({ length: 12 }, (_, i) => ({ value: i, label: i === 0 ? 'none' : `+${i}` })),
-  ),
+  getOffsetOptions: vi.fn((currentWidth?: number) => {
+    const maxOffset = currentWidth !== undefined ? 12 - currentWidth : 11;
+    return Array.from({ length: maxOffset + 1 }, (_, i) => ({ value: i, label: i === 0 ? 'none' : `+${i}` }));
+  }),
   resolveViewportSettings: vi.fn(mockResolveViewportSettings),
 }));
 
@@ -598,6 +601,92 @@ describe('ColumnBlock', () => {
       );
 
       expect(screen.queryByText('No content blocks')).toBeNull();
+    });
+  });
+
+  describe('offset options constrained by width', () => {
+    it('calls getOffsetOptions with the resolved width', () => {
+      const column = makeColumn({
+        gridSettings: { md: { width: 8, offset: 0, visible: true } },
+      });
+
+      render(
+        <ColumnBlock column={column} />,
+        { wrapper: createDndWrapper() },
+      );
+
+      expect(getOffsetOptions).toHaveBeenCalledWith(8);
+    });
+
+    it('shows only valid offset options in the dropdown', async () => {
+      const column = makeColumn({
+        gridSettings: { md: { width: 11, offset: 0, visible: true } },
+      });
+      const user = userEvent.setup();
+
+      render(
+        <ColumnBlock column={column} />,
+        { wrapper: createDndWrapper() },
+      );
+
+      // Open the offset picker
+      await user.click(screen.getByTestId('column-offset-badge'));
+
+      const listbox = screen.getByTestId('column-offset-badge-listbox');
+      const options = listbox.querySelectorAll('[role="option"]');
+      // Width=11 in a 12-column grid → max offset=1 → options: none, +1
+      expect(options).toHaveLength(2);
+    });
+
+    it('auto-clamps offset when width change makes current offset invalid', async () => {
+      const column = makeColumn({
+        gridSettings: { md: { width: 6, offset: 5, visible: true } },
+      });
+      const user = userEvent.setup();
+
+      render(
+        <ColumnBlock column={column} />,
+        { wrapper: createDndWrapper() },
+      );
+
+      // Open width picker and select width=11
+      await user.click(screen.getByTestId('column-badge'));
+      const widthListbox = screen.getByTestId('column-badge-listbox');
+      const width11Option = widthListbox.querySelector('[role="option"]:nth-child(11)');
+      await user.click(width11Option!);
+
+      // Width=11, columnCount=12, maxOffset=1, current offset=5 → clamp to 1
+      const callArgs = mockUpdateGridSettings.mock.calls[0][0];
+      expect(callArgs).toEqual(expect.objectContaining({
+        width: 11,
+        offset: 1,
+        visible: true,
+      }));
+    });
+
+    it('preserves offset when width change keeps it valid', async () => {
+      const column = makeColumn({
+        gridSettings: { md: { width: 6, offset: 2, visible: true } },
+      });
+      const user = userEvent.setup();
+
+      render(
+        <ColumnBlock column={column} />,
+        { wrapper: createDndWrapper() },
+      );
+
+      // Open width picker and select width=8 (maxOffset=4, current offset=2 is valid)
+      await user.click(screen.getByTestId('column-badge'));
+      const widthListbox = screen.getByTestId('column-badge-listbox');
+      const width8Option = widthListbox.querySelector('[role="option"]:nth-child(8)');
+      await user.click(width8Option!);
+
+      const callArgs = mockUpdateGridSettings.mock.calls[0][0];
+      expect(callArgs).toEqual(expect.objectContaining({
+        width: 8,
+        offset: 2,
+        visible: true,
+      }));
     });
   });
 });
