@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace WeDevelop\Grid\Model;
 
+use SilverStripe\CMS\Controllers\CMSPageEditController;
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
-use WeDevelop\Grid\Admin\GridElementAdmin;
 
 /**
  * Abstract base for all grid elements (containers and content).
@@ -68,9 +69,24 @@ class GridElement extends DataObject
         ],
     ];
 
-    public function getCMSEditLink(): string
+    #[\Override]
+    public function getCMSEditLink(): ?string
     {
-        return GridElementAdmin::singleton()->getCMSEditLinkForManagedDataObject($this);
+        $page = $this->getPage();
+
+        if (!$page instanceof SiteTree) {
+            return null;
+        }
+
+        return Controller::join_links(
+            CMSPageEditController::singleton()->Link('EditForm'),
+            $page->ID,
+            'field',
+            'GridEditor',
+            'item',
+            $this->ID,
+            'edit',
+        );
     }
 
     /** Human-readable element type identifier (e.g., "Section", "Row", "Text"). */

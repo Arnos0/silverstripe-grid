@@ -58,8 +58,8 @@ test.describe('Content elements', () => {
     const firstCard = elementCards.first();
     await firstCard.click();
 
-    // Should navigate to the ModelAdmin edit page
-    await expect(page).toHaveURL(/grid-elements/);
+    // Should navigate to the element edit page via the page editor
+    await expect(page).toHaveURL(/\/admin\/pages\/edit\/EditForm\/\d+\/field\/GridEditor\/item\/\d+\/edit/);
 
     // --- Step 5: Fill in the edit form ---
     // Wait for the form to be ready
@@ -89,8 +89,8 @@ test.describe('Content elements', () => {
     // Wait for save to complete — toast notification confirms success
     await expect(page.locator('.toast__content')).toContainText('Saved', { timeout: 15_000 });
 
-    // --- Step 6: Navigate back to page editor ---
-    await page.goto(`/admin/pages/edit/show/${fixture.pageId}`);
+    // --- Step 6: Navigate back to page editor via breadcrumb ---
+    await page.getByRole('link', { name: 'E2E Content Elements Page' }).click();
     await expect(page.getByTestId('grid-editor-loading')).toBeHidden({ timeout: 15_000 });
 
     // --- Step 7: Publish the page ---
