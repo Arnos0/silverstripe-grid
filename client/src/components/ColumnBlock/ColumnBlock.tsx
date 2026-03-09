@@ -54,7 +54,7 @@ export default function ColumnBlock({ column }: ColumnBlockProps) {
   const sortableStyle = buildSortableStyle(transform, transition, isDragging);
 
   const widthOptions = getWidthOptions();
-  const offsetOptions = getOffsetOptions();
+  const offsetOptions = getOffsetOptions(settings.width);
 
   const widthLabel = settings.visible
     ? `${settings.width}/${columnCount}`
@@ -82,10 +82,12 @@ export default function ColumnBlock({ column }: ColumnBlockProps) {
       if (value === 'hidden') {
         updateSettings({ visible: false });
       } else {
-        updateSettings({ width: value, visible: true });
+        const maxOffset = columnCount - value;
+        const clampedOffset = settings.offset > maxOffset ? maxOffset : settings.offset;
+        updateSettings({ width: value, visible: true, offset: clampedOffset });
       }
     },
-    [updateSettings],
+    [updateSettings, columnCount, settings.offset],
   );
 
   const handleOffsetSelect = useCallback(

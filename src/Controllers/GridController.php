@@ -657,15 +657,20 @@ class GridController extends AdminController
         $columnCount = $this->gridAdapter->getColumnCount();
 
         if (!is_int($width) || $width < 1 || $width > $columnCount) {
-            $this->jsonError(400);
+            $this->jsonError(400, sprintf('Width must be between 1 and %d.', $columnCount));
         }
 
         if (!is_int($offset) || $offset < 0 || $offset > $columnCount - 1) {
-            $this->jsonError(400);
+            $this->jsonError(400, sprintf('Offset must be between 0 and %d.', $columnCount - 1));
         }
 
         if ($width + $offset > $columnCount) {
-            $this->jsonError(400);
+            $this->jsonError(400, sprintf(
+                'Width (%d) plus offset (%d) exceeds the maximum of %d columns.',
+                $width,
+                $offset,
+                $columnCount,
+            ));
         }
 
         if (!is_bool($visible)) {
