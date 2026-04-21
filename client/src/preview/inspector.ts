@@ -10,7 +10,7 @@ interface Inspector {
   mutated: Set<HTMLElement>;
   currentHover: HTMLElement | null;
   onMouseMove: (event: MouseEvent) => void;
-  onMouseOut: (event: MouseEvent) => void;
+  onMouseLeave: () => void;
   pendingFrame: number | null;
   pendingTarget: HTMLElement | null;
   destroy(): void;
@@ -25,7 +25,7 @@ export function createInspector(): Inspector {
     pendingFrame: null,
     pendingTarget: null,
     onMouseMove: () => {},
-    onMouseOut: () => {},
+    onMouseLeave: () => {},
     destroy: () => {
       deactivate(inspector);
     },
@@ -51,9 +51,8 @@ export function createInspector(): Inspector {
     });
   };
 
-  inspector.onMouseOut = (event: MouseEvent) => {
+  inspector.onMouseLeave = () => {
     if (!inspector.active) return;
-    if (event.relatedTarget !== null) return; // still inside document
     if (inspector.currentHover !== null) {
       clearHighlightDom(inspector);
       postToParent({ type: "grid-inspect:unhover" });
@@ -127,14 +126,14 @@ export function activate(inspector: Inspector): void {
   if (inspector.active) return;
   inspector.active = true;
   document.addEventListener("mousemove", inspector.onMouseMove, { passive: true });
-  document.addEventListener("mouseout", inspector.onMouseOut);
+  document.documentElement.addEventListener("mouseleave", inspector.onMouseLeave);
 }
 
 export function deactivate(inspector: Inspector): void {
   if (!inspector.active) return;
   inspector.active = false;
   document.removeEventListener("mousemove", inspector.onMouseMove);
-  document.removeEventListener("mouseout", inspector.onMouseOut);
+  document.documentElement.removeEventListener("mouseleave", inspector.onMouseLeave);
   if (inspector.pendingFrame !== null) {
     cancelAnimationFrame(inspector.pendingFrame);
     inspector.pendingFrame = null;

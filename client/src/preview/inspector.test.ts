@@ -83,6 +83,30 @@ describe("createInspector", () => {
     inspector.destroy();
   });
 
+  it("mouseleave on document element posts unhover and clears highlight", () => {
+    build(`<div id="t" data-grid-element-id="9">x</div>`);
+    const inspector = createInspector();
+    const target = document.getElementById("t")!;
+    target.getBoundingClientRect = () =>
+      ({ top: 0, left: 0, right: 10, bottom: 10, width: 10, height: 10, x: 0, y: 0, toJSON: () => ({}) }) as DOMRect;
+
+    activate(inspector);
+    const capture = collectPosts();
+
+    // Simulate a real user hover so currentHover is set before leaving.
+    target.dispatchEvent(new MouseEvent("mousemove", { bubbles: true }));
+    inspector.flush();
+    expect(capture.posts).toContainEqual({ type: "grid-inspect:hover", id: 9 });
+    expect(target.classList.contains("grid-inspect-target")).toBe(true);
+
+    document.documentElement.dispatchEvent(new MouseEvent("mouseleave", { bubbles: false }));
+
+    expect(target.classList.contains("grid-inspect-target")).toBe(false);
+    expect(capture.posts).toContainEqual({ type: "grid-inspect:unhover" });
+    capture.restore();
+    inspector.destroy();
+  });
+
   it("deactivate() removes listeners and clears highlight state", () => {
     build(`<div id="t" data-grid-element-id="1">x</div>`);
     const inspector = createInspector();
