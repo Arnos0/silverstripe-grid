@@ -392,4 +392,31 @@ describe('InspectBridgeHost', () => {
     // Only the <span> we pass as a child survives.
     expect(container.textContent).toBe('sibling');
   });
+
+  it('flushes a queued activate when a `ready` arrives as a reply to an outbound control message', () => {
+    // Regression test for the editor↔preview race: the iframe boots and
+    // posts its initial `ready` before InspectBridgeHost has wired its
+    // subscribe effect, so that ready is lost. The fix lives on the preview
+    // side — it echoes `ready` on every inbound control message. This test
+    // simulates that echo behaviour and asserts the editor recovers.
+    const captured: HarnessCaptured = { api: null };
+    render(<Harness tree={buildTree()} captured={captured} />);
+    // User toggles on before any `ready` has been received. Activate is
+    // queued but cannot dispatch — readyRef is still false.
+    act(() => captured.api?.setEnabled(true));
+    expect(postMessage).not.toHaveBeenCalledWith(
+      { type: 'grid-inspect:activate' },
+      window.location.origin,
+    );
+
+    // The preview receives the editor's deactivate (from the initial
+    // `enabled=false` effect on mount) and echoes `ready` in response.
+    // With the subscribe now live, that ready unsticks the queue.
+    act(() => dispatchPreviewMessage({ type: 'grid-inspect:ready' }));
+
+    expect(postMessage).toHaveBeenCalledWith(
+      { type: 'grid-inspect:activate' },
+      window.location.origin,
+    );
+  });
 });
