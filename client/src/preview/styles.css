@@ -1,0 +1,34 @@
+/* All rules scoped under .grid-inspect-* to avoid theme collisions. */
+
+.grid-inspect-target {
+  outline: 3px solid #1976d2 !important;
+  background: rgba(33, 150, 243, 0.12) !important;
+}
+
+.grid-inspect-ancestor-1 {
+  outline: 2px solid rgba(33, 150, 243, 0.75) !important;
+  outline-offset: 2px;
+}
+
+.grid-inspect-ancestor-2 {
+  outline: 2px solid rgba(33, 150, 243, 0.5) !important;
+  outline-offset: 4px;
+}
+
+.grid-inspect-ancestor-3 {
+  outline: 2px solid rgba(33, 150, 243, 0.25) !important;
+  outline-offset: 6px;
+}
+
+.grid-inspect-breadcrumb {
+  position: fixed;
+  background: #212121;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font: 11px -apple-system, system-ui, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2147483647;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}

@@ -1,3 +1,4 @@
+import "./styles.css";
 import { activate, clear, createInspector, deactivate, highlight } from "./inspector";
 import { postToParent, subscribeToParent } from "./messageBridge";
 
