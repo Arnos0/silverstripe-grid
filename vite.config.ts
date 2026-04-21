@@ -75,6 +75,7 @@ export default defineConfig({
         "client/src/bundles/**",
         "client/src/bridge/**",
         "client/src/boot/**",
+        "client/src/preview/index.ts",
         "client/src/testing/**",
         "client/src/**/index.ts",
         "client/src/types/silverstripe.d.ts",
