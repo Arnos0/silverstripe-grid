@@ -1,0 +1,60 @@
+# E2E fixture for inspect-mode journeys.
+#
+# Structure:
+#   Page → Hero Section → Hero Row → Hero Col + Text Col (with ContentElement)
+#        → CTA Section → CTA Row → CTA Col
+#
+# Top-down ordering: parents before children. FixtureLoader suppresses auto-scaffolding.
+# All pages use the 'e2e-' URLSegment prefix for cleanup identification.
+
+Page:
+  e2e_inspect_page:
+    Title: 'E2E Inspect Mode Page'
+    URLSegment: 'e2e-inspect-mode'
+
+WeDevelop\Grid\Model\Section:
+  hero_section:
+    Title: 'Hero section'
+    ShowTitle: 1
+    TitleTag: h2
+    Sort: 1
+    Zone: main
+    Parent: =>Page.e2e_inspect_page
+  cta_section:
+    Title: 'Call to action'
+    ShowTitle: 1
+    TitleTag: h2
+    Sort: 2
+    Zone: main
+    Parent: =>Page.e2e_inspect_page
+
+WeDevelop\Grid\Model\Row:
+  hero_row:
+    Title: 'Hero row'
+    Sort: 1
+    Parent: =>WeDevelop\Grid\Model\Section.hero_section
+  cta_row:
+    Title: 'CTA row'
+    Sort: 1
+    Parent: =>WeDevelop\Grid\Model\Section.cta_section
+
+WeDevelop\Grid\Model\Column:
+  hero_col:
+    Title: 'Hero column'
+    Sort: 1
+    Parent: =>WeDevelop\Grid\Model\Row.hero_row
+  text_col:
+    Title: 'Text column'
+    Sort: 2
+    Parent: =>WeDevelop\Grid\Model\Row.hero_row
+  cta_col:
+    Title: 'CTA column'
+    Sort: 1
+    Parent: =>WeDevelop\Grid\Model\Row.cta_row
+
+WeDevelop\Grid\Model\ContentElement:
+  hero_paragraph:
+    Title: 'Hero paragraph'
+    HTML: '<p>Hero paragraph body content for inspect-mode tests.</p>'
+    Sort: 1
+    Parent: =>WeDevelop\Grid\Model\Column.text_col
