@@ -37,6 +37,8 @@
   "WeDevelopGrid.GridEditor.NO_SECTIONS_READONLY": "Geen secties in deze versie",
   "WeDevelopGrid.GridEditorErrorBoundary.RENDER_FALLBACK": "De grid-editor kon niet worden weergegeven. Probeer de pagina opnieuw te laden.",
   "WeDevelopGrid.GridEditorErrorBoundary.TOAST_ERROR": "De grid-editor is tegen een fout aangelopen en kon niet worden weergegeven.",
+  "WeDevelopGrid.InspectToggle.DISABLED_TITLE": "Open split-modus preview om inspect te gebruiken",
+  "WeDevelopGrid.InspectToggle.LABEL": "Inspecteren",
   "WeDevelopGrid.RowBlock.MOVE_LABEL": "{title} verplaatsen",
   "WeDevelopGrid.SectionBlock.MOVE_LABEL": "{title} verplaatsen",
   "WeDevelopGrid.useArchiveAction.ACTION_LABEL": "Archiveren",
