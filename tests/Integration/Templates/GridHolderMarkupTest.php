@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WeDevelop\Grid\Tests\Integration\Templates;
 
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Versioned\Versioned;
 use SilverStripe\View\SSViewer;
@@ -101,5 +100,9 @@ final class GridHolderMarkupTest extends SapphireTest
             $html,
         );
         $this->assertStringContainsString('style="display:contents"', $html);
+        $this->assertStringContainsString(
+            'data-grid-element-title="Wrapped"',
+            $html,
+        );
     }
 }
