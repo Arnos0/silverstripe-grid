@@ -89,7 +89,7 @@ final class GridHolderMarkupTest extends SapphireTest
     public function testGridElementHolderWrapsContentWithDataAttributes(): void
     {
         // Render a bare GridElement via the shared holder template.
-        $template = SSViewer::create(['type' => 'Includes', 'WeDevelop/Grid/Model/GridElement_holder']);
+        $template = SSViewer::create(['WeDevelop/Grid/Model/GridElement_holder']);
         $section = Section::create();
         $section->Title = 'Wrapped';
         $section->write();
