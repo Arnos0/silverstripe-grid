@@ -37,6 +37,8 @@
   "WeDevelopGrid.GridEditor.NO_SECTIONS_READONLY": "No sections in this version",
   "WeDevelopGrid.GridEditorErrorBoundary.RENDER_FALLBACK": "The grid editor failed to render. Try reloading the page.",
   "WeDevelopGrid.GridEditorErrorBoundary.TOAST_ERROR": "The grid editor encountered an error and could not render.",
+  "WeDevelopGrid.InspectToggle.DISABLED_TITLE": "Open split-mode preview to use inspect",
+  "WeDevelopGrid.InspectToggle.LABEL": "Inspect",
   "WeDevelopGrid.RowBlock.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.SectionBlock.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.useArchiveAction.ACTION_LABEL": "Archive",
