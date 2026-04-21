@@ -9,6 +9,7 @@ import { useGridEditorContext } from '@/hooks/GridEditorContext';
 import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useViewportContext } from '@/hooks/ViewportContext';
 import { useCollapse } from '@/hooks/useCollapseState';
+import { useInspectHoverBinding } from '@/inspect/useInspectHoverBinding';
 import { useUpdateGridSettings, useCreateContentElement } from '@/hooks/useElementMutations';
 import { buildSortableStyle } from '@/utils/sortableStyles';
 import { buildBlockClasses } from '@/utils/blockClasses';
@@ -93,6 +94,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const status = getElementStatus(column.statusFlags);
   const { isCollapsed, onToggle } = useColumnCollapse(column);
   const { activeType } = useDragContext();
+  const hoverBinding = useInspectHoverBinding(column);
   const updateGridSettings = useUpdateGridSettings(pageId, zone);
   const createContentElement = useCreateContentElement(pageId, zone);
   const [isPickerOpen, setPickerOpen] = useState(false);
@@ -182,7 +184,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const hasAllowedTypes = Object.keys(allowedTypes).length > 0;
 
   return (
-    <div ref={setNodeRef} style={columnStyle} className="row-block__column">
+    <div ref={setNodeRef} style={columnStyle} className="row-block__column" {...hoverBinding}>
       <div className={innerClasses} data-testid="column-block">
         <div className="column-block__header" data-testid="column-header">
           <DragHandle
@@ -262,6 +264,7 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const settings = resolveViewportSettings(column.gridSettings, activeViewport);
   const status = getElementStatus(column.statusFlags);
   const { isCollapsed, onToggle } = useColumnCollapse(column);
+  const hoverBinding = useInspectHoverBinding(column);
 
   const innerClasses = buildBlockClasses('column-block', status, {
     hidden: !settings.visible,
@@ -275,7 +278,7 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const children = column.children ?? [];
 
   return (
-    <div style={columnStyle} className="row-block__column">
+    <div style={columnStyle} className="row-block__column" {...hoverBinding}>
       <div className={innerClasses} data-testid="column-block">
         <div className="column-block__header" data-testid="column-header">
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />

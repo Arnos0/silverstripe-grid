@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import type { SimpleElementNode } from '@/types/elements';
 import { getElementStatus } from '@/types/status';
 import { useReadonly } from '@/hooks/ReadonlyContext';
+import { useInspectHoverBinding } from '@/inspect/useInspectHoverBinding';
 import { buildSortableStyle } from '@/utils/sortableStyles';
 import { t } from '@/i18n';
 import DragHandle from '@/components/DragHandle/DragHandle';
@@ -31,6 +32,7 @@ function EditableElementCard({ element }: ElementCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: element.nodeKey,
   });
+  const hoverBinding = useInspectHoverBinding(element);
   const status = getElementStatus(element.statusFlags);
   const editLink = element.editLink;
   const isClickable = editLink !== null;
@@ -89,6 +91,7 @@ function EditableElementCard({ element }: ElementCardProps) {
         className={cardClasses}
         data-testid="element-card"
         onClick={handleAnchorClick}
+        {...hoverBinding}
       >
         {header}
       </a>
@@ -96,7 +99,13 @@ function EditableElementCard({ element }: ElementCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={cardClasses} data-testid="element-card">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cardClasses}
+      data-testid="element-card"
+      {...hoverBinding}
+    >
       {header}
     </div>
   );
@@ -105,9 +114,10 @@ function EditableElementCard({ element }: ElementCardProps) {
 function ReadonlyElementCard({ element }: ElementCardProps) {
   const status = getElementStatus(element.statusFlags);
   const cardClasses = `element-card element-card--${status}`;
+  const hoverBinding = useInspectHoverBinding(element);
 
   return (
-    <div className={cardClasses} data-testid="element-card">
+    <div className={cardClasses} data-testid="element-card" {...hoverBinding}>
       <div className="element-card__header">
         <i className={`element-card__icon ${element.blockSchema.icon}`} />
         <h4 className="element-card__title" data-testid="element-card-title">

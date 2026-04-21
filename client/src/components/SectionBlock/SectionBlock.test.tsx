@@ -49,6 +49,16 @@ describe('SectionBlock', () => {
     expect(screen.getByTestId('section-title')).toHaveTextContent('Hero Section');
   });
 
+  it('renders data-node-id on the root for inspect-mode targeting', () => {
+    mockFetchSuccess({});
+
+    const section = createSectionNode({ id: 77 });
+
+    renderWithProviders(<SectionBlock section={section} />);
+
+    expect(screen.getByTestId('section-block')).toHaveAttribute('data-node-id', '77');
+  });
+
   it('renders child rows', () => {
     mockFetchSuccess({});
 

@@ -5,6 +5,7 @@ import { vi } from 'vitest';
 import { GridEditorProvider } from '@/hooks/GridEditorContext';
 import { ViewportProvider } from '@/hooks/ViewportContext';
 import { CollapseContext, type CollapseState } from '@/hooks/useCollapseState';
+import { InspectProvider } from '@/inspect/InspectContext';
 import type { NodeKey } from '@/types/identity';
 
 export interface RenderOptions {
@@ -83,7 +84,9 @@ export function renderWithProviders(
     <QueryClientProvider client={queryClient}>
       <GridEditorProvider value={{ pageId, zone }}>
         <ViewportProvider initialViewport={viewport}>
-          <CollapseContext.Provider value={resolvedCollapse}>{ui}</CollapseContext.Provider>
+          <CollapseContext.Provider value={resolvedCollapse}>
+            <InspectProvider>{ui}</InspectProvider>
+          </CollapseContext.Provider>
         </ViewportProvider>
       </GridEditorProvider>
     </QueryClientProvider>,
@@ -113,7 +116,9 @@ export function createProviderWrapper(options: RenderOptions = {}) {
       <QueryClientProvider client={queryClient}>
         <GridEditorProvider value={{ pageId, zone }}>
           <ViewportProvider initialViewport={viewport}>
-            <CollapseContext.Provider value={resolvedCollapse}>{children}</CollapseContext.Provider>
+            <CollapseContext.Provider value={resolvedCollapse}>
+              <InspectProvider>{children}</InspectProvider>
+            </CollapseContext.Provider>
           </ViewportProvider>
         </GridEditorProvider>
       </QueryClientProvider>

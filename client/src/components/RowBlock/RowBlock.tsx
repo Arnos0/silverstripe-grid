@@ -7,6 +7,7 @@ import { getElementStatus } from '@/types/status';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useCollapse } from '@/hooks/useCollapseState';
+import { useInspectHoverBinding } from '@/inspect/useInspectHoverBinding';
 import { buildSortableStyle } from '@/utils/sortableStyles';
 import { buildBlockClasses } from '@/utils/blockClasses';
 import { getOffsetStrategy, getColumnCount } from '@/utils/gridAdapter';
@@ -48,6 +49,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const status = getElementStatus(row.statusFlags);
   const { isCollapsed, onToggle } = useRowCollapse(row);
   const { activeType } = useDragContext();
+  const hoverBinding = useInspectHoverBinding(row);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: row.nodeKey });
@@ -64,7 +66,13 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const childKeys = useChildColumnKeys(row);
 
   return (
-    <div ref={setNodeRef} style={style} className={rootClasses} data-testid="row-block">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={rootClasses}
+      data-testid="row-block"
+      {...hoverBinding}
+    >
       <div className="row-block__header" data-testid="row-header">
         <DragHandle
           listeners={listeners}
@@ -123,13 +131,14 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
   const layoutMode = getOffsetStrategy() === 'margin' ? 'flex' : 'grid';
   const status = getElementStatus(row.statusFlags);
   const { isCollapsed, onToggle } = useRowCollapse(row);
+  const hoverBinding = useInspectHoverBinding(row);
 
   const rootClasses = buildBlockClasses('row-block', status, {
     collapsed: isCollapsed,
   });
 
   return (
-    <div className={rootClasses} data-testid="row-block">
+    <div className={rootClasses} data-testid="row-block" {...hoverBinding}>
       <div className="row-block__header" data-testid="row-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
         <i className={`row-block__icon ${row.blockSchema.icon}`} />

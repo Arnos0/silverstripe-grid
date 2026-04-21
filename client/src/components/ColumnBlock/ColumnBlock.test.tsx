@@ -60,6 +60,21 @@ afterEach(() => {
 });
 
 describe('ColumnBlock', () => {
+  it('renders data-node-id on the outer wrapper for inspect-mode targeting', () => {
+    mockFetchSuccess({});
+
+    const column = createColumnNode({ id: 88, childCount: 0, allowedTypes: null });
+
+    renderWithProviders(<ColumnBlock column={column} />);
+
+    // The hover binding lives on the outer `.row-block__column` wrapper
+    // because that's the actual root of the component. The inner
+    // `column-block` testid is a direct child.
+    const inner = screen.getByTestId('column-block');
+    const outer = inner.parentElement;
+    expect(outer).toHaveAttribute('data-node-id', '88');
+  });
+
   it('renders column children (element cards)', () => {
     mockFetchSuccess({});
 

@@ -7,6 +7,7 @@ import { getElementStatus } from '@/types/status';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useCollapse } from '@/hooks/useCollapseState';
+import { useInspectHoverBinding } from '@/inspect/useInspectHoverBinding';
 import { buildSortableStyle } from '@/utils/sortableStyles';
 import { buildBlockClasses } from '@/utils/blockClasses';
 import { t } from '@/i18n';
@@ -51,6 +52,7 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
   const status = getElementStatus(section.statusFlags);
   const { isCollapsed, onToggle } = useSectionCollapse(section);
   const { activeType } = useDragContext();
+  const hoverBinding = useInspectHoverBinding(section);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: section.nodeKey });
@@ -67,7 +69,13 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
   const childKeys = useChildSortableKeys(section);
 
   return (
-    <section ref={setNodeRef} style={style} className={rootClasses} data-testid="section-block">
+    <section
+      ref={setNodeRef}
+      style={style}
+      className={rootClasses}
+      data-testid="section-block"
+      {...hoverBinding}
+    >
       <div className="section-block__header" data-testid="section-header">
         <DragHandle
           listeners={listeners}
@@ -120,13 +128,14 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
 function ReadonlySectionBlock({ section }: SectionBlockProps) {
   const status = getElementStatus(section.statusFlags);
   const { isCollapsed, onToggle } = useSectionCollapse(section);
+  const hoverBinding = useInspectHoverBinding(section);
 
   const rootClasses = buildBlockClasses('section-block', status, {
     collapsed: isCollapsed,
   });
 
   return (
-    <section className={rootClasses} data-testid="section-block">
+    <section className={rootClasses} data-testid="section-block" {...hoverBinding}>
       <div className="section-block__header" data-testid="section-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
         <i className={`section-block__icon ${section.blockSchema.icon}`} />

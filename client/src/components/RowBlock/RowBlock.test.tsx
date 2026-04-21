@@ -50,6 +50,16 @@ describe('RowBlock', () => {
     expect(screen.getByTestId('row-title')).toHaveTextContent('Main Row');
   });
 
+  it('renders data-node-id on the root for inspect-mode targeting', () => {
+    mockFetchSuccess({});
+
+    const row = createRowNode({ id: 42 });
+
+    renderWithProviders(<RowBlock row={row} />);
+
+    expect(screen.getByTestId('row-block')).toHaveAttribute('data-node-id', '42');
+  });
+
   it('renders child columns', () => {
     mockFetchSuccess({});
 

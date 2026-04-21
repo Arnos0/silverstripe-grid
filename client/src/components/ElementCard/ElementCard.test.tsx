@@ -38,6 +38,16 @@ describe('ElementCard', () => {
     expect(screen.getByTestId('element-card-title')).toHaveTextContent('My Content Block');
   });
 
+  it('renders data-node-id on the root for inspect-mode targeting', () => {
+    mockFetchSuccess({});
+
+    const element = createSimpleElement({ id: 99 });
+
+    renderWithProviders(<ElementCard element={element} />);
+
+    expect(screen.getByTestId('element-card')).toHaveAttribute('data-node-id', '99');
+  });
+
   it('status class applied correctly', () => {
     mockFetchSuccess({});
 
