@@ -28,8 +28,12 @@ const iframeStub: HTMLIFrameElement = {
   }),
 } as unknown as HTMLIFrameElement;
 
+// Controllable resolver: tests can swap the returned iframe to simulate the
+// preview pane mounting after the editor (the real CMS lifecycle).
+let currentIframe: HTMLIFrameElement | null = iframeStub;
+
 vi.mock('./resolvePreviewIframe', () => ({
-  resolvePreviewIframe: () => iframeStub,
+  resolvePreviewIframe: () => currentIframe,
 }));
 
 // The bridge subscribes via `window.addEventListener('message', ...)`. To
@@ -130,6 +134,7 @@ beforeEach(() => {
   installMockLocalStorage();
   postMessage.mockClear();
   loadListeners.clear();
+  currentIframe = iframeStub;
 });
 
 afterEach(() => {
@@ -362,6 +367,51 @@ describe('InspectBridgeHost', () => {
       { type: 'grid-inspect:activate' },
       window.location.origin,
     );
+  });
+
+  it('wires the load listener when the iframe arrives in the DOM after mount', async () => {
+    // Simulate the production CMS lifecycle: editor mounts before the preview
+    // iframe is attached. The MutationObserver must pick the iframe up when
+    // it later appears and wire the `load` listener to it so readyRef is
+    // reset and queued activates flush on the next preview ready.
+    currentIframe = null;
+
+    const captured: HarnessCaptured = { api: null };
+    render(<Harness tree={buildTree()} captured={captured} />);
+
+    // Preview not here yet — toggling on queues the activate (no iframe to
+    // send through).
+    act(() => captured.api?.setEnabled(true));
+    expect(postMessage).not.toHaveBeenCalled();
+
+    // Late-mount the iframe. Appending a real element to document.body
+    // triggers the MutationObserver; the wire() callback re-resolves
+    // resolvePreviewIframe which now returns our stub.
+    currentIframe = iframeStub;
+    const marker = document.createElement('div');
+    await act(async () => {
+      document.body.appendChild(marker);
+      // MutationObserver callbacks are queued as microtasks; flushing the
+      // microtask queue lets the observer run before we assert.
+      await Promise.resolve();
+    });
+
+    // Fire a load event on the late-arrived iframe. The listener should
+    // now be wired, so readyRef resets (no visible side-effect yet — we'll
+    // prove it through the ready → activate flush).
+    act(() => {
+      for (const listener of loadListeners) listener(new Event('load'));
+    });
+
+    // The queued activate should still be pending (readyRef is false), so
+    // the next ready message flushes it.
+    act(() => dispatchPreviewMessage({ type: 'grid-inspect:ready' }));
+    expect(postMessage).toHaveBeenCalledWith(
+      { type: 'grid-inspect:activate' },
+      window.location.origin,
+    );
+
+    document.body.removeChild(marker);
   });
 
   it('renders nothing', () => {

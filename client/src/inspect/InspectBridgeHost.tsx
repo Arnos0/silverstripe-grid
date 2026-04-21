@@ -74,14 +74,45 @@ export function InspectBridgeHost({ tree }: Props): null {
   // Reset ready flag on iframe reload — the preview bundle re-announces
   // ready on every load, so any stale ready state from before the
   // navigation would otherwise cause queued activates to drop silently.
+  //
+  // The iframe may not exist in the DOM at mount (CMS navigates lazily into
+  // page edit → preview pane), and may be swapped out/in across Pjax
+  // transitions. A single-shot `document.querySelector` at mount would miss
+  // late arrivals and never re-wire. Follow the same vanilla MutationObserver
+  // pattern used for entwine Pjax fallback in `client/src/bridge/entwine.ts`:
+  // observe `document.body` for subtree mutations and re-resolve the iframe
+  // whenever the DOM shifts, wiring the load listener to whichever iframe
+  // currently answers `resolvePreviewIframe`.
   useEffect(() => {
-    const iframe = resolvePreviewIframe();
-    if (iframe === null) return;
+    let listenerIframe: HTMLIFrameElement | null = null;
     const onLoad = (): void => {
       readyRef.current = false;
     };
-    iframe.addEventListener('load', onLoad);
-    return () => iframe.removeEventListener('load', onLoad);
+
+    const wire = (iframe: HTMLIFrameElement | null): void => {
+      if (iframe === listenerIframe) return;
+      listenerIframe?.removeEventListener('load', onLoad);
+      listenerIframe = iframe;
+      listenerIframe?.addEventListener('load', onLoad);
+    };
+
+    wire(resolvePreviewIframe());
+
+    if (typeof MutationObserver === 'undefined' || typeof document === 'undefined') {
+      return () => {
+        listenerIframe?.removeEventListener('load', onLoad);
+      };
+    }
+
+    const observer = new MutationObserver(() => {
+      wire(resolvePreviewIframe());
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      listenerIframe?.removeEventListener('load', onLoad);
+    };
   }, []);
 
   // Activate / deactivate handshake.
