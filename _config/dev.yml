@@ -164,3 +164,9 @@ WeDevelop\Grid\Dev\FixtureLoader:
       # via user actions (publish, edit, publish again) so each version
       # in the resulting history is the validated result of a real
       # interaction, not a fixture side-effect.
+    inspect-mode:
+      path: 'wedevelopnl/silverstripe-grid:tests/E2E/Fixture/inspect-mode.yml'
+      post_actions:
+        - action: publish_recursive
+          class: Page
+          identifier: e2e_inspect_page
