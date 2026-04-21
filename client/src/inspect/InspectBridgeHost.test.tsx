@@ -8,6 +8,7 @@ import {
   createSimpleElement,
   createTreeApiResponse,
 } from '@/testing/factories';
+import { installMockLocalStorage } from '@/testing/mockLocalStorage';
 import type { TreeApiResponse } from '@/types/elements';
 import { InspectProvider, useInspect } from './InspectContext';
 import { InspectBridgeHost } from './InspectBridgeHost';
@@ -94,41 +95,7 @@ function buildTree(): TreeApiResponse {
   return createTreeApiResponse({ rootParent: { type: 'page', id: 1 }, sections: [section] });
 }
 
-interface MockStorage extends Storage {
-  _store: Map<string, string>;
-}
-
-function createMockLocalStorage(): MockStorage {
-  const store = new Map<string, string>();
-  return {
-    _store: store,
-    get length() {
-      return store.size;
-    },
-    clear: () => {
-      store.clear();
-    },
-    getItem: (key: string): string | null => store.get(key) ?? null,
-    setItem: (key: string, value: string): void => {
-      store.set(key, value);
-    },
-    removeItem: (key: string): void => {
-      store.delete(key);
-    },
-    key: (index: number): string | null => [...store.keys()][index] ?? null,
-  };
-}
 const realLocalStorage = globalThis.localStorage;
-
-function installMockLocalStorage(): MockStorage {
-  const mock = createMockLocalStorage();
-  Object.defineProperty(globalThis, 'localStorage', {
-    value: mock,
-    writable: true,
-    configurable: true,
-  });
-  return mock;
-}
 
 beforeEach(() => {
   installMockLocalStorage();

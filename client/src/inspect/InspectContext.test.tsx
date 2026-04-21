@@ -2,48 +2,11 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ReactNode } from 'react';
 import { createSimpleElement } from '@/testing/factories';
+import { installMockLocalStorage } from '@/testing/mockLocalStorage';
 import { InspectProvider, useInspect } from './InspectContext';
 import { STORAGE_KEY } from './storage';
 
-// jsdom's default localStorage is a Proxy that doesn't expose a usable
-// `setItem`/`clear`. Swap in a Map-backed mock for these tests.
-
-interface MockStorage extends Storage {
-  _store: Map<string, string>;
-}
-
-function createMockLocalStorage(): MockStorage {
-  const store = new Map<string, string>();
-  return {
-    _store: store,
-    get length() {
-      return store.size;
-    },
-    clear: () => {
-      store.clear();
-    },
-    getItem: (key: string): string | null => store.get(key) ?? null,
-    setItem: (key: string, value: string): void => {
-      store.set(key, value);
-    },
-    removeItem: (key: string): void => {
-      store.delete(key);
-    },
-    key: (index: number): string | null => [...store.keys()][index] ?? null,
-  };
-}
-
 const realLocalStorage = globalThis.localStorage;
-
-function installMockLocalStorage(): MockStorage {
-  const mock = createMockLocalStorage();
-  Object.defineProperty(globalThis, 'localStorage', {
-    value: mock,
-    writable: true,
-    configurable: true,
-  });
-  return mock;
-}
 
 function wrapper({ children }: { children: ReactNode }): React.JSX.Element {
   return <InspectProvider>{children}</InspectProvider>;
