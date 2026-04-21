@@ -90,8 +90,8 @@ function EditableElementCard({ element }: ElementCardProps) {
         style={style}
         className={cardClasses}
         data-testid="element-card"
-        onClick={handleAnchorClick}
         {...hoverBinding}
+        onClick={handleAnchorClick}
       >
         {header}
       </a>

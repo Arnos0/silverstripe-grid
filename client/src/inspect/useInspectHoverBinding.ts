@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import type { ElementNode } from '@/types/elements';
 import { useInspect } from './InspectContext';
@@ -35,12 +34,12 @@ export function useInspectHoverBinding(node: ElementNode): InspectHoverBindingAt
   // no drag is in progress (the default DragContext value).
   const bindingActive = enabled && activeType === null;
 
-  const onEnter = useCallback(() => setEditorHover(node), [node, setEditorHover]);
-  const onLeave = useCallback(() => setEditorHover(null), [setEditorHover]);
-
+  // Handlers are recreated per render — fine because they're spread onto
+  // native DOM elements where React uses the latest reference directly;
+  // useCallback would only matter if the return shape fed a memoised child.
   return {
     'data-node-id': String(node.id),
-    onMouseEnter: bindingActive ? onEnter : undefined,
-    onMouseLeave: bindingActive ? onLeave : undefined,
+    onMouseEnter: bindingActive ? () => setEditorHover(node) : undefined,
+    onMouseLeave: bindingActive ? () => setEditorHover(null) : undefined,
   };
 }
