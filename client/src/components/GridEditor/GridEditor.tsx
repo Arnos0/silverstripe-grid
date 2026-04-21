@@ -9,6 +9,10 @@ import { CollapseContext, useCollapseState } from '@/hooks/useCollapseState';
 import { ViewportProvider } from '@/hooks/ViewportContext';
 import { GridEditorProvider } from '@/hooks/GridEditorContext';
 import { ReadonlyProvider } from '@/hooks/ReadonlyContext';
+import { InspectBridgeHost } from '@/inspect/InspectBridgeHost';
+import { InspectProvider } from '@/inspect/InspectContext';
+import { InspectOverlay } from '@/inspect/InspectOverlay';
+import { InspectToggle } from '@/inspect/InspectToggle';
 import { isSectionNode, type TreeApiResponse } from '@/types/elements';
 import type { NodeRef } from '@/types/identity';
 import ViewportSwitcher from '@/components/ViewportSwitcher/ViewportSwitcher';
@@ -121,45 +125,55 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
         </p>
       )}
       {data !== undefined && pageId !== null && (
-        <GridEditorProvider value={{ pageId, zone }}>
-          <ViewportProvider>
-            <ReadonlyProvider value={readonly}>
-              <CollapseContext.Provider value={collapseState}>
-                <ViewportSwitcher />
-                {readonly ? (
-                  sectionList
-                ) : (
-                  <DndContext
-                    {...dndContextProps}
-                    measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-                  >
-                    <DragContext.Provider value={dragContextValue}>
-                      <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>
-                        {sectionList}
-                        {hasSections && (
-                          <AddChildButton
-                            parentId={pageId}
-                            childType="section"
-                            childLabel="Section"
-                            variant="append"
+        <InspectProvider>
+          <GridEditorProvider value={{ pageId, zone }}>
+            <ViewportProvider>
+              <ReadonlyProvider value={readonly}>
+                <CollapseContext.Provider value={collapseState}>
+                  <div className="grid-editor__header">
+                    <ViewportSwitcher />
+                    <InspectToggle />
+                  </div>
+                  <InspectBridgeHost tree={treeOrEmpty} />
+                  <InspectOverlay />
+                  {readonly ? (
+                    sectionList
+                  ) : (
+                    <DndContext
+                      {...dndContextProps}
+                      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+                    >
+                      <DragContext.Provider value={dragContextValue}>
+                        <SortableContext
+                          items={sectionIds}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {sectionList}
+                          {hasSections && (
+                            <AddChildButton
+                              parentId={pageId}
+                              childType="section"
+                              childLabel="Section"
+                              variant="append"
+                            />
+                          )}
+                        </SortableContext>
+                      </DragContext.Provider>
+                      <DragOverlay>
+                        {dragState !== null && (
+                          <DragOverlayContent
+                            node={dragState.activeNode}
+                            type={dragState.activeType}
                           />
                         )}
-                      </SortableContext>
-                    </DragContext.Provider>
-                    <DragOverlay>
-                      {dragState !== null && (
-                        <DragOverlayContent
-                          node={dragState.activeNode}
-                          type={dragState.activeType}
-                        />
-                      )}
-                    </DragOverlay>
-                  </DndContext>
-                )}
-              </CollapseContext.Provider>
-            </ReadonlyProvider>
-          </ViewportProvider>
-        </GridEditorProvider>
+                      </DragOverlay>
+                    </DndContext>
+                  )}
+                </CollapseContext.Provider>
+              </ReadonlyProvider>
+            </ViewportProvider>
+          </GridEditorProvider>
+        </InspectProvider>
       )}
       {data !== undefined && pageId === null && (
         <EmptyState

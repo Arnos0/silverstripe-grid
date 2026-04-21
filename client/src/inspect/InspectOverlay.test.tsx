@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createSimpleElement } from '@/testing/factories';
 import { installMockLocalStorage } from '@/testing/mockLocalStorage';
 import { InspectProvider, useInspect } from './InspectContext';
 import { InspectOverlay } from './InspectOverlay';
@@ -66,15 +67,10 @@ describe('InspectOverlay', () => {
     expect(screen.queryByTestId('inspect-halo')).not.toBeInTheDocument();
   });
 
-  it('renders nothing for editor-source hover (overlay is preview→editor only)', () => {
+  it('renders nothing for editor-source hover (overlay is preview->editor only)', () => {
     const { apiRef } = renderOverlay(<div data-node-id="5" />);
     act(() => {
-      // Directly set editor-source hover via the setter.
-      apiRef.current?.setEditorHover({
-        id: 5,
-        nodeKey: 'element-5',
-        self: { type: 'element', id: 5 },
-      } as Parameters<NonNullable<typeof apiRef.current>['setEditorHover']>[0]);
+      apiRef.current?.setEditorHover(createSimpleElement({ id: 5 }));
     });
     expect(screen.queryByTestId('inspect-halo')).not.toBeInTheDocument();
   });
