@@ -15,8 +15,8 @@ final class PreviewInspectorExtensionTest extends SapphireTest
 {
     protected $usesDatabase = false;
 
-    private const PREVIEW_JS = 'wedevelopnl/silverstripe-grid:client/dist/js/preview.js';
-    private const PREVIEW_CSS = 'wedevelopnl/silverstripe-grid:client/dist/styles/preview.css';
+    private const string PREVIEW_JS = 'wedevelopnl/silverstripe-grid:client/dist/js/preview.js';
+    private const string PREVIEW_CSS = 'wedevelopnl/silverstripe-grid:client/dist/styles/preview.css';
 
     protected function setUp(): void
     {
@@ -65,7 +65,6 @@ final class PreviewInspectorExtensionTest extends SapphireTest
      */
     private function resolve(string $moduleResource): string
     {
-        $resolved = ModuleResourceLoader::singleton()->resolvePath($moduleResource);
-        return is_string($resolved) ? $resolved : $moduleResource;
+        return ModuleResourceLoader::singleton()->resolvePath($moduleResource);
     }
 }
