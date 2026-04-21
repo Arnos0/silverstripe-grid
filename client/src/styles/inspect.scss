@@ -1,0 +1,67 @@
+// Styles for the editor-side inspect-mode surface.
+// 1. `.grid-editor__header` — horizontal bar grouping `.viewport-switcher`
+//    and `.inspect-toggle` on a single row. The wrapper was introduced by
+//    the inspect-mode work (Phase 6); without it the toggle would stack
+//    under the viewport switcher in CMS layouts.
+// 2. `.inspect-toggle` — matches `.viewport-switcher__button` so the two
+//    controls read as one control cluster (same height, border, padding).
+// 3. `.inspect-halo` — overlay rendered by `InspectOverlay` on top of the
+//    block the preview is currently hovering. Fixed-position and non-
+//    interactive (`pointer-events: none`) to avoid interfering with the
+//    underlying editor surface.
+
+$inspect-halo-color: #0071c4;
+$inspect-halo-shadow-color: rgb(0 113 196 / 25%);
+$inspect-halo-missing-color: #9a9a9a;
+$inspect-toggle-active-bg: #0071c4;
+$inspect-toggle-border-color: #ccc;
+$inspect-toggle-hover-bg: #f0f0f0;
+$inspect-toggle-radius: 4px;
+
+.grid-editor__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.inspect-toggle {
+  padding: 6px 16px;
+  border: 1px solid $inspect-toggle-border-color;
+  border-radius: $inspect-toggle-radius;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover:not(.inspect-toggle--active, :disabled) {
+    background-color: $inspect-toggle-hover-bg;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--active {
+    background-color: $inspect-toggle-active-bg;
+    border-color: $inspect-toggle-active-bg;
+    color: #fff;
+  }
+}
+
+.inspect-halo {
+  // Positional properties (top/left/width/height/position/zIndex) are set
+  // inline by `InspectOverlay` because they derive from a runtime rect.
+  border: 2px solid $inspect-halo-color;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px $inspect-halo-shadow-color;
+
+  &--missing {
+    border-color: $inspect-halo-missing-color;
+    border-style: dashed;
+    box-shadow: none;
+  }
+}

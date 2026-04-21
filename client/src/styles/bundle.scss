@@ -11,6 +11,7 @@
 @use '../components/RowBlock/RowBlock';
 @use '../components/SectionBlock/SectionBlock';
 @use '../components/ViewportSwitcher/ViewportSwitcher';
+@use './inspect';
 
 .grid-editor-holder > .grid-editor__container {
   flex: 0 0 100%;

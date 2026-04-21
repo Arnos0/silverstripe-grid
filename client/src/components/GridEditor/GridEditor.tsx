@@ -144,10 +144,7 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
                       measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
                     >
                       <DragContext.Provider value={dragContextValue}>
-                        <SortableContext
-                          items={sectionIds}
-                          strategy={verticalListSortingStrategy}
-                        >
+                        <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>
                           {sectionList}
                           {hasSections && (
                             <AddChildButton
