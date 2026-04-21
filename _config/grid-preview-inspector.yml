@@ -1,0 +1,9 @@
+---
+Name: grid-preview-inspector
+After:
+  - '#grid-cms'
+---
+
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - WeDevelop\Grid\Extensions\PreviewInspectorExtension
