@@ -79,4 +79,10 @@ describe("getElementId / getElementTitle", () => {
     const el = root.querySelector<HTMLElement>("[data-grid-element-id]")!;
     expect(getElementTitle(el)).toBeNull();
   });
+
+  it("returns null when title is an empty string", () => {
+    const root = build(`<div data-grid-element-id="1" data-grid-element-title="">x</div>`);
+    const el = root.querySelector<HTMLElement>("[data-grid-element-id]")!;
+    expect(getElementTitle(el)).toBeNull();
+  });
 });
