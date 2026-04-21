@@ -36,3 +36,4 @@ apm_modules/
 
 # StoryFlow local config
 .storyflow/
+.superpowers/
