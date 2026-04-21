@@ -116,15 +116,25 @@ export function InspectBridgeHost({ tree }: Props): null {
   }, []);
 
   // Activate / deactivate handshake.
+  //
+  // On mount with `enabled=true` (the common post-reload case when the user
+  // previously enabled inspect), the preview may have already emitted its
+  // boot-time `ready` before our subscribe listener attached — so `readyRef`
+  // stays false and a naive activate would queue forever. Send a probe
+  // `deactivate` alongside the queued activate: the preview echoes `ready` on
+  // every inbound message, which flips `readyRef` and flushes the queued
+  // activate. A no-op deactivate against an already-inactive inspector has no
+  // side effect, so this is safe even when the timing race didn't actually
+  // happen.
   useEffect(() => {
     const bridge = bridgeRef.current;
     if (enabled) {
       if (readyRef.current) {
         bridge.send({ type: 'grid-inspect:activate' });
-      } else {
-        // Queued — flushed when the preview's ready arrives.
-        queuedActivateRef.current = true;
+        return;
       }
+      queuedActivateRef.current = true;
+      bridge.send({ type: 'grid-inspect:deactivate' });
       return;
     }
     bridge.send({ type: 'grid-inspect:deactivate' });

@@ -393,6 +393,39 @@ describe('InspectBridgeHost', () => {
     expect(container.textContent).toBe('sibling');
   });
 
+  it('sends a deactivate probe when mounting with enabled=true but no ready yet', () => {
+    // Regression: on reload with inspect previously enabled, the editor
+    // re-mounts with `enabled=true` directly. If the preview iframe already
+    // booted and emitted its `ready` before our subscribe attached, that
+    // ready is lost and `readyRef` stays false forever — leaving the queued
+    // activate to never flush. The fix: send a `deactivate` probe in the
+    // queuing branch so the preview echoes `ready` in response, which then
+    // flips `readyRef` and flushes the queued activate.
+    const captured: HarnessCaptured = { api: null };
+    // Pre-seed localStorage so the provider hydrates with enabled=true.
+    localStorage.setItem('grid:inspect-mode', 'true');
+    render(<Harness tree={buildTree()} captured={captured} />);
+
+    // The deactivate probe is the only outbound message at this point; the
+    // activate is queued (readyRef=false) and waiting for ready.
+    expect(postMessage).toHaveBeenCalledWith(
+      { type: 'grid-inspect:deactivate' },
+      window.location.origin,
+    );
+    expect(postMessage).not.toHaveBeenCalledWith(
+      { type: 'grid-inspect:activate' },
+      window.location.origin,
+    );
+
+    // Simulate the preview echoing ready in response to the deactivate probe.
+    act(() => dispatchPreviewMessage({ type: 'grid-inspect:ready' }));
+
+    expect(postMessage).toHaveBeenCalledWith(
+      { type: 'grid-inspect:activate' },
+      window.location.origin,
+    );
+  });
+
   it('flushes a queued activate when a `ready` arrives as a reply to an outbound control message', () => {
     // Regression test for the editor↔preview race: the iframe boots and
     // posts its initial `ready` before InspectBridgeHost has wired its
