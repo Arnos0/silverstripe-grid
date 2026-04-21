@@ -1,32 +1,32 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { buildBreadcrumb, positionBreadcrumb, removeBreadcrumb } from "./breadcrumb";
+import { beforeEach, describe, expect, it } from 'vitest';
+import { buildBreadcrumb, positionBreadcrumb, removeBreadcrumb } from './breadcrumb';
 
-describe("buildBreadcrumb", () => {
+describe('buildBreadcrumb', () => {
   beforeEach(() => {
-    document.body.innerHTML = "";
+    document.body.innerHTML = '';
   });
 
-  it("creates a single breadcrumb element appended to body", () => {
-    const labels = ["Section: Hero", "Row", "Column", "Paragraph"];
+  it('creates a single breadcrumb element appended to body', () => {
+    const labels = ['Section: Hero', 'Row', 'Column', 'Paragraph'];
     const node = buildBreadcrumb(labels);
     expect(node.parentElement).toBe(document.body);
-    expect(node.classList.contains("grid-inspect-breadcrumb")).toBe(true);
-    expect(node.textContent).toContain("Section: Hero");
-    expect(node.textContent).toContain("Paragraph");
+    expect(node.classList.contains('grid-inspect-breadcrumb')).toBe(true);
+    expect(node.textContent).toContain('Section: Hero');
+    expect(node.textContent).toContain('Paragraph');
   });
 
-  it("reuses the existing breadcrumb on subsequent calls", () => {
-    const first = buildBreadcrumb(["a"]);
-    const second = buildBreadcrumb(["b"]);
+  it('reuses the existing breadcrumb on subsequent calls', () => {
+    const first = buildBreadcrumb(['a']);
+    const second = buildBreadcrumb(['b']);
     expect(second).toBe(first);
-    expect(second.textContent).toContain("b");
-    expect(second.textContent).not.toContain("a");
+    expect(second.textContent).toContain('b');
+    expect(second.textContent).not.toContain('a');
   });
 });
 
-describe("positionBreadcrumb", () => {
-  it("positions above target by default", () => {
-    const node = buildBreadcrumb(["label"]);
+describe('positionBreadcrumb', () => {
+  it('positions above target by default', () => {
+    const node = buildBreadcrumb(['label']);
     node.getBoundingClientRect = () => ({
       width: 120,
       height: 24,
@@ -46,12 +46,12 @@ describe("positionBreadcrumb", () => {
       width: 120,
       height: 40,
     });
-    expect(node.style.top).toBe("168px"); // 200 - 32
-    expect(node.style.left).toBe("300px");
+    expect(node.style.top).toBe('168px'); // 200 - 32
+    expect(node.style.left).toBe('300px');
   });
 
-  it("flips below when above would overflow viewport", () => {
-    const node = buildBreadcrumb(["label"]);
+  it('flips below when above would overflow viewport', () => {
+    const node = buildBreadcrumb(['label']);
     node.getBoundingClientRect = () => ({
       width: 120,
       height: 24,
@@ -71,11 +71,11 @@ describe("positionBreadcrumb", () => {
       width: 120,
       height: 40,
     });
-    expect(node.style.top).toBe("58px"); // 50 + 8
+    expect(node.style.top).toBe('58px'); // 50 + 8
   });
 
-  it("clamps left to viewport padding", () => {
-    const node = buildBreadcrumb(["label"]);
+  it('clamps left to viewport padding', () => {
+    const node = buildBreadcrumb(['label']);
     node.getBoundingClientRect = () => ({
       width: 120,
       height: 24,
@@ -95,21 +95,21 @@ describe("positionBreadcrumb", () => {
       width: 120,
       height: 40,
     });
-    expect(node.style.left).toBe("8px");
+    expect(node.style.left).toBe('8px');
   });
 });
 
-describe("removeBreadcrumb", () => {
-  it("removes breadcrumb from DOM", () => {
-    const node = buildBreadcrumb(["x"]);
+describe('removeBreadcrumb', () => {
+  it('removes breadcrumb from DOM', () => {
+    const node = buildBreadcrumb(['x']);
     expect(node.parentElement).not.toBeNull();
     removeBreadcrumb();
-    expect(document.querySelector(".grid-inspect-breadcrumb")).toBeNull();
+    expect(document.querySelector('.grid-inspect-breadcrumb')).toBeNull();
   });
 
-  it("is idempotent", () => {
+  it('is idempotent', () => {
     removeBreadcrumb();
     removeBreadcrumb();
-    expect(document.querySelector(".grid-inspect-breadcrumb")).toBeNull();
+    expect(document.querySelector('.grid-inspect-breadcrumb')).toBeNull();
   });
 });

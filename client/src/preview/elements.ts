@@ -1,5 +1,5 @@
-const ATTR_ID = "data-grid-element-id";
-const ATTR_TITLE = "data-grid-element-title";
+const ATTR_ID = 'data-grid-element-id';
+const ATTR_TITLE = 'data-grid-element-title';
 
 export function hitTest(target: Element | null): HTMLElement | null {
   if (target === null) return null;
@@ -16,7 +16,7 @@ export function getElementId(element: HTMLElement): number | null {
 
 export function getElementTitle(element: HTMLElement): string | null {
   const value = element.getAttribute(ATTR_TITLE);
-  return value !== null && value !== "" ? value : null;
+  return value !== null && value !== '' ? value : null;
 }
 
 export function getAncestors(element: HTMLElement): number[] {
