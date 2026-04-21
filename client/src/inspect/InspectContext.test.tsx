@@ -64,9 +64,7 @@ describe('InspectContext', () => {
   it('throws when useInspect is called outside a provider', () => {
     // Suppress the React error boundary noise — we only care about the throw.
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => renderHook(() => useInspect())).toThrow(
-      /useInspect must be used within/,
-    );
+    expect(() => renderHook(() => useInspect())).toThrow(/useInspect must be used within/);
     errorSpy.mockRestore();
   });
 

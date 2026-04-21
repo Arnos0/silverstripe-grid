@@ -116,16 +116,7 @@ export function InspectProvider({ children }: { children: ReactNode }): React.JS
       clearHover,
       setMissing,
     }),
-    [
-      enabled,
-      hover,
-      missing,
-      setEnabled,
-      setEditorHover,
-      setPreviewHover,
-      clearHover,
-      setMissing,
-    ],
+    [enabled, hover, missing, setEnabled, setEditorHover, setPreviewHover, clearHover, setMissing],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

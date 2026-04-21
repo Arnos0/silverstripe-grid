@@ -1,8 +1,4 @@
-import {
-  type InboundFromPreview,
-  inboundMessageSchema,
-  type OutboundToPreview,
-} from './schemas';
+import { type InboundFromPreview, inboundMessageSchema, type OutboundToPreview } from './schemas';
 
 export type { InboundFromPreview, OutboundToPreview };
 
@@ -22,9 +18,7 @@ export interface MessageBridge {
  * Inbound messages are filtered by `window.location.origin` and parsed by
  * the Zod schema — handlers never see malformed or cross-origin payloads.
  */
-export function createMessageBridge(
-  resolveIframe: () => HTMLIFrameElement | null,
-): MessageBridge {
+export function createMessageBridge(resolveIframe: () => HTMLIFrameElement | null): MessageBridge {
   return {
     send(message) {
       const iframe = resolveIframe();
