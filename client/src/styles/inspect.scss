@@ -9,14 +9,26 @@
 //    block the preview is currently hovering. Fixed-position and non-
 //    interactive (`pointer-events: none`) to avoid interfering with the
 //    underlying editor surface.
+// 4. `.inspect-breadcrumb` — floating path indicator rendered alongside the
+//    halo. Shows the full Section › Row › Column › Element trail; segments
+//    whose containers are collapsed are dimmed so the admin can see what
+//    they'd need to expand to reach the hovered element.
 
 $inspect-halo-color: #0071c4;
 $inspect-halo-shadow-color: rgb(0 113 196 / 25%);
 $inspect-halo-missing-color: #9a9a9a;
+$inspect-halo-indirect-color: #7ba9d8;
 $inspect-toggle-active-bg: #0071c4;
 $inspect-toggle-border-color: #ccc;
 $inspect-toggle-hover-bg: #f0f0f0;
 $inspect-toggle-radius: 4px;
+$inspect-breadcrumb-bg: #1f2937;
+$inspect-breadcrumb-fg: #f8fafc;
+$inspect-breadcrumb-dim-fg: rgb(248 250 252 / 45%);
+$inspect-breadcrumb-separator-fg: rgb(248 250 252 / 35%);
+$inspect-breadcrumb-target-fg: #7dd3fc;
+$inspect-breadcrumb-shadow: 0 4px 12px rgb(15 23 42 / 30%);
+$inspect-breadcrumb-radius: 6px;
 
 .grid-editor__header {
   display: flex;
@@ -34,7 +46,9 @@ $inspect-toggle-radius: 4px;
   font-size: 13px;
   line-height: 1.4;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 
   &:hover:not(.inspect-toggle--active, :disabled) {
     background-color: $inspect-toggle-hover-bg;
@@ -58,10 +72,84 @@ $inspect-toggle-radius: 4px;
   border: 2px solid $inspect-halo-color;
   border-radius: 4px;
   box-shadow: 0 0 0 2px $inspect-halo-shadow-color;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  // Target sits inside a collapsed ancestor — the halo landed on a proxy.
+  // Dashed outline + softer colour reads as "not the real target" without
+  // losing the spatial cue.
+  &--indirect {
+    border-style: dashed;
+    border-color: $inspect-halo-indirect-color;
+    box-shadow: none;
+  }
 
   &--missing {
     border-color: $inspect-halo-missing-color;
     border-style: dashed;
     box-shadow: none;
+  }
+}
+
+.inspect-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: $inspect-breadcrumb-bg;
+  color: $inspect-breadcrumb-fg;
+  border-radius: $inspect-breadcrumb-radius;
+  box-shadow: $inspect-breadcrumb-shadow;
+  pointer-events: none;
+  max-width: 80vw;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+
+  &__segment {
+    // Slight indication that segments are first-class (not just text) so the
+    // chain reads as discrete steps rather than a run-on string.
+    display: inline-flex;
+    align-items: center;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    // Collapsed ancestor — dimmed so the admin sees at a glance which
+    // segments they'd need to expand. Paired with a small chevron glyph via
+    // pseudo-element (rendered as "↳" or similar) to make "hidden" explicit
+    // rather than relying on dimming alone.
+    &--hidden {
+      color: $inspect-breadcrumb-dim-fg;
+      font-style: italic;
+
+      &::after {
+        content: '\00a0↴';
+        margin-left: 2px;
+        font-style: normal;
+        font-size: 10px;
+        opacity: 0.7;
+      }
+    }
+
+    // The hovered element itself — promoted with accent colour and weight so
+    // the eye finds the target in the trail without counting separators.
+    &--target {
+      color: $inspect-breadcrumb-target-fg;
+      font-weight: 600;
+    }
+  }
+
+  &__separator {
+    color: $inspect-breadcrumb-separator-fg;
+    font-size: 11px;
+    user-select: none;
+  }
+
+  &--missing {
+    background: #374151;
+    color: $inspect-breadcrumb-dim-fg;
   }
 }

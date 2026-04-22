@@ -276,16 +276,21 @@ describe('InspectBridgeHost', () => {
     );
   });
 
-  it('invokes setPreviewHover with resolved ancestor ids on preview hover', () => {
+  it('invokes setPreviewHover with resolved ancestor ids and full path on preview hover', () => {
     const captured: HarnessCaptured = { api: null };
     render(<Harness tree={buildTree()} captured={captured} />);
     act(() => dispatchPreviewMessage({ type: 'grid-inspect:hover', id: 13 }));
 
-    expect(captured.api?.hover).toEqual({
+    expect(captured.api?.hover).toMatchObject({
       source: 'preview',
       id: 13,
       ancestorIds: [10, 11, 12],
     });
+    // Path walks outermost → target and carries titles + types for the
+    // editor-side breadcrumb.
+    const path = captured.api?.hover?.source === 'preview' ? captured.api.hover.path : [];
+    expect(path.map((p) => p.id)).toEqual([10, 11, 12, 13]);
+    expect(path.map((p) => p.type)).toEqual(['section', 'row', 'column', 'element']);
   });
 
   it('invokes clearHover on preview unhover', () => {

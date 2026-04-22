@@ -94,13 +94,20 @@ describe('InspectContext', () => {
     expect(result.current.hover).toBeNull();
   });
 
-  it('setPreviewHover sets preview-source hover with ancestor ids', () => {
+  it('setPreviewHover sets preview-source hover with ancestor ids and path', () => {
     const { result } = renderHook(() => useInspect(), { wrapper });
-    act(() => result.current.setPreviewHover(9, [1, 2, 3]));
+    const path = [
+      { id: 1, title: 'Section 1', type: 'section' as const },
+      { id: 2, title: 'Row 1', type: 'row' as const },
+      { id: 3, title: 'Column 1', type: 'column' as const },
+      { id: 9, title: 'Target', type: 'element' as const },
+    ];
+    act(() => result.current.setPreviewHover(9, [1, 2, 3], path));
     expect(result.current.hover).toEqual({
       source: 'preview',
       id: 9,
       ancestorIds: [1, 2, 3],
+      path,
     });
   });
 
@@ -124,7 +131,7 @@ describe('InspectContext', () => {
   it('setPreviewHover clears any missing flag', () => {
     const { result } = renderHook(() => useInspect(), { wrapper });
     act(() => result.current.setMissing(true));
-    act(() => result.current.setPreviewHover(1, []));
+    act(() => result.current.setPreviewHover(1, [], []));
     expect(result.current.missing).toBe(false);
   });
 });

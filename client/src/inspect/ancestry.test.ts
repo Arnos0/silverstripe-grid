@@ -7,7 +7,7 @@ import {
   createSimpleElement,
   createTreeApiResponse,
 } from '@/testing/factories';
-import { resolveAncestorIds } from './ancestry';
+import { resolveAncestorIds, resolveAncestorPath } from './ancestry';
 
 /**
  * Build a Section(10) > Row(11) > Column(12) > Element(13) tree. Using the
@@ -104,5 +104,64 @@ describe('resolveAncestorIds', () => {
 
     expect(resolveAncestorIds(tree, 203)).toEqual([102, 122, 152]);
     expect(resolveAncestorIds(tree, 200)).toEqual([100, 120, 150]);
+  });
+});
+
+describe('resolveAncestorPath', () => {
+  it('returns outside-in path including the target as the last segment', () => {
+    const tree = buildLinearTree();
+    const path = resolveAncestorPath(tree, 13);
+    expect(path.map((s) => s.id)).toEqual([10, 11, 12, 13]);
+    expect(path.map((s) => s.type)).toEqual(['section', 'row', 'column', 'element']);
+  });
+
+  it('carries titles alongside ids so consumers can render a breadcrumb without looking nodes back up', () => {
+    // Build with explicit titles that a real tree would carry.
+    const element = createSimpleElement({
+      id: 13,
+      parent: { type: 'column', id: 12 },
+      title: 'Hero paragraph',
+    });
+    const column = createColumnNode({
+      id: 12,
+      parent: { type: 'row', id: 11 },
+      children: [element],
+      title: 'Column 2',
+    });
+    const row = createRowNode({
+      id: 11,
+      parent: { type: 'section', id: 10 },
+      children: [column],
+      title: 'Row 1',
+    });
+    const section = createSectionNode({
+      id: 10,
+      parent: { type: 'page', id: 1 },
+      children: [row],
+      title: 'Section 1',
+    });
+    const tree = createTreeApiResponse({
+      rootParent: { type: 'page', id: 1 },
+      sections: [section],
+    });
+
+    expect(resolveAncestorPath(tree, 13).map((s) => s.title)).toEqual([
+      'Section 1',
+      'Row 1',
+      'Column 2',
+      'Hero paragraph',
+    ]);
+  });
+
+  it('returns a single-segment path for a root section (just the section itself)', () => {
+    const tree = buildLinearTree();
+    const path = resolveAncestorPath(tree, 10);
+    expect(path).toHaveLength(1);
+    expect(path[0].id).toBe(10);
+  });
+
+  it('returns an empty path when the id is missing from the tree', () => {
+    const tree = buildLinearTree();
+    expect(resolveAncestorPath(tree, 999)).toEqual([]);
   });
 });

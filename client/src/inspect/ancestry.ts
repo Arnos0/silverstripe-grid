@@ -1,5 +1,16 @@
 import { type ElementNode, isContainerNode, type TreeApiResponse } from '@/types/elements';
-import type { NodeKey } from '@/types/identity';
+import type { NodeKey, NodeType } from '@/types/identity';
+
+/**
+ * One segment of the ancestor path. Holds everything the editor-side halo +
+ * breadcrumb need to render the path, without forcing consumers to look the
+ * node back up in the tree on every render.
+ */
+export interface PathSegment {
+  readonly id: number;
+  readonly title: string;
+  readonly type: NodeType;
+}
 
 /**
  * Walk the tree depth-first and index every node by composite `nodeKey` and
@@ -25,6 +36,14 @@ function indexTree(tree: TreeApiResponse): {
   for (const node of tree.nodes) visit(node);
 
   return { byKey, byId };
+}
+
+function nodeToSegment(node: ElementNode): PathSegment {
+  return {
+    id: node.id,
+    title: node.title,
+    type: node.self.type,
+  };
 }
 
 /**
@@ -56,4 +75,29 @@ export function resolveAncestorIds(tree: TreeApiResponse, id: number): number[] 
     current = parent;
   }
   return ancestors.reverse();
+}
+
+/**
+ * Resolve the full ancestor-to-target path for a hovered node. Returns an
+ * array where index 0 is the outermost ancestor (the root section) and the
+ * last entry is the hovered node itself. Useful for rendering a breadcrumb
+ * that shows "Section 1 › Row 1 › Column 2 › Content element 1".
+ *
+ * Returns an empty array when the id isn't in the tree.
+ */
+export function resolveAncestorPath(tree: TreeApiResponse, id: number): PathSegment[] {
+  const { byKey, byId } = indexTree(tree);
+
+  const start = byId.get(id);
+  if (start === undefined) return [];
+
+  const path: PathSegment[] = [nodeToSegment(start)];
+  let current: ElementNode = start;
+  while (true) {
+    const parent = byKey.get(current.parentKey);
+    if (parent === undefined) break;
+    path.push(nodeToSegment(parent));
+    current = parent;
+  }
+  return path.reverse();
 }

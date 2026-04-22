@@ -9,6 +9,7 @@ import {
 } from 'react';
 import type { ElementNode } from '@/types/elements';
 import type { NodeKey } from '@/types/identity';
+import type { PathSegment } from './ancestry';
 import { readEnabled, STORAGE_KEY, writeEnabled } from './storage';
 
 /**
@@ -22,7 +23,18 @@ import { readEnabled, STORAGE_KEY, writeEnabled } from './storage';
 export type InspectHover =
   | null
   | { source: 'editor'; nodeKey: NodeKey; id: number; ancestorIds: number[] }
-  | { source: 'preview'; id: number; ancestorIds: number[] };
+  | {
+      source: 'preview';
+      id: number;
+      ancestorIds: number[];
+      /**
+       * Outside-in segments from the root section through the hovered target
+       * (inclusive). Drives the editor-side breadcrumb so the user sees the
+       * full `Section › Row › Column › Element` trail even when intermediate
+       * ancestors are collapsed in the tree.
+       */
+      path: readonly PathSegment[];
+    };
 
 export interface InspectApi {
   enabled: boolean;
@@ -30,7 +42,7 @@ export interface InspectApi {
   missing: boolean;
   setEnabled(next: boolean): void;
   setEditorHover(node: ElementNode | null): void;
-  setPreviewHover(id: number, ancestorIds: number[]): void;
+  setPreviewHover(id: number, ancestorIds: number[], path: readonly PathSegment[]): void;
   clearHover(): void;
   setMissing(value: boolean): void;
 }
@@ -91,10 +103,13 @@ export function InspectProvider({ children }: { children: ReactNode }): React.JS
     setMissingState(false);
   }, []);
 
-  const setPreviewHover = useCallback((id: number, ancestorIds: number[]): void => {
-    setHover({ source: 'preview', id, ancestorIds });
-    setMissingState(false);
-  }, []);
+  const setPreviewHover = useCallback(
+    (id: number, ancestorIds: number[], path: readonly PathSegment[]): void => {
+      setHover({ source: 'preview', id, ancestorIds, path });
+      setMissingState(false);
+    },
+    [],
+  );
 
   const clearHover = useCallback((): void => {
     setHover(null);

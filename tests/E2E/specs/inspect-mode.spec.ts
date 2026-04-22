@@ -57,10 +57,68 @@ test.describe('Inspect mode', () => {
       await expect(paragraphInPreview).toHaveClass(/grid-inspect-target/);
       await expect(halo).toBeVisible();
 
-      // Breadcrumb reflects the Section → Row → Column → Element trail.
-      const breadcrumb = previewFrame.locator('.grid-inspect-breadcrumb');
-      await expect(breadcrumb).toContainText('Hero section');
-      await expect(breadcrumb).toContainText('Hero paragraph');
+      // Preview-side breadcrumb (inside the iframe).
+      const previewBreadcrumb = previewFrame.locator('.grid-inspect-breadcrumb');
+      await expect(previewBreadcrumb).toContainText('Hero section');
+      await expect(previewBreadcrumb).toContainText('Hero paragraph');
+
+      // Editor-side breadcrumb — full Section › Row › Column › Element trail
+      // rendered near the halo so the admin can orient even when the tree
+      // structure isn't visible in the editor column.
+      const editorBreadcrumb = page.getByTestId('inspect-breadcrumb');
+      await expect(editorBreadcrumb).toBeVisible();
+      await expect(editorBreadcrumb).toContainText('Hero section');
+      await expect(editorBreadcrumb).toContainText('Hero row');
+      await expect(editorBreadcrumb).toContainText('Text column');
+      await expect(editorBreadcrumb).toContainText('Hero paragraph');
+    });
+
+    await test.step('collapse Hero section → halo becomes indirect, breadcrumb dims hidden segments', async () => {
+      // Collapse the Hero section in the editor. The descendant block DOM
+      // stays mounted (SectionBlock keeps its children rendered; collapse is
+      // a CSS-only treatment) so the overlay's "visible" check uses rendered
+      // rect, not mere presence. When a descendant collapses to zero height,
+      // it counts as hidden — the halo falls back to the visible Section
+      // proxy and the breadcrumb dims the unreachable segments.
+      const heroSection = page
+        .getByTestId('section-block')
+        .filter({ hasText: 'Hero section' });
+      await heroSection.getByTestId('collapse-toggle').first().click();
+
+      // Wait for the descendant to actually collapse visually (zero height
+      // vs the CSS class — the latter is not meaningful by itself).
+      const heroRow = heroSection.getByTestId('row-block').filter({ hasText: 'Hero row' });
+      await expect(heroRow).not.toBeVisible();
+
+      const paragraphInPreview = previewFrame
+        .locator('[data-grid-element-title="Hero paragraph"]')
+        .first();
+      await paragraphInPreview.hover();
+
+      // Halo now carries the indirect variant — the real target isn't
+      // visible in the editor DOM so the overlay paints on the collapsed
+      // Section proxy.
+      const haloEl = page.getByTestId('inspect-halo');
+      await expect(haloEl).toHaveClass(/inspect-halo--indirect/);
+
+      // Breadcrumb still shows the full trail but marks hidden segments.
+      const editorBreadcrumb = page.getByTestId('inspect-breadcrumb');
+      await expect(
+        editorBreadcrumb.locator('[data-segment-type="section"]'),
+      ).not.toHaveAttribute('data-segment-hidden', 'true');
+      await expect(
+        editorBreadcrumb.locator('[data-segment-type="row"]'),
+      ).toHaveAttribute('data-segment-hidden', 'true');
+      await expect(
+        editorBreadcrumb.locator('[data-segment-type="column"]'),
+      ).toHaveAttribute('data-segment-hidden', 'true');
+      await expect(
+        editorBreadcrumb.locator('[data-segment-type="element"]'),
+      ).toHaveAttribute('data-segment-hidden', 'true');
+
+      // Restore the tree for subsequent steps.
+      await heroSection.getByTestId('collapse-toggle').first().click();
+      await expect(heroRow).toBeVisible();
     });
 
     await test.step('reload the edit form → inspect mode persists via localStorage', async () => {

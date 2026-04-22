@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { TreeApiResponse } from '@/types/elements';
-import { resolveAncestorIds } from './ancestry';
+import { resolveAncestorIds, resolveAncestorPath } from './ancestry';
 import { useInspect } from './InspectContext';
 import { createMessageBridge } from './messageBridge';
 import { resolvePreviewIframe } from './resolvePreviewIframe';
@@ -55,7 +55,8 @@ export function InspectBridgeHost({ tree }: Props): null {
         }
         case 'grid-inspect:hover': {
           const ancestors = resolveAncestorIds(tree, message.id);
-          setPreviewHover(message.id, ancestors);
+          const path = resolveAncestorPath(tree, message.id);
+          setPreviewHover(message.id, ancestors, path);
           return;
         }
         case 'grid-inspect:unhover': {
