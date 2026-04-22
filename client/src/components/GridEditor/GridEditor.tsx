@@ -11,6 +11,7 @@ import { GridEditorProvider } from '@/hooks/GridEditorContext';
 import { ReadonlyProvider } from '@/hooks/ReadonlyContext';
 import { InspectBridgeHost } from '@/inspect/InspectBridgeHost';
 import { InspectProvider } from '@/inspect/InspectContext';
+import { InspectHoverDelegate } from '@/inspect/InspectHoverDelegate';
 import { InspectOverlay } from '@/inspect/InspectOverlay';
 import { InspectToggle } from '@/inspect/InspectToggle';
 import { isSectionNode, type TreeApiResponse } from '@/types/elements';
@@ -137,13 +138,17 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
                   <InspectBridgeHost tree={treeOrEmpty} />
                   <InspectOverlay />
                   {readonly ? (
-                    sectionList
+                    <>
+                      <InspectHoverDelegate tree={treeOrEmpty} />
+                      {sectionList}
+                    </>
                   ) : (
                     <DndContext
                       {...dndContextProps}
                       measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
                     >
                       <DragContext.Provider value={dragContextValue}>
+                        <InspectHoverDelegate tree={treeOrEmpty} />
                         <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>
                           {sectionList}
                           {hasSections && (

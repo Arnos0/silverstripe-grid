@@ -136,6 +136,40 @@ test.describe('Inspect mode', () => {
       ).toHaveCount(1, { timeout: 2_000 });
     });
 
+    await test.step('hover editor Text column header → preview highlights column', async () => {
+      const textColumnHeader = page
+        .getByTestId('column-block')
+        .filter({ hasText: 'Text column' })
+        .getByTestId('column-header');
+      await textColumnHeader.hover();
+
+      await expect(
+        previewFrame.locator('[data-grid-element-title="Text column"].grid-inspect-target'),
+      ).toHaveCount(1, { timeout: 2_000 });
+    });
+
+    await test.step('hover editor child content element, then move back up to its parent Text column → preview switches target to column', async () => {
+      // Reproduces the real-user flow: cursor enters a child ElementCard
+      // (highlights the child), then the user moves up to the parent column
+      // header to highlight the column itself. The wrapper's React
+      // onMouseEnter does NOT refire when cursor re-enters the wrapper from
+      // a descendant, so this path exercises the specific failure mode the
+      // user reported.
+      const textColumn = page.getByTestId('column-block').filter({ hasText: 'Text column' });
+      const childCard = textColumn.getByTestId('element-card').first();
+      const textColumnHeader = textColumn.getByTestId('column-header');
+
+      await childCard.hover();
+      await expect(
+        previewFrame.locator('[data-grid-element-title="Hero paragraph"].grid-inspect-target'),
+      ).toHaveCount(1, { timeout: 2_000 });
+
+      await textColumnHeader.hover();
+      await expect(
+        previewFrame.locator('[data-grid-element-title="Text column"].grid-inspect-target'),
+      ).toHaveCount(1, { timeout: 2_000 });
+    });
+
     await test.step('rapid sibling hover settles on the final target (debounce wins last)', async () => {
       // Use section-headers for the same "don't cascade into descendant
       // bindings" reason as the previous step.
