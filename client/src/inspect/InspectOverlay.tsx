@@ -48,9 +48,7 @@ function resolveHalo(id: number, ancestorIds: readonly number[]): Resolution | n
  * Returns an array in the same order as `path` so the breadcrumb can dim
  * segments whose containers collapse them out of view.
  */
-function markVisibility(
-  path: readonly PathSegment[],
-): Array<PathSegment & { isVisible: boolean }> {
+function markVisibility(path: readonly PathSegment[]): Array<PathSegment & { isVisible: boolean }> {
   return path.map((segment) => ({
     ...segment,
     isVisible: findVisibleById(segment.id) !== null,
@@ -179,13 +177,18 @@ function BreadcrumbCrumb({ segments, lastIndex, targetRect, missing }: Breadcrum
     setMeasured({ w: width, h: height });
   }, [ref]);
 
-  const style = measured === null
-    ? ({ position: 'fixed', top: targetRect.top - 100, left: targetRect.left, visibility: 'hidden', zIndex: 10_000 } as CSSProperties)
-    : positionBreadcrumb(targetRect, measured.w, measured.h);
+  const style =
+    measured === null
+      ? ({
+          position: 'fixed',
+          top: targetRect.top - 100,
+          left: targetRect.left,
+          visibility: 'hidden',
+          zIndex: 10_000,
+        } as CSSProperties)
+      : positionBreadcrumb(targetRect, measured.w, measured.h);
 
-  const rootClass = missing
-    ? `${BREADCRUMB_CLASS} ${BREADCRUMB_CLASS}--missing`
-    : BREADCRUMB_CLASS;
+  const rootClass = missing ? `${BREADCRUMB_CLASS} ${BREADCRUMB_CLASS}--missing` : BREADCRUMB_CLASS;
 
   return (
     <div

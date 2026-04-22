@@ -201,9 +201,7 @@ describe('InspectHoverDelegate', () => {
     expect(probe.current?.hover).not.toBeNull();
 
     act(() => {
-      document.documentElement.dispatchEvent(
-        new MouseEvent('mouseleave', { bubbles: false }),
-      );
+      document.documentElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: false }));
     });
 
     expect(probe.current?.hover).toBeNull();

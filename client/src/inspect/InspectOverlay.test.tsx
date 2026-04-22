@@ -104,11 +104,15 @@ describe('InspectOverlay', () => {
     // ancestorIds is [outermost, ..., immediate parent] per contract.
     const { apiRef } = renderOverlay(<div data-node-id="1" />);
     act(() => {
-      apiRef.current?.setPreviewHover(99, [1, 3], [
-        pathSegment({ id: 1, title: 'Section 1', type: 'section' }),
-        pathSegment({ id: 3, title: 'Row 1', type: 'row' }),
-        pathSegment({ id: 99, title: 'Paragraph', type: 'element' }),
-      ]);
+      apiRef.current?.setPreviewHover(
+        99,
+        [1, 3],
+        [
+          pathSegment({ id: 1, title: 'Section 1', type: 'section' }),
+          pathSegment({ id: 3, title: 'Row 1', type: 'row' }),
+          pathSegment({ id: 99, title: 'Paragraph', type: 'element' }),
+        ],
+      );
     });
     const halo = screen.getByTestId('inspect-halo');
     expect(halo).toHaveClass('inspect-halo--indirect');
@@ -118,12 +122,16 @@ describe('InspectOverlay', () => {
   it('returns null when neither the target nor any ancestor is in the DOM', () => {
     const { apiRef } = renderOverlay(<div />);
     act(() => {
-      apiRef.current?.setPreviewHover(99, [1, 2, 3], [
-        pathSegment({ id: 1 }),
-        pathSegment({ id: 2 }),
-        pathSegment({ id: 3 }),
-        pathSegment({ id: 99 }),
-      ]);
+      apiRef.current?.setPreviewHover(
+        99,
+        [1, 2, 3],
+        [
+          pathSegment({ id: 1 }),
+          pathSegment({ id: 2 }),
+          pathSegment({ id: 3 }),
+          pathSegment({ id: 99 }),
+        ],
+      );
     });
     expect(screen.queryByTestId('inspect-halo')).not.toBeInTheDocument();
   });
