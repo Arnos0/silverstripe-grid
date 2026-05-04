@@ -45,17 +45,15 @@ export default function ElementTypePicker({
   return (
     <dialog
       ref={dialogRef}
-      className="element-type-picker"
       data-testid="element-type-picker"
       onClose={handleClose}
     >
-      <div className="element-type-picker__header">
-        <h3 className="element-type-picker__title">
+      <div>
+        <h3>
           {t('WeDevelopGrid.ElementTypePicker.TITLE', 'Add content element')}
         </h3>
         <button
           type="button"
-          className="element-type-picker__close"
           data-testid="element-type-picker-close"
           onClick={handleClose}
           aria-label={t('WeDevelopGrid.ElementTypePicker.CLOSE_LABEL', 'Close')}
@@ -63,27 +61,26 @@ export default function ElementTypePicker({
           &times;
         </button>
       </div>
-      <div className="element-type-picker__body">
+      <div>
         {entries.length > 0 ? (
-          <div className="element-type-picker__grid">
+          <div>
             {entries.map(([className, info]) => (
               <button
                 key={className}
                 type="button"
-                className="element-type-picker__tile"
                 data-testid="element-type-tile"
                 onClick={() => handleTileClick(className)}
               >
-                <span className={`element-type-picker__icon ${info.icon}`} data-testid="element-type-icon" />
-                <span className="element-type-picker__label">{info.label}</span>
+                <span className={info.icon} data-testid="element-type-icon" />
+                <span>{info.label}</span>
                 {info.description !== '' && (
-                  <span className="element-type-picker__description">{info.description}</span>
+                  <span>{info.description}</span>
                 )}
               </button>
             ))}
           </div>
         ) : (
-          <p className="element-type-picker__empty">
+          <p>
             {t(
               'WeDevelopGrid.ElementTypePicker.EMPTY_MESSAGE',
               'No content element types available',
