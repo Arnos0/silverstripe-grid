@@ -57,12 +57,14 @@ final class GridEditorFieldTest extends SapphireTest
         self::assertSame('main', $schema['grid-zone']);
     }
 
-    public function testConstructorAddsExtraClass(): void
+    public function testConstructorAddsNoChangeTrackClassAndReactMountAttribute(): void
     {
         $field = new GridEditorField('GridEditor', 42);
+        $this->attachToForm($field);
 
-        self::assertStringContainsString('grid-editor__container', $field->extraClass());
         self::assertStringContainsString('no-change-track', $field->extraClass());
+        self::assertStringNotContainsString('grid-editor__container', $field->extraClass());
+        self::assertSame('grid-editor', $field->getAttribute('data-react-mount'));
     }
 
     public function testSaveIntoIsNoOp(): void

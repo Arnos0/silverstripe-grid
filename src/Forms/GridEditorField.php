@@ -50,7 +50,8 @@ class GridEditorField extends GridField
         $this->schemaDataType = FormField::SCHEMA_DATA_TYPE_CUSTOM;
         $this->setSchemaComponent('GridEditorField');
 
-        $this->addExtraClass('grid-editor__container no-change-track');
+        $this->addExtraClass('no-change-track');
+        $this->setAttribute('data-react-mount', 'grid-editor');
     }
 
     /**
