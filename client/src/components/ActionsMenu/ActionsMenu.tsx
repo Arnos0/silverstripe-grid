@@ -157,6 +157,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
               className={`actions-menu__item${action.destructive ? ' actions-menu__item--destructive' : ''}`}
               role="menuitem"
               tabIndex={index === activeIndex ? 0 : -1}
+              data-destructive={action.destructive ? 'true' : undefined}
               onClick={(e) => handleItemClick(e, action.onAction)}
             >
               {action.label}

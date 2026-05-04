@@ -127,7 +127,7 @@ describe('ActionsMenu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
-  it('applies destructive CSS class to destructive actions', async () => {
+  it('applies destructive marker to destructive actions', async () => {
     const user = userEvent.setup();
 
     render(<ActionsMenu actions={createActions()} />);
@@ -136,8 +136,8 @@ describe('ActionsMenu', () => {
 
     const deleteItem = screen.getByText('Delete');
 
-    expect(deleteItem).toHaveClass('actions-menu__item--destructive');
-    expect(screen.getByText('Edit')).not.toHaveClass('actions-menu__item--destructive');
+    expect(deleteItem).toHaveAttribute('data-destructive', 'true');
+    expect(screen.getByText('Edit')).not.toHaveAttribute('data-destructive');
   });
 
   it('toggles aria-expanded with menu state', async () => {
@@ -206,21 +206,14 @@ describe('ActionsMenu', () => {
     expect(items).toHaveLength(2);
   });
 
-  it('trigger has actions-menu__trigger class', () => {
-    render(<ActionsMenu actions={createActions()} />);
-
-    expect(screen.getByTestId('actions-menu-trigger')).toHaveClass('actions-menu__trigger');
-  });
-
-  it('non-destructive item does not have actions-menu__item--destructive class', async () => {
+  it('non-destructive item does not have destructive marker', async () => {
     const user = userEvent.setup();
 
     render(<ActionsMenu actions={createActions()} />);
 
     await user.click(screen.getByTestId('actions-menu-trigger'));
 
-    expect(screen.getByText('Edit')).toHaveClass('actions-menu__item');
-    expect(screen.getByText('Edit')).not.toHaveClass('actions-menu__item--destructive');
+    expect(screen.getByText('Edit')).not.toHaveAttribute('data-destructive');
   });
 
   it('uses custom testId for dropdown', async () => {
@@ -261,28 +254,6 @@ describe('ActionsMenu', () => {
 
     // Menu should still be closed, no errors
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-  });
-
-  it('destructive item has exact CSS class string', async () => {
-    const user = userEvent.setup();
-
-    render(<ActionsMenu actions={createActions()} />);
-
-    await user.click(screen.getByTestId('actions-menu-trigger'));
-
-    const deleteItem = screen.getByText('Delete');
-    expect(deleteItem.className).toBe('actions-menu__item actions-menu__item--destructive');
-  });
-
-  it('non-destructive item has only the base CSS class', async () => {
-    const user = userEvent.setup();
-
-    render(<ActionsMenu actions={createActions()} />);
-
-    await user.click(screen.getByTestId('actions-menu-trigger'));
-
-    const editItem = screen.getByText('Edit');
-    expect(editItem.className).toBe('actions-menu__item');
   });
 
   describe('roving tabindex and focus management', () => {

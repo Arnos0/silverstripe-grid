@@ -26,11 +26,14 @@ interface PreviewProps {
 function SectionPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={`drag-overlay-content__icon ${node.blockSchema.icon}`} />
+      <i
+        className={`drag-overlay-content__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
       <span className="drag-overlay-content__title" data-testid={`drag-overlay-${type}-title`}>
         {node.title}
       </span>
-      <span className="drag-overlay-content__meta">
+      <span className="drag-overlay-content__meta" data-testid={`drag-overlay-${type}-meta`}>
         {pluralize(getChildCount(node), t('WeDevelopGrid.DragOverlayContent.ROW_SINGULAR', 'row'))}
       </span>
     </>
@@ -40,11 +43,14 @@ function SectionPreview({ node, type }: PreviewProps): React.JSX.Element {
 function RowPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={`drag-overlay-content__icon ${node.blockSchema.icon}`} />
+      <i
+        className={`drag-overlay-content__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
       <span className="drag-overlay-content__title" data-testid={`drag-overlay-${type}-title`}>
         {node.title}
       </span>
-      <span className="drag-overlay-content__meta">
+      <span className="drag-overlay-content__meta" data-testid={`drag-overlay-${type}-meta`}>
         {pluralize(
           getChildCount(node),
           t('WeDevelopGrid.DragOverlayContent.COLUMN_SINGULAR', 'column'),
@@ -57,7 +63,10 @@ function RowPreview({ node, type }: PreviewProps): React.JSX.Element {
 function ColumnPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={`drag-overlay-content__icon ${node.blockSchema.icon}`} />
+      <i
+        className={`drag-overlay-content__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
       <span className="drag-overlay-content__title" data-testid={`drag-overlay-${type}-title`}>
         {node.title}
       </span>
@@ -68,7 +77,10 @@ function ColumnPreview({ node, type }: PreviewProps): React.JSX.Element {
 function ElementPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={`drag-overlay-content__icon ${node.blockSchema.icon}`} />
+      <i
+        className={`drag-overlay-content__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
       <span className="drag-overlay-content__title" data-testid={`drag-overlay-${type}-title`}>
         {node.title}
       </span>
