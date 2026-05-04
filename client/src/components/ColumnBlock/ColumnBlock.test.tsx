@@ -464,9 +464,9 @@ describe('ColumnBlock', () => {
         gridSettings: { default: { width: 6, offset: 0, visible: true }, overrides: {} },
       });
 
-      const { container } = renderWithProviders(<ColumnBlock column={column} />);
+      renderWithProviders(<ColumnBlock column={column} />);
 
-      const outerDiv = container.querySelector('.row-block__column') as HTMLElement;
+      const outerDiv = screen.getByTestId('column-block-outer');
       expect(outerDiv.style.getPropertyValue('--col-width')).toBe('50%');
     });
 
@@ -477,9 +477,9 @@ describe('ColumnBlock', () => {
         gridSettings: { default: { width: 6, offset: 3, visible: true }, overrides: {} },
       });
 
-      const { container } = renderWithProviders(<ColumnBlock column={column} />);
+      renderWithProviders(<ColumnBlock column={column} />);
 
-      const outerDiv = container.querySelector('.row-block__column') as HTMLElement;
+      const outerDiv = screen.getByTestId('column-block-outer');
       expect(outerDiv.style.getPropertyValue('--col-offset')).toBe('25%');
     });
 
@@ -490,9 +490,9 @@ describe('ColumnBlock', () => {
         gridSettings: { default: { width: 6, offset: 0, visible: true }, overrides: {} },
       });
 
-      const { container } = renderWithProviders(<ColumnBlock column={column} />);
+      renderWithProviders(<ColumnBlock column={column} />);
 
-      const outerDiv = container.querySelector('.row-block__column') as HTMLElement;
+      const outerDiv = screen.getByTestId('column-block-outer');
       expect(outerDiv.style.getPropertyValue('--col-offset')).toBe('');
     });
   });
@@ -509,9 +509,9 @@ describe('ColumnBlock', () => {
         gridSettings: { default: { width: 4, offset: 2, visible: true }, overrides: {} },
       });
 
-      const { container } = renderWithProviders(<ColumnBlock column={column} />);
+      renderWithProviders(<ColumnBlock column={column} />);
 
-      const outerDiv = container.querySelector('.row-block__column') as HTMLElement;
+      const outerDiv = screen.getByTestId('column-block-outer');
       expect(outerDiv.style.getPropertyValue('--col-span')).toBe('4');
       // offset + 1 = 3 for grid-column-start
       expect(outerDiv.style.getPropertyValue('--col-start')).toBe('3');
