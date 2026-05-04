@@ -19,7 +19,7 @@ function createCmsDom(options: { withGridEditor?: boolean } = {}): HTMLElement {
   const { withGridEditor = true } = options;
   const wrapper = document.createElement('div');
   wrapper.innerHTML = `
-    ${withGridEditor ? '<div class="grid-editor__container"></div>' : ''}
+    ${withGridEditor ? '<div data-react-mount="grid-editor"></div>' : ''}
     <div class="cms-preview">
       <div class="preview-device-outer"></div>
       <span id="preview-size-dropdown" class="preview-size-selector">
@@ -48,7 +48,7 @@ describe('cmsPreviewBridge — lifecycle', () => {
   });
 
   it('no-ops when the vendor DOM is absent', async () => {
-    document.body.innerHTML = '<div class="grid-editor__container"></div>';
+    document.body.innerHTML = '<div data-react-mount="grid-editor"></div>';
     registerCmsPreviewBridge();
     await new Promise((r) => setTimeout(r, 0));
 
