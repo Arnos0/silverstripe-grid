@@ -37,7 +37,7 @@ export default class GridEditorErrorBoundary extends Component<Props, State> {
   override render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <p className="grid-editor__error">
+        <p className="grid-editor__error" data-testid="grid-editor-error">
           {t(
             'WeDevelopGrid.GridEditorErrorBoundary.RENDER_FALLBACK',
             'The grid editor failed to render. Try reloading the page.',

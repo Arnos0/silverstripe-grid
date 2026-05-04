@@ -80,14 +80,13 @@ describe('GridEditorErrorBoundary', () => {
     );
   });
 
-  it('fallback has grid-editor__error class', () => {
+  it('fallback element has data-testid grid-editor-error', () => {
     render(
       <GridEditorErrorBoundary>
         <ThrowingChild />
       </GridEditorErrorBoundary>,
     );
 
-    const fallback = screen.getByText('The grid editor failed to render. Try reloading the page.');
-    expect(fallback).toHaveClass('grid-editor__error');
+    expect(screen.getByTestId('grid-editor-error')).toBeInTheDocument();
   });
 });

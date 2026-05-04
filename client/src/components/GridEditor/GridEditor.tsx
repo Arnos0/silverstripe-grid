@@ -119,14 +119,20 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
   );
 
   return (
-    <div className={rootClassName} data-page-id={pageId} data-zone={zone} data-testid="grid-editor">
+    <div
+      className={rootClassName}
+      data-page-id={pageId}
+      data-zone={zone}
+      data-testid="grid-editor"
+      data-state={readonly ? 'readonly' : undefined}
+    >
       {isLoading && (
         <p className="grid-editor__loading" data-testid="grid-editor-loading">
           {t('WeDevelopGrid.GridEditor.LOADING', 'Loading elements...')}
         </p>
       )}
       {error !== null && (
-        <p className="grid-editor__error">
+        <p className="grid-editor__error" data-testid="grid-editor-error">
           {t('WeDevelopGrid.GridEditor.LOAD_ERROR', 'Failed to load elements: {message}', {
             message: error.message,
           })}

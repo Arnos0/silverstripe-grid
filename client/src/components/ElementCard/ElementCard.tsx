@@ -52,7 +52,7 @@ function EditableElementCard({ element }: ElementCardProps) {
             title: element.title,
           })}
         />
-        <i className={`element-card__icon ${element.blockSchema.icon}`} />
+        <i className={`element-card__icon ${element.blockSchema.icon}`} data-testid="element-card-icon" />
         <h4 className="element-card__title" data-testid="element-card-title">
           {element.title}
         </h4>
@@ -96,6 +96,8 @@ function EditableElementCard({ element }: ElementCardProps) {
         style={style}
         className={cardClasses}
         data-testid="element-card"
+        data-state="clickable"
+        data-status={status}
         onClick={handleAnchorClick}
       >
         {header}
@@ -104,7 +106,7 @@ function EditableElementCard({ element }: ElementCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={cardClasses} data-testid="element-card">
+    <div ref={setNodeRef} style={style} className={cardClasses} data-testid="element-card" data-status={status}>
       {header}
     </div>
   );
@@ -115,9 +117,9 @@ function ReadonlyElementCard({ element }: ElementCardProps) {
   const cardClasses = `element-card element-card--${status}`;
 
   return (
-    <div className={cardClasses} data-testid="element-card">
+    <div className={cardClasses} data-testid="element-card" data-status={status}>
       <div className="element-card__header">
-        <i className={`element-card__icon ${element.blockSchema.icon}`} />
+        <i className={`element-card__icon ${element.blockSchema.icon}`} data-testid="element-card-icon" />
         <h4 className="element-card__title" data-testid="element-card-title">
           {element.title}
         </h4>
