@@ -187,7 +187,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const hasAllowedTypes = Object.keys(allowedTypes).length > 0;
 
   return (
-    <div ref={setNodeRef} style={columnStyle} className="row-block__column">
+    <div ref={setNodeRef} style={columnStyle} className="row-block__column" data-testid="column-block-outer">
       <div
         className={innerClasses}
         data-testid="column-block"
@@ -288,7 +288,7 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const children = column.children ?? [];
 
   return (
-    <div style={columnStyle} className="row-block__column">
+    <div style={columnStyle} className="row-block__column" data-testid="column-block-outer">
       <div
         className={innerClasses}
         data-testid="column-block"
