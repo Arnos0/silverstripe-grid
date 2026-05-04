@@ -207,7 +207,7 @@ export default function DuplicateToDialog({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {pages.isLoading && (
-              <p className="duplicate-to-dialog__loading">
+              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
                 {t('WeDevelopGrid.DuplicateToDialog.LOADING_PAGES', 'Loading pages\u2026')}
               </p>
             )}
@@ -246,7 +246,7 @@ export default function DuplicateToDialog({
         {step === 'zone' && (
           <div data-testid="duplicate-to-step-zone">
             {zones.isLoading && (
-              <p className="duplicate-to-dialog__loading">
+              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
                 {t('WeDevelopGrid.DuplicateToDialog.LOADING_ZONES', 'Loading zones\u2026')}
               </p>
             )}
@@ -280,7 +280,7 @@ export default function DuplicateToDialog({
         {step === 'container' && (
           <div data-testid="duplicate-to-step-container">
             {containers.isLoading && (
-              <p className="duplicate-to-dialog__loading">
+              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
                 {t(
                   'WeDevelopGrid.DuplicateToDialog.LOADING_CONTAINERS',
                   'Loading containers\u2026',

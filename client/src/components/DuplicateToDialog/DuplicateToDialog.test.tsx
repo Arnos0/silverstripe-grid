@@ -652,8 +652,8 @@ describe('DuplicateToDialog', () => {
       vi.spyOn(globalThis, 'fetch').mockReturnValue(new Promise(() => {}));
       renderDialog();
 
-      expect(screen.getByText(/Loading pages/)).toBeInTheDocument();
-      expect(screen.getByText(/Loading pages/)).toHaveClass('duplicate-to-dialog__loading');
+      expect(screen.getByTestId('duplicate-to-loading')).toBeInTheDocument();
+      expect(screen.getByTestId('duplicate-to-loading')).toHaveTextContent(/Loading pages/);
     });
 
     it('shows "Loading zones..." before zone data arrives', async () => {
@@ -704,8 +704,8 @@ describe('DuplicateToDialog', () => {
         expect(screen.getByTestId('duplicate-to-step-zone')).toBeInTheDocument();
       });
 
-      expect(screen.getByText(/Loading zones/)).toBeInTheDocument();
-      expect(screen.getByText(/Loading zones/)).toHaveClass('duplicate-to-dialog__loading');
+      expect(screen.getByTestId('duplicate-to-loading')).toBeInTheDocument();
+      expect(screen.getByTestId('duplicate-to-loading')).toHaveTextContent(/Loading zones/);
     });
 
     it('shows "Loading containers..." before container data arrives', async () => {
@@ -766,8 +766,8 @@ describe('DuplicateToDialog', () => {
         expect(screen.getByTestId('duplicate-to-step-container')).toBeInTheDocument();
       });
 
-      expect(screen.getByText(/Loading containers/)).toBeInTheDocument();
-      expect(screen.getByText(/Loading containers/)).toHaveClass('duplicate-to-dialog__loading');
+      expect(screen.getByTestId('duplicate-to-loading')).toBeInTheDocument();
+      expect(screen.getByTestId('duplicate-to-loading')).toHaveTextContent(/Loading containers/);
     });
   });
 

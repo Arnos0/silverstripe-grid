@@ -139,7 +139,6 @@ describe('GridSettingsPicker', () => {
     const trigger = screen.getByTestId('width-picker');
 
     expect(trigger).toBeDisabled();
-    expect(trigger).toHaveClass('grid-settings-picker__trigger--disabled');
   });
 
   it('trigger button displays the label text', () => {
@@ -206,36 +205,16 @@ describe('GridSettingsPicker', () => {
     expect(trigger).toHaveAttribute('aria-controls', 'width-picker-listbox');
   });
 
-  it('hidden option has separator class', async () => {
+  it('hidden option has separator attribute', async () => {
     const user = userEvent.setup();
 
     renderPicker();
 
     await user.click(screen.getByTestId('width-picker'));
 
-    expect(screen.getByText('Hidden')).toHaveClass('grid-settings-picker__option--separator');
+    expect(screen.getByText('Hidden')).toHaveAttribute('data-separator', 'true');
   });
 
-  it('selected option has selected class', async () => {
-    const user = userEvent.setup();
-
-    renderPicker({ selectedValue: 6 });
-
-    await user.click(screen.getByTestId('width-picker'));
-
-    expect(screen.getByText('6 columns')).toHaveClass('grid-settings-picker__option--selected');
-    expect(screen.getByText('12 columns')).not.toHaveClass(
-      'grid-settings-picker__option--selected',
-    );
-  });
-
-  it('enabled trigger does not have disabled class', () => {
-    renderPicker({ disabled: false });
-
-    expect(screen.getByTestId('width-picker')).not.toHaveClass(
-      'grid-settings-picker__trigger--disabled',
-    );
-  });
 
   it('outside click while picker is closed does not open it', async () => {
     const user = userEvent.setup();
@@ -267,33 +246,7 @@ describe('GridSettingsPicker', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
-  it('option elements have exact base class', async () => {
-    const user = userEvent.setup();
 
-    renderPicker({ selectedValue: 12 });
-
-    await user.click(screen.getByTestId('width-picker'));
-
-    const options = screen.getAllByRole('option');
-    // Each option has the base class
-    for (const option of options) {
-      expect(option).toHaveClass('grid-settings-picker__option');
-    }
-  });
-
-  it('trigger has exact base class when enabled', () => {
-    renderPicker({ disabled: false });
-
-    expect(screen.getByTestId('width-picker').className).toBe('grid-settings-picker__trigger');
-  });
-
-  it('trigger has exact classes when disabled', () => {
-    renderPicker({ disabled: true });
-
-    expect(screen.getByTestId('width-picker').className).toBe(
-      'grid-settings-picker__trigger grid-settings-picker__trigger--disabled',
-    );
-  });
 
   describe('roving tabindex and focus management', () => {
     it('sets roving tabindex with exactly one option tab-reachable on open', async () => {

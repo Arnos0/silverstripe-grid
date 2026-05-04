@@ -157,6 +157,7 @@ export default function GridSettingsPicker({
               className={`grid-settings-picker__option${option.value === selectedValue ? ' grid-settings-picker__option--selected' : ''}${option.value === 'hidden' ? ' grid-settings-picker__option--separator' : ''}`}
               role="option"
               aria-selected={option.value === selectedValue}
+              data-separator={option.value === 'hidden' ? 'true' : undefined}
               tabIndex={index === activeIndex ? 0 : -1}
               onClick={() => handleOptionClick(option.value)}
             >
