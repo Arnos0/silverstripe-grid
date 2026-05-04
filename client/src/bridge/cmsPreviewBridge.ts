@@ -18,7 +18,7 @@ import { installViewportStyles, removeViewportStyles } from './viewportPreviewSt
  * should be imported from anywhere else in the module.
  */
 
-const GRID_EDITOR_SELECTOR = '.grid-editor__container';
+const GRID_EDITOR_SELECTOR = '[data-react-mount="grid-editor"]';
 const MOUNT_CLASS = 'cms-preview-viewport-mount preview-selector';
 
 let observer: MutationObserver | null = null;
