@@ -8,7 +8,7 @@ vi.mock('./Injector', () => ({
   loadComponent: vi.fn(() => () => createElement('div', { 'data-grid-editor-stub': 'true' })),
 }));
 
-const HOST_SELECTOR = '.grid-editor__container';
+const HOST_SELECTOR = '[data-react-mount="grid-editor"]';
 
 async function flushMicrotasks(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -16,7 +16,7 @@ async function flushMicrotasks(): Promise<void> {
 
 function createHost(): HTMLElement {
   const host = document.createElement('div');
-  host.className = 'grid-editor__container';
+  host.setAttribute('data-react-mount', 'grid-editor');
   host.setAttribute('data-schema', JSON.stringify({ 'grid-page-id': 1, 'grid-zone': 'main' }));
   return host;
 }

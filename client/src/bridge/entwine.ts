@@ -12,7 +12,7 @@ interface BridgeSchema {
   version: number | undefined;
 }
 
-const MOUNT_SELECTOR = '.grid-editor__container';
+const MOUNT_SELECTOR = '[data-react-mount="grid-editor"]';
 const MOUNTED_ATTR = 'data-grid-editor-mounted';
 
 // Track roots keyed by the host element so both the entwine path and the
