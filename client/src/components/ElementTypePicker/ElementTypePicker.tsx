@@ -74,7 +74,7 @@ export default function ElementTypePicker({
                 data-testid="element-type-tile"
                 onClick={() => handleTileClick(className)}
               >
-                <span className={`element-type-picker__icon ${info.icon}`} />
+                <span className={`element-type-picker__icon ${info.icon}`} data-testid="element-type-icon" />
                 <span className="element-type-picker__label">{info.label}</span>
                 {info.description !== '' && (
                   <span className="element-type-picker__description">{info.description}</span>

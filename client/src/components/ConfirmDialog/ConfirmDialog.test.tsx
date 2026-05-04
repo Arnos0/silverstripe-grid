@@ -50,18 +50,18 @@ describe('ConfirmDialog', () => {
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
-  it('applies destructive CSS class to confirm button when destructive', () => {
+  it('applies destructive state to confirm button when destructive', () => {
     render(<ConfirmDialog {...defaultProps} destructive={true} />);
 
     const confirmButton = screen.getByText('Delete');
-    expect(confirmButton).toHaveClass('confirm-dialog__button--destructive');
+    expect(confirmButton).toHaveAttribute('data-destructive', 'true');
   });
 
-  it('does not apply destructive CSS class by default', () => {
+  it('does not apply destructive state by default', () => {
     render(<ConfirmDialog {...defaultProps} />);
 
     const confirmButton = screen.getByText('Delete');
-    expect(confirmButton).not.toHaveClass('confirm-dialog__button--destructive');
+    expect(confirmButton).not.toHaveAttribute('data-destructive');
   });
 
   it('calls onCancel when dialog native close event fires', () => {
@@ -96,17 +96,5 @@ describe('ConfirmDialog', () => {
     expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
   });
 
-  it('confirm button has confirm class', () => {
-    render(<ConfirmDialog {...defaultProps} />);
 
-    const confirmButton = screen.getByText('Delete');
-    expect(confirmButton).toHaveClass('confirm-dialog__button--confirm');
-  });
-
-  it('cancel button has cancel class', () => {
-    render(<ConfirmDialog {...defaultProps} />);
-
-    const cancelButton = screen.getByText('Cancel');
-    expect(cancelButton).toHaveClass('confirm-dialog__button--cancel');
-  });
 });

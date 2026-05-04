@@ -72,6 +72,7 @@ export default function ConfirmDialog({
         <button
           type="button"
           className={`confirm-dialog__button confirm-dialog__button--confirm${destructive ? ' confirm-dialog__button--destructive' : ''}`}
+          data-destructive={destructive ? 'true' : undefined}
           onClick={onConfirm}
         >
           {confirmLabel}

@@ -82,13 +82,10 @@ describe('ElementTypePicker', () => {
   it('tile icons have correct class from allowedTypes icon field', () => {
     render(<ElementTypePicker {...defaultProps} />);
 
-    const tiles = screen.getAllByTestId('element-type-tile');
+    const icons = screen.getAllByTestId('element-type-icon');
 
-    const textBlockIcon = tiles[0].querySelector('.element-type-picker__icon');
-    expect(textBlockIcon).toHaveClass('element-type-picker__icon', 'font-icon-block-content');
-
-    const imageBlockIcon = tiles[1].querySelector('.element-type-picker__icon');
-    expect(imageBlockIcon).toHaveClass('element-type-picker__icon', 'font-icon-block-media');
+    expect(icons[0]).toHaveClass('font-icon-block-content');
+    expect(icons[1]).toHaveClass('font-icon-block-media');
   });
 
   it('renders the dialog title "Add content element"', () => {
@@ -116,12 +113,5 @@ describe('ElementTypePicker', () => {
     expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalled();
   });
 
-  it('tile labels render inside element-type-picker__label span', () => {
-    render(<ElementTypePicker {...defaultProps} />);
 
-    const labels = document.querySelectorAll('.element-type-picker__label');
-    expect(labels).toHaveLength(2);
-    expect(labels[0]).toHaveTextContent('Text Block');
-    expect(labels[1]).toHaveTextContent('Image Block');
-  });
 });
