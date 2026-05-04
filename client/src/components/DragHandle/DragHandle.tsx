@@ -15,13 +15,12 @@ export default function DragHandle({
   return (
     <button
       type="button"
-      className="drag-handle"
       data-testid="drag-handle"
       aria-label={label}
       {...listeners}
       {...attributes}
     >
-      <span className="drag-handle__icon" data-testid="drag-handle-icon" aria-hidden="true" />
+      <span data-testid="drag-handle-icon" aria-hidden="true" />
     </button>
   );
 }
