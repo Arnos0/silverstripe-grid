@@ -1,6 +1,5 @@
 import type { DraggableAttributes, DraggableSyntheticListeners } from '@dnd-kit/core';
 import { t } from '@/i18n';
-import './DragHandle.scss';
 
 interface DragHandleProps {
   readonly listeners: DraggableSyntheticListeners;

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { t } from '@/i18n';
-import './ConfirmDialog.scss';
 
 interface ConfirmDialogProps {
   readonly isOpen: boolean;

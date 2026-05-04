@@ -2,7 +2,6 @@ import type { ElementNode } from '@/types/elements';
 import { isContainerNode } from '@/types/elements';
 import type { DraggableType } from '@/types/dnd';
 import { t } from '@/i18n';
-import './DragOverlayContent.scss';
 
 interface DragOverlayContentProps {
   readonly node: ElementNode;

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { t } from '@/i18n';
-import './ActionsMenu.scss';
 
 export interface ActionItem {
   readonly key: string;
