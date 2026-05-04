@@ -122,38 +122,38 @@ describe('ColumnBlock', () => {
     expect(screen.queryByTestId('add-content-button')).not.toBeInTheDocument();
   });
 
-  describe('CSS classes', () => {
-    it('includes status modifier class for draft status', () => {
+  describe('status and state attributes', () => {
+    it('includes draft status attribute', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({ status: 'draft' });
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--draft');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-status', 'draft');
     });
 
-    it('includes status modifier class for modified status', () => {
+    it('includes modified status attribute', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({ status: 'modified' });
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--modified');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-status', 'modified');
     });
 
-    it('includes published status by default', () => {
+    it('includes published status attribute by default', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({ status: 'published' });
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--published');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-status', 'published');
     });
 
-    it('includes hidden class when column is not visible', () => {
+    it('sets data-hidden when column is not visible', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({
@@ -162,10 +162,10 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--hidden');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-hidden', '');
     });
 
-    it('does not include hidden class when column is visible', () => {
+    it('does not set data-hidden when column is visible', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({
@@ -174,10 +174,10 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).not.toHaveClass('column-block--hidden');
+      expect(screen.getByTestId('column-block')).not.toHaveAttribute('data-hidden');
     });
 
-    it('includes collapsed class when the column is collapsed in the context', () => {
+    it('sets data-collapsed when the column is collapsed in the context', () => {
       mockFetchSuccess({});
 
       const column = createColumnNode({});
@@ -186,10 +186,10 @@ describe('ColumnBlock', () => {
         collapsedKeys: [column.nodeKey],
       });
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--collapsed');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-collapsed', '');
     });
 
-    it('includes drop-target class when isOver and activeType is column', () => {
+    it('sets data-drop-target when isOver and activeType is column', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -201,10 +201,10 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).toHaveClass('column-block--drop-target');
+      expect(screen.getByTestId('column-block')).toHaveAttribute('data-drop-target', '');
     });
 
-    it('does not include drop-target class when isOver but activeType is not column', () => {
+    it('does not set data-drop-target when isOver but activeType is not column', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -216,10 +216,10 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).not.toHaveClass('column-block--drop-target');
+      expect(screen.getByTestId('column-block')).not.toHaveAttribute('data-drop-target');
     });
 
-    it('does not include drop-target class when activeType is column but not isOver', () => {
+    it('does not set data-drop-target when activeType is column but not isOver', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: false,
@@ -231,7 +231,7 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />);
 
-      expect(screen.getByTestId('column-block')).not.toHaveClass('column-block--drop-target');
+      expect(screen.getByTestId('column-block')).not.toHaveAttribute('data-drop-target');
     });
   });
 

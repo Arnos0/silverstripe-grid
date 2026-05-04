@@ -67,7 +67,15 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const childKeys = useChildColumnKeys(row);
 
   return (
-    <div ref={setNodeRef} style={style} className={rootClasses} data-testid="row-block">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={rootClasses}
+      data-testid="row-block"
+      data-status={status}
+      data-collapsed={isCollapsed ? '' : undefined}
+      data-drop-target={showDropTarget ? '' : undefined}
+    >
       <div className="row-block__header" data-testid="row-header">
         <DragHandle
           listeners={listeners}
@@ -89,6 +97,8 @@ function EditableRowBlock({ row }: RowBlockProps) {
       </div>
       <div
         className={`row-block__columns row-block__columns--${layoutMode}`}
+        data-testid="row-block-columns"
+        data-layout-mode={layoutMode}
         style={
           layoutMode === 'grid'
             ? ({ '--grid-columns': String(getColumnCount()) } as React.CSSProperties)
@@ -130,7 +140,12 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
   const rootClasses = buildClasses(status, isCollapsed && 'collapsed');
 
   return (
-    <div className={rootClasses} data-testid="row-block">
+    <div
+      className={rootClasses}
+      data-testid="row-block"
+      data-status={status}
+      data-collapsed={isCollapsed ? '' : undefined}
+    >
       <div className="row-block__header" data-testid="row-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
         <i className={`row-block__icon ${row.blockSchema.icon}`} />
@@ -140,6 +155,8 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
       </div>
       <div
         className={`row-block__columns row-block__columns--${layoutMode}`}
+        data-testid="row-block-columns"
+        data-layout-mode={layoutMode}
         style={
           layoutMode === 'grid'
             ? ({ '--grid-columns': String(getColumnCount()) } as React.CSSProperties)

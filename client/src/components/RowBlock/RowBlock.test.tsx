@@ -92,38 +92,38 @@ describe('RowBlock', () => {
     expect(screen.getByTestId('add-child-empty')).toBeInTheDocument();
   });
 
-  describe('CSS classes', () => {
-    it('includes draft status modifier', () => {
+  describe('status and state attributes', () => {
+    it('includes draft status attribute', () => {
       mockFetchSuccess({});
 
       const row = createRowNode({ status: 'draft' });
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).toHaveClass('row-block--draft');
+      expect(screen.getByTestId('row-block')).toHaveAttribute('data-status', 'draft');
     });
 
-    it('includes modified status modifier', () => {
+    it('includes modified status attribute', () => {
       mockFetchSuccess({});
 
       const row = createRowNode({ status: 'modified' });
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).toHaveClass('row-block--modified');
+      expect(screen.getByTestId('row-block')).toHaveAttribute('data-status', 'modified');
     });
 
-    it('includes published status by default', () => {
+    it('includes published status attribute by default', () => {
       mockFetchSuccess({});
 
       const row = createRowNode({ status: 'published' });
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).toHaveClass('row-block--published');
+      expect(screen.getByTestId('row-block')).toHaveAttribute('data-status', 'published');
     });
 
-    it('includes collapsed class when the row is collapsed in the context', () => {
+    it('sets data-collapsed when the row is collapsed in the context', () => {
       mockFetchSuccess({});
 
       const row = createRowNode({});
@@ -132,20 +132,20 @@ describe('RowBlock', () => {
         collapsedKeys: [row.nodeKey],
       });
 
-      expect(screen.getByTestId('row-block')).toHaveClass('row-block--collapsed');
+      expect(screen.getByTestId('row-block')).toHaveAttribute('data-collapsed', '');
     });
 
-    it('does not include collapsed class when expanded', () => {
+    it('does not set data-collapsed when expanded', () => {
       mockFetchSuccess({});
 
       const row = createRowNode({});
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).not.toHaveClass('row-block--collapsed');
+      expect(screen.getByTestId('row-block')).not.toHaveAttribute('data-collapsed');
     });
 
-    it('includes drop-target class when isOver and activeType is row', () => {
+    it('sets data-drop-target when isOver and activeType is row', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -157,10 +157,10 @@ describe('RowBlock', () => {
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).toHaveClass('row-block--drop-target');
+      expect(screen.getByTestId('row-block')).toHaveAttribute('data-drop-target', '');
     });
 
-    it('does not include drop-target class when isOver but activeType is not row', () => {
+    it('does not set data-drop-target when isOver but activeType is not row', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -172,10 +172,10 @@ describe('RowBlock', () => {
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).not.toHaveClass('row-block--drop-target');
+      expect(screen.getByTestId('row-block')).not.toHaveAttribute('data-drop-target');
     });
 
-    it('does not include drop-target class when activeType is row but not isOver', () => {
+    it('does not set data-drop-target when activeType is row but not isOver', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: false,
@@ -187,7 +187,7 @@ describe('RowBlock', () => {
 
       renderWithProviders(<RowBlock row={row} />);
 
-      expect(screen.getByTestId('row-block')).not.toHaveClass('row-block--drop-target');
+      expect(screen.getByTestId('row-block')).not.toHaveAttribute('data-drop-target');
     });
   });
 
@@ -197,11 +197,10 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(<RowBlock row={row} />);
+      renderWithProviders(<RowBlock row={row} />);
 
-      const columnsDiv = container.querySelector('.row-block__columns');
-      expect(columnsDiv).toHaveClass('row-block__columns--flex');
-      expect(columnsDiv).not.toHaveClass('row-block__columns--grid');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect(columnsDiv).toHaveAttribute('data-layout-mode', 'flex');
     });
 
     it('uses grid layout when offset strategy is grid-placement', () => {
@@ -213,11 +212,10 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(<RowBlock row={row} />);
+      renderWithProviders(<RowBlock row={row} />);
 
-      const columnsDiv = container.querySelector('.row-block__columns');
-      expect(columnsDiv).toHaveClass('row-block__columns--grid');
-      expect(columnsDiv).not.toHaveClass('row-block__columns--flex');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect(columnsDiv).toHaveAttribute('data-layout-mode', 'grid');
     });
 
     it('sets --grid-columns CSS variable in grid mode', () => {
@@ -228,10 +226,10 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(<RowBlock row={row} />);
+      renderWithProviders(<RowBlock row={row} />);
 
-      const columnsDiv = container.querySelector('.row-block__columns') as HTMLElement;
-      expect(columnsDiv.style.getPropertyValue('--grid-columns')).toBe('12');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect((columnsDiv as HTMLElement).style.getPropertyValue('--grid-columns')).toBe('12');
     });
 
     it('does not set --grid-columns CSS variable in flex mode', () => {
@@ -240,10 +238,10 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(<RowBlock row={row} />);
+      renderWithProviders(<RowBlock row={row} />);
 
-      const columnsDiv = container.querySelector('.row-block__columns') as HTMLElement;
-      expect(columnsDiv.style.getPropertyValue('--grid-columns')).toBe('');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect((columnsDiv as HTMLElement).style.getPropertyValue('--grid-columns')).toBe('');
     });
   });
 
@@ -282,16 +280,15 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <ReadonlyProvider value={true}>
           <RowBlock row={row} />
         </ReadonlyProvider>,
       );
 
-      const columnsDiv = container.querySelector('.row-block__columns') as HTMLElement;
-      expect(columnsDiv).toHaveClass('row-block__columns--flex');
-      expect(columnsDiv).not.toHaveClass('row-block__columns--grid');
-      expect(columnsDiv.style.getPropertyValue('--grid-columns')).toBe('');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect(columnsDiv).toHaveAttribute('data-layout-mode', 'flex');
+      expect((columnsDiv as HTMLElement).style.getPropertyValue('--grid-columns')).toBe('');
     });
 
     it('uses grid layout and sets --grid-columns when offset strategy is grid-placement', () => {
@@ -301,16 +298,15 @@ describe('RowBlock', () => {
 
       const row = createRowNode({ columnCount: 1 });
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <ReadonlyProvider value={true}>
           <RowBlock row={row} />
         </ReadonlyProvider>,
       );
 
-      const columnsDiv = container.querySelector('.row-block__columns') as HTMLElement;
-      expect(columnsDiv).toHaveClass('row-block__columns--grid');
-      expect(columnsDiv).not.toHaveClass('row-block__columns--flex');
-      expect(columnsDiv.style.getPropertyValue('--grid-columns')).toBe('12');
+      const columnsDiv = screen.getByTestId('row-block-columns');
+      expect(columnsDiv).toHaveAttribute('data-layout-mode', 'grid');
+      expect((columnsDiv as HTMLElement).style.getPropertyValue('--grid-columns')).toBe('12');
     });
   });
 });

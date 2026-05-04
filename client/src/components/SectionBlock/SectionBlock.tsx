@@ -72,7 +72,15 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
   const childKeys = useChildSortableKeys(section);
 
   return (
-    <section ref={setNodeRef} style={style} className={rootClasses} data-testid="section-block">
+    <section
+      ref={setNodeRef}
+      style={style}
+      className={rootClasses}
+      data-testid="section-block"
+      data-status={status}
+      data-collapsed={isCollapsed ? '' : undefined}
+      data-drop-target={showDropTarget ? '' : undefined}
+    >
       <div className="section-block__header" data-testid="section-header">
         <DragHandle
           listeners={listeners}
@@ -129,7 +137,12 @@ function ReadonlySectionBlock({ section }: SectionBlockProps) {
   const rootClasses = buildClasses(status, isCollapsed && 'collapsed');
 
   return (
-    <section className={rootClasses} data-testid="section-block">
+    <section
+      className={rootClasses}
+      data-testid="section-block"
+      data-status={status}
+      data-collapsed={isCollapsed ? '' : undefined}
+    >
       <div className="section-block__header" data-testid="section-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
         <i className={`section-block__icon ${section.blockSchema.icon}`} />
