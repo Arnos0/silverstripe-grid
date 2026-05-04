@@ -3,7 +3,6 @@ import { usePages, useZones, useAcceptableContainers } from '@/hooks/useDuplicat
 import { t } from '@/i18n';
 import type { NodeRef, NodeType } from '@/types/identity';
 import type { ElementTypeKey } from '@/utils/getElementType';
-import './DuplicateToDialog.scss';
 
 type Step = 'page' | 'zone' | 'container' | 'confirm';
 

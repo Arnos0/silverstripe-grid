@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { GridSettingsOption } from '@/types/gridSettings';
-import './GridSettingsPicker.scss';
 
 export type { GridSettingsOption } from '@/types/gridSettings';
 
