@@ -3,7 +3,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { ColumnNode, ViewportSettings } from '@/types/elements';
 import type { NodeKey } from '@/types/identity';
-import type { ElementStatus } from '@/types/status';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import { useGridEditorContext } from '@/hooks/GridEditorContext';
 import { useReadonly } from '@/hooks/ReadonlyContext';
@@ -11,7 +10,6 @@ import { useViewportContext } from '@/hooks/ViewportContext';
 import { useCollapse } from '@/hooks/useCollapseState';
 import { useUpdateGridSettings, useCreateContentElement } from '@/hooks/useElementMutations';
 import { buildSortableStyle } from '@/utils/sortableStyles';
-import { createBlockClasses } from '@/utils/blockClasses';
 import {
   getColumnCount,
   getOffsetStrategy,
@@ -27,10 +25,6 @@ import GridSettingsPicker from '@/components/GridSettingsPicker/GridSettingsPick
 import ElementCard from '@/components/ElementCard/ElementCard';
 import EmptyState from '@/components/EmptyState/EmptyState';
 import ElementTypePicker from '@/components/ElementTypePicker/ElementTypePicker';
-
-const buildClasses = createBlockClasses<ElementStatus | 'hidden' | 'collapsed' | 'drop-target'>(
-  'column-block',
-);
 
 interface ColumnBlockProps {
   readonly column: ColumnNode;
@@ -110,13 +104,6 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const isDragActive = activeType !== null;
   const isPickerDisabled = isDragActive || updateGridSettings.isPending;
 
-  const innerClasses = buildClasses(
-    status,
-    !settings.visible && 'hidden',
-    isCollapsed && 'collapsed',
-    showDropTarget && 'drop-target',
-  );
-
   const sortableStyle = buildSortableStyle(transform, transition, isDragging);
   const columnStyle = buildColumnStyle(settings, sortableStyle);
 
@@ -187,16 +174,15 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const hasAllowedTypes = Object.keys(allowedTypes).length > 0;
 
   return (
-    <div ref={setNodeRef} style={columnStyle} className="row-block__column" data-testid="column-block-outer">
+    <div ref={setNodeRef} style={columnStyle} data-testid="column-block-outer">
       <div
-        className={innerClasses}
         data-testid="column-block"
         data-status={status}
         data-collapsed={isCollapsed ? '' : undefined}
         data-drop-target={showDropTarget ? '' : undefined}
         data-hidden={!settings.visible ? '' : undefined}
       >
-        <div className="column-block__header" data-testid="column-header">
+        <div data-testid="column-header">
           <DragHandle
             listeners={listeners}
             attributes={attributes}
@@ -205,8 +191,8 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
             })}
           />
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-          <i className={`column-block__icon ${column.blockSchema.icon}`} />
-          <span className="column-block__title" data-testid="column-title">
+          <i className={column.blockSchema.icon} />
+          <span data-testid="column-title">
             {column.editLink !== null ? (
               <a href={column.editLink} data-testid="column-edit-link">
                 {column.title}
@@ -215,7 +201,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
               column.title
             )}
           </span>
-          <div className="column-block__header-meta">
+          <div>
             <GridSettingsPicker
               label={widthLabel}
               options={widthOptions}
@@ -235,7 +221,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
             <ElementActions node={column} />
           </div>
         </div>
-        <div className="column-block__body">
+        <div>
           <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
             {hasChildren
               ? children.map((child) => <ElementCard key={child.nodeKey} element={child} />)
@@ -248,7 +234,6 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
           {hasAllowedTypes && (
             <button
               type="button"
-              className="column-block__add-button"
               data-testid="add-content-button"
               onClick={handleOpenPicker}
             >
@@ -275,12 +260,6 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const status = column.status;
   const { isCollapsed, onToggle } = useColumnCollapse(column);
 
-  const innerClasses = buildClasses(
-    status,
-    !settings.visible && 'hidden',
-    isCollapsed && 'collapsed',
-  );
-
   // No sortable transform in readonly mode — pass empty style and let
   // buildColumnStyle layer the --col-width / --col-span variables on top.
   const columnStyle = buildColumnStyle(settings, {});
@@ -288,22 +267,21 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const children = column.children ?? [];
 
   return (
-    <div style={columnStyle} className="row-block__column" data-testid="column-block-outer">
+    <div style={columnStyle} data-testid="column-block-outer">
       <div
-        className={innerClasses}
         data-testid="column-block"
         data-status={status}
         data-collapsed={isCollapsed ? '' : undefined}
         data-hidden={!settings.visible ? '' : undefined}
       >
-        <div className="column-block__header" data-testid="column-header">
+        <div data-testid="column-header">
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-          <i className={`column-block__icon ${column.blockSchema.icon}`} />
-          <span className="column-block__title" data-testid="column-title">
+          <i className={column.blockSchema.icon} />
+          <span data-testid="column-title">
             {column.title}
           </span>
         </div>
-        <div className="column-block__body">
+        <div>
           {children.length > 0 ? (
             children.map((child) => <ElementCard key={child.nodeKey} element={child} />)
           ) : (
