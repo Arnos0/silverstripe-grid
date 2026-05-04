@@ -100,13 +100,12 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
     [dragState?.activeType],
   );
 
-  const rootClassName = readonly ? 'grid-editor grid-editor--readonly' : 'grid-editor';
   const hasSections = sections.length > 0;
 
   const sectionList = hasSections ? (
     sections.map((section) => <SectionBlock key={section.nodeKey} section={section} />)
   ) : readonly ? (
-    <p className="grid-editor__empty-state">
+    <p data-testid="grid-editor-empty">
       {t('WeDevelopGrid.GridEditor.NO_SECTIONS_READONLY', 'No sections in this version')}
     </p>
   ) : (
@@ -120,19 +119,18 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
 
   return (
     <div
-      className={rootClassName}
       data-page-id={pageId}
       data-zone={zone}
       data-testid="grid-editor"
       data-state={readonly ? 'readonly' : undefined}
     >
       {isLoading && (
-        <p className="grid-editor__loading" data-testid="grid-editor-loading">
+        <p data-testid="grid-editor-loading">
           {t('WeDevelopGrid.GridEditor.LOADING', 'Loading elements...')}
         </p>
       )}
       {error !== null && (
-        <p className="grid-editor__error" data-testid="grid-editor-error">
+        <p data-testid="grid-editor-error">
           {t('WeDevelopGrid.GridEditor.LOAD_ERROR', 'Failed to load elements: {message}', {
             message: error.message,
           })}
