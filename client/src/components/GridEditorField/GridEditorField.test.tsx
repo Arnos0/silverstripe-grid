@@ -32,7 +32,7 @@ describe('GridEditorField (FormBuilder entry point)', () => {
       />,
     );
 
-    expect(screen.getByTestId('grid-editor')).toHaveClass('grid-editor--readonly');
+    expect(screen.getByTestId('grid-editor')).toHaveAttribute('data-state', 'readonly');
   });
 
   it('returns null when pageId is missing from schema data', () => {

@@ -53,7 +53,6 @@ describe('GridEditor', () => {
 
     const loadingEl = screen.getByTestId('grid-editor-loading');
     expect(loadingEl).toHaveTextContent('Loading elements...');
-    expect(loadingEl).toHaveClass('grid-editor__loading');
   });
 
   it('renders sections after data loads', async () => {
@@ -131,9 +130,9 @@ describe('GridEditor', () => {
       expect(screen.queryByTestId('grid-editor-loading')).not.toBeInTheDocument();
     });
 
-    const errorEl = screen.getByText(/Failed to load elements/);
+    const errorEl = screen.getByTestId('grid-editor-error');
     expect(errorEl).toBeInTheDocument();
-    expect(errorEl).toHaveClass('grid-editor__error');
+    expect(errorEl).toHaveTextContent(/Failed to load elements/);
   });
 
   it('sets data attributes on root element', () => {
@@ -144,7 +143,6 @@ describe('GridEditor', () => {
     const editor = screen.getByTestId('grid-editor');
     expect(editor).toHaveAttribute('data-page-id', '1');
     expect(editor).toHaveAttribute('data-zone', 'main');
-    expect(editor).toHaveClass('grid-editor');
   });
 
   describe('readonly mode', () => {
@@ -168,7 +166,7 @@ describe('GridEditor', () => {
       });
 
       expect(screen.getAllByTestId('section-block')).toHaveLength(2);
-      expect(screen.getByTestId('grid-editor')).toHaveClass('grid-editor--readonly');
+      expect(screen.getByTestId('grid-editor')).toHaveAttribute('data-state', 'readonly');
     });
 
     it('mounts the viewport switcher in readonly mode without the reset-overrides button', async () => {
@@ -240,7 +238,7 @@ describe('GridEditor', () => {
       renderWithProviders(<GridEditor pageId={1} zone="main" readonly={true} version={2} />);
 
       expect(screen.getByTestId('grid-editor-loading')).toHaveTextContent('Loading elements...');
-      expect(screen.getByTestId('grid-editor')).toHaveClass('grid-editor--readonly');
+      expect(screen.getByTestId('grid-editor')).toHaveAttribute('data-state', 'readonly');
     });
   });
 });

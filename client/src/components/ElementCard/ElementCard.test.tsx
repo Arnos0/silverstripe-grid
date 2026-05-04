@@ -38,34 +38,34 @@ describe('ElementCard', () => {
     expect(screen.getByTestId('element-card-title')).toHaveTextContent('My Content Block');
   });
 
-  it('status class applied correctly', () => {
+  it('status attribute applied correctly', () => {
     mockFetchSuccess({});
 
     const element = createSimpleElement({ status: 'draft' });
 
     renderWithProviders(<ElementCard element={element} />);
 
-    expect(screen.getByTestId('element-card')).toHaveClass('element-card--draft');
+    expect(screen.getByTestId('element-card')).toHaveAttribute('data-status', 'draft');
   });
 
-  it('clickable class applied when editLink exists', () => {
+  it('clickable state applied when editLink exists', () => {
     mockFetchSuccess({});
 
     const element = createSimpleElement({ editLink: '/admin/pages/edit/show/5' });
 
     renderWithProviders(<ElementCard element={element} />);
 
-    expect(screen.getByTestId('element-card')).toHaveClass('element-card--clickable');
+    expect(screen.getByTestId('element-card')).toHaveAttribute('data-state', 'clickable');
   });
 
-  it('no clickable class when editLink is null', () => {
+  it('no clickable state when editLink is null', () => {
     mockFetchSuccess({});
 
     const element = createSimpleElement({ editLink: null });
 
     renderWithProviders(<ElementCard element={element} />);
 
-    expect(screen.getByTestId('element-card')).not.toHaveClass('element-card--clickable');
+    expect(screen.getByTestId('element-card')).not.toHaveAttribute('data-state', 'clickable');
   });
 
   it('renders an anchor with an href so middle-click opens in a new tab', () => {
@@ -90,17 +90,7 @@ describe('ElementCard', () => {
     expect(screen.queryByRole('link')).toBeNull();
   });
 
-  it('applies element-card base class always', () => {
-    mockFetchSuccess({});
-
-    const element = createSimpleElement();
-
-    renderWithProviders(<ElementCard element={element} />);
-
-    expect(screen.getByTestId('element-card')).toHaveClass('element-card');
-  });
-
-  it('clickable class is exactly "element-card--clickable"', () => {
+  it('clickable state is set when editLink is provided', () => {
     mockFetchSuccess({});
 
     const element = createSimpleElement({ editLink: '/admin/pages/edit/show/5' });
@@ -108,7 +98,7 @@ describe('ElementCard', () => {
     renderWithProviders(<ElementCard element={element} />);
 
     const card = screen.getByTestId('element-card');
-    expect(card.className).toContain('element-card--clickable');
+    expect(card).toHaveAttribute('data-state', 'clickable');
   });
 
   it('renders the icon with the blockSchema icon class', () => {
@@ -126,8 +116,8 @@ describe('ElementCard', () => {
 
     renderWithProviders(<ElementCard element={element} />);
 
-    const icon = screen.getByTestId('element-card').querySelector('.element-card__icon');
-    expect(icon).toHaveClass('element-card__icon', 'font-icon-block-content');
+    const icon = screen.getByTestId('element-card-icon');
+    expect(icon).toHaveClass('font-icon-block-content');
   });
 
   describe('summary', () => {
