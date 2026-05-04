@@ -47,7 +47,6 @@ export default function AddChildButton({
   const button = (
     <button
       type="button"
-      className="add-child-button__button"
       data-testid="add-child-button"
       disabled={isPending}
       onClick={handleClick}
@@ -62,8 +61,8 @@ export default function AddChildButton({
 
   if (variant === 'empty-state') {
     return (
-      <div className="add-child-button add-child-button--empty-state" data-testid="add-child-empty">
-        <p className="add-child-button__message">
+      <div data-testid="add-child-empty">
+        <p>
           {t('WeDevelopGrid.AddChildButton.EMPTY_MESSAGE', 'No {childLabel}s yet', {
             childLabel: childLabel.toLowerCase(),
           })}
@@ -74,7 +73,7 @@ export default function AddChildButton({
   }
 
   return (
-    <div className="add-child-button add-child-button--append" data-testid="add-child-append">
+    <div data-testid="add-child-append">
       {button}
     </div>
   );

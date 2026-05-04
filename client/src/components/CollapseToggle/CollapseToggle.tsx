@@ -10,7 +10,6 @@ export default function CollapseToggle({ isCollapsed, onToggle, label }: Collaps
   return (
     <button
       type="button"
-      className={`collapse-toggle${isCollapsed ? ' collapse-toggle--collapsed' : ''}`}
       aria-expanded={!isCollapsed}
       aria-label={
         isCollapsed
@@ -18,12 +17,13 @@ export default function CollapseToggle({ isCollapsed, onToggle, label }: Collaps
           : t('WeDevelopGrid.CollapseToggle.COLLAPSE_LABEL', 'Collapse {label}', { label })
       }
       data-testid="collapse-toggle"
+      data-state={isCollapsed ? 'collapsed' : 'expanded'}
       onClick={(e) => {
         e.stopPropagation();
         onToggle();
       }}
     >
-      <span className="collapse-toggle__chevron" aria-hidden="true" />
+      <span aria-hidden="true" />
     </button>
   );
 }

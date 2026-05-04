@@ -123,11 +123,10 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
   const menuId = `${testId}-menu`;
 
   return (
-    <div ref={wrapperRef} className="actions-menu">
+    <div ref={wrapperRef}>
       <button
         ref={triggerRef}
         type="button"
-        className="actions-menu__trigger"
         data-testid="actions-menu-trigger"
         aria-haspopup="menu"
         aria-expanded={isOpen}
@@ -135,13 +134,12 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
         aria-label={t('WeDevelopGrid.ActionsMenu.TRIGGER_LABEL', 'Actions')}
         onClick={handleTriggerClick}
       >
-        <span className="actions-menu__dots" aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
       {isOpen && (
         <div
           id={menuId}
           ref={menuRef}
-          className="actions-menu__dropdown"
           role="menu"
           tabIndex={-1}
           aria-activedescendant={getItemId(activeIndex)}
@@ -153,7 +151,6 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
             <div
               key={action.key}
               id={getItemId(index)}
-              className={`actions-menu__item${action.destructive ? ' actions-menu__item--destructive' : ''}`}
               role="menuitem"
               tabIndex={index === activeIndex ? 0 : -1}
               data-destructive={action.destructive ? 'true' : undefined}
