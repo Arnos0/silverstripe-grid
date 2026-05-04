@@ -165,7 +165,6 @@ export default function DuplicateToDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="duplicate-to-dialog"
       data-testid="duplicate-to-dialog"
       onClose={handleClose}
       // onClick guard prevents clicks inside the dialog from bubbling to
@@ -179,8 +178,8 @@ export default function DuplicateToDialog({
         e.stopPropagation();
       }}
     >
-      <div className="duplicate-to-dialog__header">
-        <h3 className="duplicate-to-dialog__title">
+      <div>
+        <h3>
           {step === 'page' &&
             t('WeDevelopGrid.DuplicateToDialog.STEP_PAGE_TITLE', 'Select target page')}
           {step === 'zone' && t('WeDevelopGrid.DuplicateToDialog.STEP_ZONE_TITLE', 'Select zone')}
@@ -191,12 +190,11 @@ export default function DuplicateToDialog({
         </h3>
       </div>
 
-      <div className="duplicate-to-dialog__body">
+      <div>
         {step === 'page' && (
           <div data-testid="duplicate-to-step-page">
             <input
               type="text"
-              className="duplicate-to-dialog__search"
               data-testid="duplicate-to-search"
               placeholder={t(
                 'WeDevelopGrid.DuplicateToDialog.SEARCH_PLACEHOLDER',
@@ -206,20 +204,18 @@ export default function DuplicateToDialog({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {pages.isLoading && (
-              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
+              <p data-testid="duplicate-to-loading">
                 {t('WeDevelopGrid.DuplicateToDialog.LOADING_PAGES', 'Loading pages\u2026')}
               </p>
             )}
             {pages.data !== undefined && (
               <div
-                className="duplicate-to-dialog__list"
                 data-testid="duplicate-to-page-list"
                 role="listbox"
               >
                 {pages.data.map((page) => (
                   <div
                     key={page.id}
-                    className={`duplicate-to-dialog__item${page.id === selectedPageId ? ' duplicate-to-dialog__item--selected' : ''}${!page.hasGridZones ? ' duplicate-to-dialog__item--disabled' : ''}`}
                     role="option"
                     aria-selected={page.id === selectedPageId}
                     aria-disabled={!page.hasGridZones}
@@ -245,20 +241,18 @@ export default function DuplicateToDialog({
         {step === 'zone' && (
           <div data-testid="duplicate-to-step-zone">
             {zones.isLoading && (
-              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
+              <p data-testid="duplicate-to-loading">
                 {t('WeDevelopGrid.DuplicateToDialog.LOADING_ZONES', 'Loading zones\u2026')}
               </p>
             )}
             {zones.data !== undefined && zones.data.length > 1 && (
               <div
-                className="duplicate-to-dialog__list"
                 data-testid="duplicate-to-zone-list"
                 role="listbox"
               >
                 {zones.data.map((zone) => (
                   <div
                     key={zone}
-                    className={`duplicate-to-dialog__item${zone === selectedZone ? ' duplicate-to-dialog__item--selected' : ''}`}
                     role="option"
                     aria-selected={zone === selectedZone}
                     data-testid="duplicate-to-zone-item"
@@ -279,7 +273,7 @@ export default function DuplicateToDialog({
         {step === 'container' && (
           <div data-testid="duplicate-to-step-container">
             {containers.isLoading && (
-              <p className="duplicate-to-dialog__loading" data-testid="duplicate-to-loading">
+              <p data-testid="duplicate-to-loading">
                 {t(
                   'WeDevelopGrid.DuplicateToDialog.LOADING_CONTAINERS',
                   'Loading containers\u2026',
@@ -287,7 +281,7 @@ export default function DuplicateToDialog({
               </p>
             )}
             {containers.data !== undefined && containers.data.length === 0 && (
-              <p className="duplicate-to-dialog__empty" data-testid="duplicate-to-no-containers">
+              <p data-testid="duplicate-to-no-containers">
                 {t(
                   'WeDevelopGrid.DuplicateToDialog.NO_CONTAINERS',
                   'No compatible containers found in this zone',
@@ -296,14 +290,12 @@ export default function DuplicateToDialog({
             )}
             {containers.data !== undefined && containers.data.length > 0 && (
               <div
-                className="duplicate-to-dialog__list"
                 data-testid="duplicate-to-container-list"
                 role="listbox"
               >
                 {containers.data.map((container) => (
                   <div
                     key={container.id}
-                    className={`duplicate-to-dialog__item${container.id === selectedContainerId ? ' duplicate-to-dialog__item--selected' : ''}`}
                     role="option"
                     aria-selected={container.id === selectedContainerId}
                     data-testid="duplicate-to-container-item"
@@ -313,8 +305,8 @@ export default function DuplicateToDialog({
                     }}
                     tabIndex={0}
                   >
-                    <span className="duplicate-to-dialog__item-title">{container.title}</span>
-                    <span className="duplicate-to-dialog__item-type">{container.type}</span>
+                    <span>{container.title}</span>
+                    <span>{container.type}</span>
                   </div>
                 ))}
               </div>
@@ -324,7 +316,7 @@ export default function DuplicateToDialog({
 
         {step === 'confirm' && (
           <div data-testid="duplicate-to-step-confirm">
-            <p className="duplicate-to-dialog__summary">
+            <p>
               {t(
                 'WeDevelopGrid.DuplicateToDialog.CONFIRM_SUMMARY_PREFIX',
                 'Duplicate section to zone',
@@ -335,17 +327,16 @@ export default function DuplicateToDialog({
         )}
       </div>
 
-      <div className="duplicate-to-dialog__footer">
+      <div>
         {error !== undefined && error !== null && (
-          <p className="duplicate-to-dialog__error" data-testid="duplicate-to-error">
+          <p data-testid="duplicate-to-error">
             {error}
           </p>
         )}
-        <div className="duplicate-to-dialog__actions">
+        <div>
           {step !== 'page' && (
             <button
               type="button"
-              className="duplicate-to-dialog__button duplicate-to-dialog__button--back"
               data-testid="duplicate-to-back"
               onClick={goBack}
             >
@@ -354,7 +345,6 @@ export default function DuplicateToDialog({
           )}
           <button
             type="button"
-            className="duplicate-to-dialog__button duplicate-to-dialog__button--cancel"
             onClick={handleClose}
           >
             {t('WeDevelopGrid.DuplicateToDialog.CANCEL_BUTTON', 'Cancel')}
@@ -362,7 +352,6 @@ export default function DuplicateToDialog({
           {step === 'page' && (
             <button
               type="button"
-              className="duplicate-to-dialog__button duplicate-to-dialog__button--next"
               data-testid="duplicate-to-next"
               disabled={selectedPageId === 0}
               onClick={advanceFromPage}
@@ -373,7 +362,6 @@ export default function DuplicateToDialog({
           {step === 'zone' && (
             <button
               type="button"
-              className="duplicate-to-dialog__button duplicate-to-dialog__button--next"
               data-testid="duplicate-to-next"
               disabled={selectedZone === null}
               onClick={advanceFromZone}
@@ -384,7 +372,6 @@ export default function DuplicateToDialog({
           {step === 'container' && (
             <button
               type="button"
-              className="duplicate-to-dialog__button duplicate-to-dialog__button--confirm"
               data-testid="duplicate-to-confirm"
               disabled={selectedContainerId === null}
               onClick={handleConfirm}
@@ -395,7 +382,6 @@ export default function DuplicateToDialog({
           {step === 'confirm' && (
             <button
               type="button"
-              className="duplicate-to-dialog__button duplicate-to-dialog__button--confirm"
               data-testid="duplicate-to-confirm"
               onClick={handleConfirm}
             >

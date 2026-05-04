@@ -123,11 +123,10 @@ export default function GridSettingsPicker({
   }
 
   return (
-    <div ref={wrapperRef} className="grid-settings-picker">
+    <div ref={wrapperRef}>
       <button
         ref={triggerRef}
         type="button"
-        className={`grid-settings-picker__trigger${disabled ? ' grid-settings-picker__trigger--disabled' : ''}`}
         data-testid={testId}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -141,7 +140,6 @@ export default function GridSettingsPicker({
         <div
           id={listboxId}
           ref={listboxRef}
-          className="grid-settings-picker__options"
           role="listbox"
           tabIndex={-1}
           aria-activedescendant={getOptionId(activeIndex)}
@@ -153,7 +151,6 @@ export default function GridSettingsPicker({
             <div
               key={option.value}
               id={getOptionId(index)}
-              className={`grid-settings-picker__option${option.value === selectedValue ? ' grid-settings-picker__option--selected' : ''}${option.value === 'hidden' ? ' grid-settings-picker__option--separator' : ''}`}
               role="option"
               aria-selected={option.value === selectedValue}
               data-separator={option.value === 'hidden' ? 'true' : undefined}

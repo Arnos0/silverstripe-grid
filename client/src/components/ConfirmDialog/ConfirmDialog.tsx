@@ -40,7 +40,6 @@ export default function ConfirmDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="confirm-dialog"
       data-testid="confirm-dialog"
       onClose={handleClose}
       // onClick guard prevents clicks inside the dialog from bubbling to
@@ -54,23 +53,21 @@ export default function ConfirmDialog({
         e.stopPropagation();
       }}
     >
-      <div className="confirm-dialog__header">
-        <h3 className="confirm-dialog__title">{title}</h3>
+      <div>
+        <h3>{title}</h3>
       </div>
-      <div className="confirm-dialog__body">
-        <p className="confirm-dialog__message">{message}</p>
+      <div>
+        <p>{message}</p>
       </div>
-      <div className="confirm-dialog__footer">
+      <div>
         <button
           type="button"
-          className="confirm-dialog__button confirm-dialog__button--cancel"
           onClick={handleClose}
         >
           {t('WeDevelopGrid.ConfirmDialog.CANCEL_BUTTON', 'Cancel')}
         </button>
         <button
           type="button"
-          className={`confirm-dialog__button confirm-dialog__button--confirm${destructive ? ' confirm-dialog__button--destructive' : ''}`}
           data-destructive={destructive ? 'true' : undefined}
           onClick={onConfirm}
         >
