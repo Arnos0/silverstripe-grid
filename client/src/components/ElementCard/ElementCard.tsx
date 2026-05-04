@@ -36,15 +36,9 @@ function EditableElementCard({ element }: ElementCardProps) {
 
   const style = buildSortableStyle(transform, transition, isDragging);
 
-  const cardClasses = [
-    'element-card',
-    `element-card--${status}`,
-    ...(isClickable ? ['element-card--clickable'] : []),
-  ].join(' ');
-
   const header: ReactNode = (
     <>
-      <div className="element-card__header">
+      <div>
         <DragHandle
           listeners={listeners}
           attributes={attributes}
@@ -52,14 +46,14 @@ function EditableElementCard({ element }: ElementCardProps) {
             title: element.title,
           })}
         />
-        <i className={`element-card__icon ${element.blockSchema.icon}`} data-testid="element-card-icon" />
-        <h4 className="element-card__title" data-testid="element-card-title">
+        <i className={element.blockSchema.icon} data-testid="element-card-icon" />
+        <h4 data-testid="element-card-title">
           {element.title}
         </h4>
         <ElementActions node={element} />
       </div>
       {element.summary ? (
-        <p className="element-card__summary" data-testid="element-card-summary">
+        <p data-testid="element-card-summary">
           {element.summary}
         </p>
       ) : null}
@@ -94,7 +88,6 @@ function EditableElementCard({ element }: ElementCardProps) {
         ref={setNodeRef}
         href={editLink}
         style={style}
-        className={cardClasses}
         data-testid="element-card"
         data-state="clickable"
         data-status={status}
@@ -106,7 +99,7 @@ function EditableElementCard({ element }: ElementCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={cardClasses} data-testid="element-card" data-status={status}>
+    <div ref={setNodeRef} style={style} data-testid="element-card" data-status={status}>
       {header}
     </div>
   );
@@ -114,18 +107,17 @@ function EditableElementCard({ element }: ElementCardProps) {
 
 function ReadonlyElementCard({ element }: ElementCardProps) {
   const status = element.status;
-  const cardClasses = `element-card element-card--${status}`;
 
   return (
-    <div className={cardClasses} data-testid="element-card" data-status={status}>
-      <div className="element-card__header">
-        <i className={`element-card__icon ${element.blockSchema.icon}`} data-testid="element-card-icon" />
-        <h4 className="element-card__title" data-testid="element-card-title">
+    <div data-testid="element-card" data-status={status}>
+      <div>
+        <i className={element.blockSchema.icon} data-testid="element-card-icon" />
+        <h4 data-testid="element-card-title">
           {element.title}
         </h4>
       </div>
       {element.summary ? (
-        <p className="element-card__summary" data-testid="element-card-summary">
+        <p data-testid="element-card-summary">
           {element.summary}
         </p>
       ) : null}
