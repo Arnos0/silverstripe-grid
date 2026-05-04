@@ -94,8 +94,8 @@ describe('SectionBlock', () => {
 
     renderWithProviders(<SectionBlock section={section} />, { collapseState });
 
-    // Initially expanded — body should not have collapsed class
-    expect(screen.getByTestId('section-block')).not.toHaveClass('section-block--collapsed');
+    // Initially expanded — section should not have data-collapsed attribute
+    expect(screen.getByTestId('section-block')).not.toHaveAttribute('data-collapsed');
 
     // There are multiple collapse toggles (section + child rows/columns).
     // The first one belongs to the section header.
@@ -116,7 +116,7 @@ describe('SectionBlock', () => {
       collapsedKeys: [section.nodeKey],
     });
 
-    expect(screen.getByTestId('section-block')).toHaveClass('section-block--collapsed');
+    expect(screen.getByTestId('section-block')).toHaveAttribute('data-collapsed', '');
   });
 
   it('edit link rendered when editLink exists', () => {
@@ -152,38 +152,38 @@ describe('SectionBlock', () => {
     expect(screen.getByTestId('add-child-empty')).toBeInTheDocument();
   });
 
-  describe('CSS classes', () => {
-    it('includes draft status modifier', () => {
+  describe('status and state attributes', () => {
+    it('includes draft status attribute', () => {
       mockFetchSuccess({});
 
       const section = createSectionNode({ status: 'draft' });
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).toHaveClass('section-block--draft');
+      expect(screen.getByTestId('section-block')).toHaveAttribute('data-status', 'draft');
     });
 
-    it('includes modified status modifier', () => {
+    it('includes modified status attribute', () => {
       mockFetchSuccess({});
 
       const section = createSectionNode({ status: 'modified' });
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).toHaveClass('section-block--modified');
+      expect(screen.getByTestId('section-block')).toHaveAttribute('data-status', 'modified');
     });
 
-    it('includes published status by default', () => {
+    it('includes published status attribute by default', () => {
       mockFetchSuccess({});
 
       const section = createSectionNode({ status: 'published' });
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).toHaveClass('section-block--published');
+      expect(screen.getByTestId('section-block')).toHaveAttribute('data-status', 'published');
     });
 
-    it('includes drop-target class when isOver and activeType is section', () => {
+    it('sets data-drop-target when isOver and activeType is section', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -195,10 +195,10 @@ describe('SectionBlock', () => {
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).toHaveClass('section-block--drop-target');
+      expect(screen.getByTestId('section-block')).toHaveAttribute('data-drop-target', '');
     });
 
-    it('does not include drop-target class when isOver but activeType is not section', () => {
+    it('does not set data-drop-target when isOver but activeType is not section', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: true,
@@ -210,10 +210,10 @@ describe('SectionBlock', () => {
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).not.toHaveClass('section-block--drop-target');
+      expect(screen.getByTestId('section-block')).not.toHaveAttribute('data-drop-target');
     });
 
-    it('does not include drop-target class when activeType is section but not isOver', () => {
+    it('does not set data-drop-target when activeType is section but not isOver', () => {
       vi.mocked(useSortable).mockReturnValue({
         ...defaultSortable,
         isOver: false,
@@ -225,7 +225,7 @@ describe('SectionBlock', () => {
 
       renderWithProviders(<SectionBlock section={section} />);
 
-      expect(screen.getByTestId('section-block')).not.toHaveClass('section-block--drop-target');
+      expect(screen.getByTestId('section-block')).not.toHaveAttribute('data-drop-target');
     });
   });
 });

@@ -188,7 +188,14 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
 
   return (
     <div ref={setNodeRef} style={columnStyle} className="row-block__column">
-      <div className={innerClasses} data-testid="column-block">
+      <div
+        className={innerClasses}
+        data-testid="column-block"
+        data-status={status}
+        data-collapsed={isCollapsed ? '' : undefined}
+        data-drop-target={showDropTarget ? '' : undefined}
+        data-hidden={!settings.visible ? '' : undefined}
+      >
         <div className="column-block__header" data-testid="column-header">
           <DragHandle
             listeners={listeners}
@@ -282,7 +289,13 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
 
   return (
     <div style={columnStyle} className="row-block__column">
-      <div className={innerClasses} data-testid="column-block">
+      <div
+        className={innerClasses}
+        data-testid="column-block"
+        data-status={status}
+        data-collapsed={isCollapsed ? '' : undefined}
+        data-hidden={!settings.visible ? '' : undefined}
+      >
         <div className="column-block__header" data-testid="column-header">
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
           <i className={`column-block__icon ${column.blockSchema.icon}`} />
