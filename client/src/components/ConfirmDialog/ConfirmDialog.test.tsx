@@ -95,6 +95,4 @@ describe('ConfirmDialog', () => {
 
     expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
   });
-
-
 });

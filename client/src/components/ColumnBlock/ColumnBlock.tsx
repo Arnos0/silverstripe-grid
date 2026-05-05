@@ -232,11 +232,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
                 )}
           </SortableContext>
           {hasAllowedTypes && (
-            <button
-              type="button"
-              data-testid="add-content-button"
-              onClick={handleOpenPicker}
-            >
+            <button type="button" data-testid="add-content-button" onClick={handleOpenPicker}>
               {t('WeDevelopGrid.ColumnBlock.ADD_CONTENT_BUTTON', '+ Add content')}
             </button>
           )}
@@ -277,9 +273,7 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
         <div data-testid="column-header">
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
           <i className={column.blockSchema.icon} />
-          <span data-testid="column-title">
-            {column.title}
-          </span>
+          <span data-testid="column-title">{column.title}</span>
         </div>
         <div>
           {children.length > 0 ? (

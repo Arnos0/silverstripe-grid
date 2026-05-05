@@ -47,16 +47,10 @@ function EditableElementCard({ element }: ElementCardProps) {
           })}
         />
         <i className={element.blockSchema.icon} data-testid="element-card-icon" />
-        <h4 data-testid="element-card-title">
-          {element.title}
-        </h4>
+        <h4 data-testid="element-card-title">{element.title}</h4>
         <ElementActions node={element} />
       </div>
-      {element.summary ? (
-        <p data-testid="element-card-summary">
-          {element.summary}
-        </p>
-      ) : null}
+      {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
     </>
   );
 
@@ -112,15 +106,9 @@ function ReadonlyElementCard({ element }: ElementCardProps) {
     <div data-testid="element-card" data-status={status}>
       <div>
         <i className={element.blockSchema.icon} data-testid="element-card-icon" />
-        <h4 data-testid="element-card-title">
-          {element.title}
-        </h4>
+        <h4 data-testid="element-card-title">{element.title}</h4>
       </div>
-      {element.summary ? (
-        <p data-testid="element-card-summary">
-          {element.summary}
-        </p>
-      ) : null}
+      {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
     </div>
   );
 }

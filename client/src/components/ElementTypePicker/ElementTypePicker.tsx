@@ -43,15 +43,9 @@ export default function ElementTypePicker({
   const entries = Object.entries(allowedTypes);
 
   return (
-    <dialog
-      ref={dialogRef}
-      data-testid="element-type-picker"
-      onClose={handleClose}
-    >
+    <dialog ref={dialogRef} data-testid="element-type-picker" onClose={handleClose}>
       <div>
-        <h3>
-          {t('WeDevelopGrid.ElementTypePicker.TITLE', 'Add content element')}
-        </h3>
+        <h3>{t('WeDevelopGrid.ElementTypePicker.TITLE', 'Add content element')}</h3>
         <button
           type="button"
           data-testid="element-type-picker-close"
@@ -73,9 +67,7 @@ export default function ElementTypePicker({
               >
                 <span className={info.icon} data-testid="element-type-icon" />
                 <span>{info.label}</span>
-                {info.description !== '' && (
-                  <span>{info.description}</span>
-                )}
+                {info.description !== '' && <span>{info.description}</span>}
               </button>
             ))}
           </div>

@@ -45,12 +45,7 @@ export default function AddChildButton({
   }
 
   const button = (
-    <button
-      type="button"
-      data-testid="add-child-button"
-      disabled={isPending}
-      onClick={handleClick}
-    >
+    <button type="button" data-testid="add-child-button" disabled={isPending} onClick={handleClick}>
       {isPending
         ? t('WeDevelopGrid.AddChildButton.ADDING_LABEL', 'Adding {childLabel}\u2026', {
             childLabel,
@@ -72,9 +67,5 @@ export default function AddChildButton({
     );
   }
 
-  return (
-    <div data-testid="add-child-append">
-      {button}
-    </div>
-  );
+  return <div data-testid="add-child-append">{button}</div>;
 }

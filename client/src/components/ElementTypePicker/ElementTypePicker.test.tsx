@@ -112,6 +112,4 @@ describe('ElementTypePicker', () => {
 
     expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalled();
   });
-
-
 });

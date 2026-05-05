@@ -60,10 +60,7 @@ export default function ConfirmDialog({
         <p>{message}</p>
       </div>
       <div>
-        <button
-          type="button"
-          onClick={handleClose}
-        >
+        <button type="button" onClick={handleClose}>
           {t('WeDevelopGrid.ConfirmDialog.CANCEL_BUTTON', 'Cancel')}
         </button>
         <button
