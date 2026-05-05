@@ -12,7 +12,7 @@ export default function ViewportSwitcher() {
   const reset = useResetOverridesAction();
 
   return (
-    <div className="viewport-switcher" data-testid="viewport-switcher">
+    <div data-testid="viewport-switcher">
       {/* biome-ignore lint/a11y/useSemanticElements: no HTML element maps to role="group" for a toolbar-style button cluster; <fieldset> implies form grouping. */}
       <div
         role="group"
@@ -25,7 +25,6 @@ export default function ViewportSwitcher() {
             <button
               key={viewport.key}
               type="button"
-              className={`viewport-switcher__button${isActive ? ' viewport-switcher__button--active' : ''}`}
               data-testid={`viewport-button-${viewport.key}`}
               aria-pressed={isActive}
               aria-disabled={isActive || undefined}
@@ -43,7 +42,6 @@ export default function ViewportSwitcher() {
       {!readonly && reset.showReset && (
         <button
           type="button"
-          className="viewport-switcher__reset"
           data-testid="reset-overrides-button"
           onClick={reset.onResetClick}
         >
