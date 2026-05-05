@@ -119,6 +119,4 @@ describe('DragOverlayContent', () => {
     expect(screen.getByTestId('drag-overlay-column')).toBeInTheDocument();
     expect(screen.getByTestId('drag-overlay-column-title')).toBeInTheDocument();
   });
-
 });
-

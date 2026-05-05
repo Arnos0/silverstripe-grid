@@ -215,7 +215,6 @@ describe('GridSettingsPicker', () => {
     expect(screen.getByText('Hidden')).toHaveAttribute('data-separator', 'true');
   });
 
-
   it('outside click while picker is closed does not open it', async () => {
     const user = userEvent.setup();
 
@@ -245,8 +244,6 @@ describe('GridSettingsPicker', () => {
     // Should still be closed
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
-
-
 
   describe('roving tabindex and focus management', () => {
     it('sets roving tabindex with exactly one option tab-reachable on open', async () => {

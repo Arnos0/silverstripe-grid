@@ -40,11 +40,7 @@ export default function ViewportSwitcher() {
         })}
       </div>
       {!readonly && reset.showReset && (
-        <button
-          type="button"
-          data-testid="reset-overrides-button"
-          onClick={reset.onResetClick}
-        >
+        <button type="button" data-testid="reset-overrides-button" onClick={reset.onResetClick}>
           {reset.label}
         </button>
       )}

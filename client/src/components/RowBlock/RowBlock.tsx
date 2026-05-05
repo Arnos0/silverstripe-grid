@@ -126,17 +126,11 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
   const { isCollapsed, onToggle } = useRowCollapse(row);
 
   return (
-    <div
-      data-testid="row-block"
-      data-status={status}
-      data-collapsed={isCollapsed ? '' : undefined}
-    >
+    <div data-testid="row-block" data-status={status} data-collapsed={isCollapsed ? '' : undefined}>
       <div data-testid="row-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
         <i className={row.blockSchema.icon} />
-        <h3 data-testid="row-title">
-          {row.title}
-        </h3>
+        <h3 data-testid="row-title">{row.title}</h3>
       </div>
       <div
         data-testid="row-block-columns"

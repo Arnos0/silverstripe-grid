@@ -209,10 +209,7 @@ export default function DuplicateToDialog({
               </p>
             )}
             {pages.data !== undefined && (
-              <div
-                data-testid="duplicate-to-page-list"
-                role="listbox"
-              >
+              <div data-testid="duplicate-to-page-list" role="listbox">
                 {pages.data.map((page) => (
                   <div
                     key={page.id}
@@ -246,10 +243,7 @@ export default function DuplicateToDialog({
               </p>
             )}
             {zones.data !== undefined && zones.data.length > 1 && (
-              <div
-                data-testid="duplicate-to-zone-list"
-                role="listbox"
-              >
+              <div data-testid="duplicate-to-zone-list" role="listbox">
                 {zones.data.map((zone) => (
                   <div
                     key={zone}
@@ -289,10 +283,7 @@ export default function DuplicateToDialog({
               </p>
             )}
             {containers.data !== undefined && containers.data.length > 0 && (
-              <div
-                data-testid="duplicate-to-container-list"
-                role="listbox"
-              >
+              <div data-testid="duplicate-to-container-list" role="listbox">
                 {containers.data.map((container) => (
                   <div
                     key={container.id}
@@ -328,25 +319,14 @@ export default function DuplicateToDialog({
       </div>
 
       <div>
-        {error !== undefined && error !== null && (
-          <p data-testid="duplicate-to-error">
-            {error}
-          </p>
-        )}
+        {error !== undefined && error !== null && <p data-testid="duplicate-to-error">{error}</p>}
         <div>
           {step !== 'page' && (
-            <button
-              type="button"
-              data-testid="duplicate-to-back"
-              onClick={goBack}
-            >
+            <button type="button" data-testid="duplicate-to-back" onClick={goBack}>
               {t('WeDevelopGrid.DuplicateToDialog.BACK_BUTTON', 'Back')}
             </button>
           )}
-          <button
-            type="button"
-            onClick={handleClose}
-          >
+          <button type="button" onClick={handleClose}>
             {t('WeDevelopGrid.DuplicateToDialog.CANCEL_BUTTON', 'Cancel')}
           </button>
           {step === 'page' && (
@@ -380,11 +360,7 @@ export default function DuplicateToDialog({
             </button>
           )}
           {step === 'confirm' && (
-            <button
-              type="button"
-              data-testid="duplicate-to-confirm"
-              onClick={handleConfirm}
-            >
+            <button type="button" data-testid="duplicate-to-confirm" onClick={handleConfirm}>
               {t('WeDevelopGrid.DuplicateToDialog.CONFIRM_BUTTON', 'Confirm')}
             </button>
           )}

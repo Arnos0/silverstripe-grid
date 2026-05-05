@@ -7,10 +7,7 @@ export default function CmsPreviewViewportSelector() {
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: matches ViewportSwitcher's toolbar-style grouping; <fieldset> implies a form.
-    <div
-      data-testid="cms-preview-viewport-selector"
-      role="group"
-    >
+    <div data-testid="cms-preview-viewport-selector" role="group">
       {viewports.map((viewport) => {
         const isActive = viewport.key === activeViewport;
         return (

@@ -130,9 +130,7 @@ function ReadonlySectionBlock({ section }: SectionBlockProps) {
       <div data-testid="section-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
         <i className={section.blockSchema.icon} />
-        <h2 data-testid="section-title">
-          {section.title}
-        </h2>
+        <h2 data-testid="section-title">{section.title}</h2>
       </div>
       <div>
         {section.children?.map((row) => (
