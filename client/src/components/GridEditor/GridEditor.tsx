@@ -28,9 +28,9 @@ interface GridEditorProps {
  * Root component for the grid editor.
  *
  * Mounted by:
- * - The legacy entwine bridge (`client/src/bridge/entwine.ts`) on the
- *   `.grid-editor__container` element in the main CMS edit view — always
- *   runs in editable mode.
+ * - The legacy entwine bridge (`client/src/bridge/entwine.ts`) on elements
+ *   matching `[data-react-mount="grid-editor"]` in the main CMS edit view —
+ *   always runs in editable mode.
  * - The React `GridEditorField` wrapper (`client/src/components/GridEditorField`)
  *   when `FormBuilder` serializes the history viewer's form schema — always
  *   runs in readonly mode with a specific page version.
