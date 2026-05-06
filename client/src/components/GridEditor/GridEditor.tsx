@@ -9,20 +9,13 @@ import { CollapseContext, useCollapseState } from '@/hooks/useCollapseState';
 import { ViewportProvider } from '@/hooks/ViewportContext';
 import { GridEditorProvider } from '@/hooks/GridEditorContext';
 import { ReadonlyProvider } from '@/hooks/ReadonlyContext';
-import { isSectionNode, type TreeApiResponse } from '@/types/elements';
+import { isSectionNode } from '@/types/elements';
 import type { NodeRef } from '@/types/identity';
 import ViewportSwitcher from '@/components/ViewportSwitcher/ViewportSwitcher';
 import SectionBlock from '@/components/SectionBlock/SectionBlock';
 import AddChildButton from '@/components/AddChildButton/AddChildButton';
 import EmptyState from '@/components/EmptyState/EmptyState';
 import DragOverlayContent from '@/components/DragOverlayContent/DragOverlayContent';
-
-function emptyTree(pageId: number | null): TreeApiResponse {
-  return {
-    rootParent: { type: 'page', id: pageId ?? 1 },
-    nodes: [],
-  };
-}
 
 interface GridEditorProps {
   readonly pageId: number | null;
@@ -47,20 +40,47 @@ interface GridEditorProps {
  * the readonly tree never calls `useSortable` — we simply don't mount a
  * `DndContext` wrapper around it. The ViewportSwitcher renders in both
  * modes so admins can inspect responsive grid settings at every version.
+ *
+ * `pageId` is optional at the boundary because the entwine bridge can be
+ * mounted before `data-schema` is parsed. We early-return an empty-state
+ * sentinel here so every hook below this guard sees a guaranteed numeric
+ * id — no `?? 0` / `?? 1` placeholders flowing into query keys or tree
+ * fabrications.
  */
 export default function GridEditor({ pageId, zone, readonly = false, version }: GridEditorProps) {
+  if (pageId === null) {
+    return (
+      <div className="grid-editor" data-zone={zone} data-testid="grid-editor">
+        <EmptyState
+          message={t('WeDevelopGrid.GridEditor.NO_SECTIONS', 'No sections yet')}
+          variant="centered"
+        />
+      </div>
+    );
+  }
+
+  return <GridEditorBody pageId={pageId} zone={zone} readonly={readonly} version={version} />;
+}
+
+interface GridEditorBodyProps {
+  readonly pageId: number;
+  readonly zone: string;
+  readonly readonly: boolean;
+  readonly version: number | undefined;
+}
+
+function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps) {
   const { data, isLoading, error } = useElementTree(pageId, zone, readonly ? version : undefined);
 
-  const reorderMutation = useReorderElement(pageId ?? 0, zone);
-
-  const treeOrEmpty = data ?? emptyTree(pageId);
+  const reorderMutation = useReorderElement(pageId, zone);
 
   const { dndContextProps, dragState, pendingTree } = useDragAndDrop({
-    tree: treeOrEmpty,
+    tree: data ?? { rootParent: { type: 'page', id: pageId }, nodes: [] },
     onReorder: (element: NodeRef, parent: NodeRef, after: NodeRef | null, clearPendingTree) => {
+      if (data === undefined) return;
       reorderMutation.mutate({
         params: { element, parent, after },
-        tree: treeOrEmpty,
+        tree: data,
         clearPendingTree,
       });
     },
@@ -71,7 +91,7 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
 
   const sections = effectiveData === undefined ? [] : effectiveData.nodes.filter(isSectionNode);
 
-  const collapseState = useCollapseState(pageId ?? 0);
+  const collapseState = useCollapseState(pageId);
 
   const sectionIds = useMemo(() => sections.map((s) => s.nodeKey), [sections]);
 
@@ -90,20 +110,18 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
       {t('WeDevelopGrid.GridEditor.NO_SECTIONS_READONLY', 'No sections in this version')}
     </p>
   ) : (
-    pageId !== null && (
-      <AddChildButton
-        parentId={pageId}
-        childType="section"
-        childLabel="Section"
-        variant="empty-state"
-      />
-    )
+    <AddChildButton
+      parentId={pageId}
+      childType="section"
+      childLabel="Section"
+      variant="empty-state"
+    />
   );
 
   return (
     <div
       className={rootClassName}
-      data-page-id={pageId ?? undefined}
+      data-page-id={pageId}
       data-zone={zone}
       data-testid="grid-editor"
     >
@@ -119,7 +137,7 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
           })}
         </p>
       )}
-      {data !== undefined && pageId !== null && (
+      {data !== undefined && (
         <GridEditorProvider value={{ pageId, zone }}>
           <ViewportProvider>
             <ReadonlyProvider value={readonly}>
@@ -159,12 +177,6 @@ export default function GridEditor({ pageId, zone, readonly = false, version }: 
             </ReadonlyProvider>
           </ViewportProvider>
         </GridEditorProvider>
-      )}
-      {data !== undefined && pageId === null && (
-        <EmptyState
-          message={t('WeDevelopGrid.GridEditor.NO_SECTIONS', 'No sections yet')}
-          variant="centered"
-        />
       )}
     </div>
   );
