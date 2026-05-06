@@ -102,7 +102,7 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
                 <RowBlock key={row.nodeKey} row={row} />
               ))}
               <AddChildButton
-                parentId={section.id}
+                parentId={section.self.id}
                 childType="row"
                 childLabel="Row"
                 variant="append"
@@ -110,7 +110,7 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
             </>
           ) : (
             <AddChildButton
-              parentId={section.id}
+              parentId={section.self.id}
               childType="row"
               childLabel="Row"
               variant="empty-state"

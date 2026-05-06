@@ -20,8 +20,8 @@ export interface BlockSchema {
 interface BaseFields {
   /**
    * Scoped identity of this node. Canonical form for lookups and API payloads
-   * — always prefer `self`/`nodeKey` over the bare `id` to avoid polymorphic
-   * collisions with pages.
+   * — always prefer `self`/`nodeKey` over a bare numeric id to avoid
+   * polymorphic collisions with pages.
    */
   self: NodeRef;
   /**
@@ -33,15 +33,6 @@ interface BaseFields {
   nodeKey: NodeKey;
   /** Precomputed composite key for this node's parent. */
   parentKey: NodeKey;
-  /**
-   * Numeric record ID of this node. Equal to `self.id`. Safe to use for the
-   * unambiguous GridElement-only endpoints (publish, unpublish, delete,
-   * duplicate, updateGridSettings) that accept a bare id because they query
-   * `GridElement::get()` exclusively. **Do not use as a Map key or for
-   * display identity** — use `nodeKey` instead so page/element ID collisions
-   * are eliminated.
-   */
-  id: number;
   title: string;
   blockSchema: BlockSchema;
   obsoleteClassName: string | null;

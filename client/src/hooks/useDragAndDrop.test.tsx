@@ -139,7 +139,7 @@ describe('useDragAndDrop', () => {
       const { tree, element1 } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -147,7 +147,7 @@ describe('useDragAndDrop', () => {
       expect(result.current.dragState).not.toBeNull();
       expect(result.current.dragState?.activeId).toBe(activeId);
       expect(result.current.dragState?.activeType).toBe('element');
-      expect(result.current.dragState?.activeNode.id).toBe(element1.id);
+      expect(result.current.dragState?.activeNode.self.id).toBe(element1.self.id);
     });
 
     it('ignores invalid draggable IDs', () => {
@@ -178,14 +178,14 @@ describe('useDragAndDrop', () => {
       const { tree, column } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('column', column.id);
+      const activeId = buildDraggableId('column', column.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
 
       expect(result.current.dragState).not.toBeNull();
       expect(result.current.dragState?.activeType).toBe('column');
-      expect(result.current.dragState?.activeNode.id).toBe(column.id);
+      expect(result.current.dragState?.activeNode.self.id).toBe(column.self.id);
     });
   });
 
@@ -194,7 +194,7 @@ describe('useDragAndDrop', () => {
       const { tree, element1 } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -211,8 +211,8 @@ describe('useDragAndDrop', () => {
       const { tree, element1, col2 } = buildTwoColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('column', col2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('column', col2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -236,8 +236,8 @@ describe('useDragAndDrop', () => {
       const { tree, element1, col2 } = buildTwoColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('column', col2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('column', col2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -253,8 +253,8 @@ describe('useDragAndDrop', () => {
       const { tree, element1, element2 } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('element', element2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('element', element2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -270,7 +270,7 @@ describe('useDragAndDrop', () => {
       const { tree, element1 } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -285,7 +285,7 @@ describe('useDragAndDrop', () => {
       const { tree, element1 } = buildSingleColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -300,8 +300,8 @@ describe('useDragAndDrop', () => {
       const { tree, element1, element2 } = buildTwoColumnTree();
       const { result } = renderDndHook({ tree });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('element', element2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('element', element2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -320,7 +320,7 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -339,7 +339,7 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
+      const activeId = buildDraggableId('element', element1.self.id);
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
       });
@@ -357,8 +357,8 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('element', element2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('element', element2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -369,9 +369,9 @@ describe('useDragAndDrop', () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1);
       expect(onReorder).toHaveBeenCalledWith(
-        { type: 'element', id: element1.id },
+        { type: 'element', id: element1.self.id },
         { type: 'column', id: 30 },
-        { type: 'element', id: element2.id },
+        { type: 'element', id: element2.self.id },
         expect.any(Function),
       );
     });
@@ -416,8 +416,8 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('element', element2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('element', element2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -434,8 +434,8 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overContainerId = buildDraggableId('column', col2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overContainerId = buildDraggableId('column', col2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -452,7 +452,7 @@ describe('useDragAndDrop', () => {
 
       expect(onReorder).toHaveBeenCalledTimes(1);
       const [element, parent] = onReorder.mock.calls[0];
-      expect(element).toEqual({ type: 'element', id: element1.id });
+      expect(element).toEqual({ type: 'element', id: element1.self.id });
       expect(parent).toEqual({ type: 'column', id: 31 });
       expect(result.current.dragState).toBeNull();
     });
@@ -483,8 +483,8 @@ describe('useDragAndDrop', () => {
       });
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overId = buildDraggableId('element', element2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overId = buildDraggableId('element', element2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -530,7 +530,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderDndHook({ tree, onReorder });
 
       const activeId = buildDraggableId('element', 40);
-      const overContainerId = buildDraggableId('column', col2.id);
+      const overContainerId = buildDraggableId('column', col2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -585,7 +585,7 @@ describe('useDragAndDrop', () => {
       const { result } = renderDndHook({ tree });
 
       const activeId = buildDraggableId('element', 40);
-      const overContainerId = buildDraggableId('column', col2.id);
+      const overContainerId = buildDraggableId('column', col2.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -599,7 +599,9 @@ describe('useDragAndDrop', () => {
       expect(pending).not.toBeNull();
       const targetCol = ((pending?.nodes[0] as typeof section).children?.[0] as typeof row)
         .children?.[1];
-      expect((targetCol as typeof col2).children?.map((c) => c.id)).toEqual([50, 51, 52, 40]);
+      expect((targetCol as typeof col2).children?.map((c) => c.self.id)).toEqual([
+        50, 51, 52, 40,
+      ]);
     });
   });
 
@@ -613,8 +615,8 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', element1.id);
-      const overContainerId = buildDraggableId('column', col2.id);
+      const activeId = buildDraggableId('element', element1.self.id);
+      const overContainerId = buildDraggableId('column', col2.self.id);
       const missingOverId = buildDraggableId('element', 999);
 
       act(() => {
@@ -664,8 +666,8 @@ describe('useDragAndDrop', () => {
       const onReorder = vi.fn();
       const { result } = renderDndHook({ tree, onReorder });
 
-      const activeId = buildDraggableId('element', b.id);
-      const overId = buildDraggableId('element', a.id);
+      const activeId = buildDraggableId('element', b.self.id);
+      const overId = buildDraggableId('element', a.self.id);
 
       act(() => {
         result.current.dndContextProps.onDragStart(makeDragStartEvent(activeId));
@@ -705,7 +707,7 @@ describe('useDragAndDrop', () => {
       // the sibling lookup returned the wrong entry.
       expect(result.current.dragState).not.toBeNull();
       expect(result.current.dragState?.activeType).toBe('section');
-      expect(result.current.dragState?.activeNode.id).toBe(1);
+      expect(result.current.dragState?.activeNode.self.id).toBe(1);
     });
   });
 });

@@ -102,7 +102,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
                 <ColumnBlock key={column.nodeKey} column={column} />
               ))}
               <AddChildButton
-                parentId={row.id}
+                parentId={row.self.id}
                 childType="column"
                 childLabel="Column"
                 variant="append"
@@ -110,7 +110,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
             </>
           ) : (
             <AddChildButton
-              parentId={row.id}
+              parentId={row.self.id}
               childType="column"
               childLabel="Column"
               variant="empty-state"

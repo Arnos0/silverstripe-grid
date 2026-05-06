@@ -36,7 +36,7 @@ describe('applyReorder', () => {
 
       const movedColumn = ((result.nodes[0] as SectionNode).children?.[0] as RowNode)
         .children?.[0] as ColumnNode;
-      expect(movedColumn.children?.map((c: SimpleElementNode) => c.id)).toEqual([11, 12, 10]);
+      expect(movedColumn.children?.map((c: SimpleElementNode) => c.self.id)).toEqual([11, 12, 10]);
     });
 
     it('prepends when afterKey is null', () => {
@@ -61,7 +61,7 @@ describe('applyReorder', () => {
 
       const movedColumn = ((result.nodes[0] as SectionNode).children?.[0] as RowNode)
         .children?.[0] as ColumnNode;
-      expect(movedColumn.children?.map((c: SimpleElementNode) => c.id)).toEqual([11, 10]);
+      expect(movedColumn.children?.map((c: SimpleElementNode) => c.self.id)).toEqual([11, 10]);
     });
 
     it('returns the same reference when the element is already at the target position', () => {
@@ -112,7 +112,7 @@ describe('applyReorder', () => {
       const movedCol30 = row20.children?.[0] as ColumnNode;
       const movedCol31 = row20.children?.[1] as ColumnNode;
       expect(movedCol30.children).toEqual([]);
-      expect(movedCol31.children?.[0].id).toBe(10);
+      expect(movedCol31.children?.[0].self.id).toBe(10);
       expect(movedCol31.children?.[0].parent).toEqual({ type: 'column', id: 31 });
       expect(movedCol31.children?.[0].parentKey).toBe(NodeIdentity.toKey('column', 31));
     });
@@ -145,7 +145,7 @@ describe('applyReorder', () => {
         NodeIdentity.toKey('section', 2),
       );
 
-      expect(result.nodes.map((s) => s.id)).toEqual([2, 1]);
+      expect(result.nodes.map((s) => s.self.id)).toEqual([2, 1]);
     });
 
     it('moves a row across sections when numeric IDs collide', () => {
@@ -181,7 +181,7 @@ describe('applyReorder', () => {
       const [movedSection1, movedSection2] = result.nodes as [SectionNode, SectionNode];
       expect(movedSection1.children).toEqual([]);
       expect(movedSection2.children).toHaveLength(1);
-      expect(movedSection2.children?.[0].id).toBe(10);
+      expect(movedSection2.children?.[0].self.id).toBe(10);
       expect(movedSection2.children?.[0].parent).toEqual({ type: 'section', id: 2 });
     });
   });
@@ -235,7 +235,7 @@ describe('applyReorder', () => {
 
       const row40 = (result.nodes[0] as SectionNode).children?.[0] as RowNode;
       const col31Result = row40.children?.[1] as ColumnNode;
-      expect(col31Result.children?.map((c: SimpleElementNode) => c.id)).toEqual([20, 10]);
+      expect(col31Result.children?.map((c: SimpleElementNode) => c.self.id)).toEqual([20, 10]);
     });
   });
 
@@ -296,7 +296,7 @@ describe('applyReorder', () => {
       expect(result).not.toBe(tree);
       const movedColumn = ((result.nodes[0] as SectionNode).children?.[0] as RowNode)
         .children?.[0] as ColumnNode;
-      expect(movedColumn.children?.map((c: SimpleElementNode) => c.id)).toEqual([11, 12, 10]);
+      expect(movedColumn.children?.map((c: SimpleElementNode) => c.self.id)).toEqual([11, 12, 10]);
     });
   });
 
@@ -329,7 +329,7 @@ describe('applyReorder', () => {
 
       const row40 = (result.nodes[0] as SectionNode).children?.[0] as RowNode;
       const col31Result = row40.children?.[1] as ColumnNode;
-      expect(col31Result.children?.map((c: SimpleElementNode) => c.id)).toEqual([20, 10, 21]);
+      expect(col31Result.children?.map((c: SimpleElementNode) => c.self.id)).toEqual([20, 10, 21]);
     });
   });
 });

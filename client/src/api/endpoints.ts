@@ -57,7 +57,6 @@ function attachDerivedFields(node: NodeWire): ElementNode {
     ...node,
     nodeKey: NodeIdentity.toKey(node.self.type, node.self.id),
     parentKey: NodeIdentity.toKey(node.parent.type, node.parent.id),
-    id: node.self.id,
   } as ElementNode;
 
   if (isContainerNode(enriched) && enriched.children !== null) {
