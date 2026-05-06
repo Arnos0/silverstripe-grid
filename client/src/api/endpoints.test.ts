@@ -90,8 +90,10 @@ describe('normaliseTreeResponse', () => {
   });
 
   it('throws on malformed payload', () => {
-    expect(() => normaliseTreeResponse(null)).toThrow(TypeError);
-    expect(() => normaliseTreeResponse({ rootParent: { type: 'page', id: 1 } })).toThrow(TypeError);
+    // Schema validation surfaces as ZodError (subclass of Error). Callers in
+    // hooks/components surface this as a generic load error to the user.
+    expect(() => normaliseTreeResponse(null)).toThrow();
+    expect(() => normaliseTreeResponse({ rootParent: { type: 'page', id: 1 } })).toThrow();
   });
 });
 
@@ -223,6 +225,7 @@ describe('duplicateToElement', () => {
 
 describe('fetchAcceptableContainers', () => {
   it('constructs correct URL with encoded params', async () => {
+    mockFetchSuccess([]);
     await fetchAcceptableContainers(1, 'main zone', 'Text Block');
     const [url] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/acceptableContainers/1/main%20zone/Text%20Block');
@@ -231,6 +234,7 @@ describe('fetchAcceptableContainers', () => {
 
 describe('fetchZones', () => {
   it('constructs correct URL', async () => {
+    mockFetchSuccess([]);
     await fetchZones(42);
     const [url] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/zones/42');
@@ -239,12 +243,14 @@ describe('fetchZones', () => {
 
 describe('fetchPages', () => {
   it('constructs URL without params when no search', async () => {
+    mockFetchSuccess([]);
     await fetchPages();
     const [url] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/pages');
   });
 
   it('includes encoded search param', async () => {
+    mockFetchSuccess([]);
     await fetchPages('my page');
     const [url] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/pages?search=my%20page');
