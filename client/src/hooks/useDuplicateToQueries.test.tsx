@@ -94,11 +94,11 @@ describe('useAcceptableContainers', () => {
   });
 
   it('should fetch when all dependencies are provided', async () => {
-    const containers: AcceptableContainer[] = [{ id: 10, title: 'Column 1', type: 'Column' }];
+    const containers: AcceptableContainer[] = [{ id: 10, title: 'Column 1', type: 'column' }];
     mockFetchSuccess(containers);
     const wrapper = createWrapper();
 
-    const { result } = renderHook(() => useAcceptableContainers(1, 'main', 'Section'), { wrapper });
+    const { result } = renderHook(() => useAcceptableContainers(1, 'main', 'section'), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(containers);

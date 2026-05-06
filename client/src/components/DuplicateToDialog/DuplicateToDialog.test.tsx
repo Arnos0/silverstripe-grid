@@ -27,8 +27,8 @@ const PAGES = [
 const ZONES = ['main', 'sidebar'];
 
 const CONTAINERS = [
-  { id: 100, title: 'Row 1', type: 'Row' },
-  { id: 101, title: 'Row 2', type: 'Row' },
+  { id: 100, title: 'Row 1', type: 'row' as const },
+  { id: 101, title: 'Row 2', type: 'row' as const },
 ];
 
 /**
@@ -911,7 +911,7 @@ describe('DuplicateToDialog', () => {
 
       // Each container shows both title and type
       expect(screen.getByText('Row 1')).toBeInTheDocument();
-      expect(screen.getAllByText('Row')).toHaveLength(2);
+      expect(screen.getAllByText('row')).toHaveLength(2);
     });
   });
 

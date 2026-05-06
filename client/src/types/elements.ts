@@ -64,7 +64,16 @@ interface BaseFields {
 
 // --- Leaf node type ---
 
-export interface SimpleElementNode extends BaseFields {}
+/**
+ * Leaf (non-container) element. Carries an explicit `containerType?: never`
+ * so the {@link ElementNode} discriminated union narrows correctly via the
+ * `containerType in node` checks in the type guards below — without this,
+ * any future field accidentally named `containerType` would silently break
+ * narrowing.
+ */
+export interface SimpleElementNode extends BaseFields {
+  containerType?: never;
+}
 
 // --- Grid settings (column-specific) ---
 

@@ -1,17 +1,10 @@
 import { isContainerNode } from '@/types/elements';
-import type { ParsedDraggableId } from '@/types/dnd';
+import type { ParsedDraggableId, ViewportRect } from '@/types/dnd';
 import type { ElementMaps } from '@/hooks/useElementMaps';
 import { NodeIdentity, type NodeKey } from '@/types/identity';
 import { resolveInsertDirection } from '@/utils/resolveInsertDirection';
 import { resolveReorderParams } from '@/utils/resolveReorderParams';
 import type { ReorderElementParams } from '@/api/endpoints';
-
-interface RectLike {
-  readonly left: number;
-  readonly top: number;
-  readonly width: number;
-  readonly height: number;
-}
 
 export interface DropContext {
   readonly activeParsed: ParsedDraggableId;
@@ -20,7 +13,7 @@ export interface DropContext {
   readonly maps: ElementMaps;
   readonly sourceParentKey: NodeKey;
   readonly sourceIndex: number;
-  readonly overRect: RectLike;
+  readonly overRect: ViewportRect;
 }
 
 /**
