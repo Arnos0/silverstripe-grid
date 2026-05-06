@@ -2,6 +2,12 @@ import type { ContainerType, ElementNode, TreeApiResponse } from '@/types/elemen
 import { isContainerNode } from '@/types/elements';
 import type { AcceptableContainer, PageEntry } from '@/types/duplicateTo';
 import { NodeIdentity, type NodeRef } from '@/types/identity';
+import {
+  acceptableContainerListSchema,
+  pageEntryListSchema,
+  treeApiResponseWireSchema,
+  zoneListSchema,
+} from '@/types/schemas';
 import { apiDelete, apiGet, apiPatch, apiPost } from './client';
 import { getControllerLink } from './config';
 
@@ -30,66 +36,39 @@ export async function fetchElementTree(
 }
 
 /**
- * Validate the tree response shape from the server and attach derived
- * `nodeKey`/`parentKey` fields to every node in the tree.
- *
- * The server emits `self` and `parent` as `{type, id}` tuples — the frontend
- * caches the composite string keys alongside so downstream lookups never have
- * to reconstruct them per render.
+ * Validate the tree response shape from the server with Zod, then attach the
+ * derived `nodeKey`/`parentKey`/`id` fields that downstream code expects on
+ * every node. The wire schema rejects invalid shapes with a structured error;
+ * the post-parse step is purely additive.
  */
 export function normaliseTreeResponse(raw: unknown): TreeApiResponse {
-  if (typeof raw !== 'object' || raw === null) {
-    throw new TypeError('tree response: expected an object');
-  }
-  const data = raw as Record<string, unknown>;
-  const rootParent = NodeIdentity.assert(data.rootParent, 'tree response.rootParent');
-  if (!Array.isArray(data.nodes)) {
-    throw new TypeError('tree response: expected `nodes` to be an array');
-  }
+  const parsed = treeApiResponseWireSchema.parse(raw);
 
-  const nodes = data.nodes.map((node: unknown) => normaliseNode(node));
-
-  return { rootParent, nodes };
+  return {
+    rootParent: parsed.rootParent,
+    nodes: parsed.nodes.map((node) => attachDerivedFields(node)),
+  };
 }
 
-/**
- * Assert that a validated raw node object is a well-formed ElementNode.
- *
- * This assertion is safe after normaliseNode has validated `self` and
- * `parent` via NodeIdentity.assert and attached computed keys. The remaining
- * fields (title, blockSchema, containerType, etc.) are trusted from the
- * server.
- */
-function assertElementNode(value: Record<string, unknown>): ElementNode {
-  return value as unknown as ElementNode;
-}
+type NodeWire = (typeof treeApiResponseWireSchema._output)['nodes'][number];
 
-function normaliseNode(raw: unknown): ElementNode {
-  if (typeof raw !== 'object' || raw === null) {
-    throw new TypeError('tree node: expected an object');
-  }
-  const node = raw as Record<string, unknown> & { children?: unknown };
-  const self = NodeIdentity.assert(node.self, 'tree node.self');
-  const parent = NodeIdentity.assert(node.parent, 'tree node.parent');
-
-  const normalised = assertElementNode({
+function attachDerivedFields(node: NodeWire): ElementNode {
+  const enriched = {
     ...node,
-    self,
-    parent,
-    nodeKey: NodeIdentity.toKey(self.type, self.id),
-    parentKey: NodeIdentity.toKey(parent.type, parent.id),
-    id: self.id,
-  });
+    nodeKey: NodeIdentity.toKey(node.self.type, node.self.id),
+    parentKey: NodeIdentity.toKey(node.parent.type, node.parent.id),
+    id: node.self.id,
+  } as ElementNode;
 
-  if (isContainerNode(normalised) && Array.isArray(node.children)) {
-    // Reassign children with the normalised variants. Cast is safe: the type
-    // guard above confirms `normalised` is a container node.
-    (normalised as { children: ElementNode[] | null }).children = node.children.map((child) =>
-      normaliseNode(child),
+  if (isContainerNode(enriched) && enriched.children !== null) {
+    // The wire schema validated `children` as recursive NodeWire arrays; the
+    // mapped result is a fully-typed ElementNode array of the same length.
+    (enriched as { children: ElementNode[] }).children = enriched.children.map((child) =>
+      attachDerivedFields(child as unknown as NodeWire),
     );
   }
 
-  return normalised;
+  return enriched;
 }
 
 export interface CreateElementParams {
@@ -202,16 +181,18 @@ export async function fetchAcceptableContainers(
   elementType: string,
 ): Promise<AcceptableContainer[]> {
   const base = getControllerLink();
-  return apiGet<AcceptableContainer[]>(
+  const raw = await apiGet<unknown>(
     `${base}/api/acceptableContainers/${pageId}/${encodeURIComponent(zone)}/${encodeURIComponent(elementType)}`,
   );
+  return acceptableContainerListSchema.parse(raw);
 }
 
 // --- Zones ---
 
 export async function fetchZones(pageId: number): Promise<string[]> {
   const base = getControllerLink();
-  return apiGet<string[]>(`${base}/api/zones/${pageId}`);
+  const raw = await apiGet<unknown>(`${base}/api/zones/${pageId}`);
+  return zoneListSchema.parse(raw);
 }
 
 // --- Pages ---
@@ -221,5 +202,6 @@ export type { PageEntry } from '@/types/duplicateTo';
 export async function fetchPages(search?: string): Promise<PageEntry[]> {
   const base = getControllerLink();
   const params = search ? `?search=${encodeURIComponent(search)}` : '';
-  return apiGet<PageEntry[]>(`${base}/api/pages${params}`);
+  const raw = await apiGet<unknown>(`${base}/api/pages${params}`);
+  return pageEntryListSchema.parse(raw);
 }
