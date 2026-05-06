@@ -21,7 +21,7 @@ import type {
 } from '@/api/endpoints';
 import type { ApiError } from '@/api/errors';
 import type { TreeApiResponse } from '@/types/elements';
-import { NodeIdentity } from '@/types/identity';
+import { NodeIdentity, type NodeRef } from '@/types/identity';
 import { applyReorder } from '@/utils/applyReorder';
 import { refreshPreview } from '@/utils/refreshPreview';
 import { showToast } from '@/utils/toast';
@@ -65,28 +65,28 @@ export function useCreateContentElement(pageId: number, zone: string) {
 }
 
 export function usePublishElement(pageId: number, zone: string) {
-  return useMutation<void, ApiError, number>({
+  return useMutation<void, ApiError, NodeRef>({
     mutationFn: publishElement,
     ...useStandardMutationOptions(pageId, zone),
   });
 }
 
 export function useUnpublishElement(pageId: number, zone: string) {
-  return useMutation<void, ApiError, number>({
+  return useMutation<void, ApiError, NodeRef>({
     mutationFn: unpublishElement,
     ...useStandardMutationOptions(pageId, zone),
   });
 }
 
 export function useArchiveElement(pageId: number, zone: string) {
-  return useMutation<void, ApiError, number>({
+  return useMutation<void, ApiError, NodeRef>({
     mutationFn: archiveElement,
     ...useStandardMutationOptions(pageId, zone),
   });
 }
 
 export function useDuplicateElement(pageId: number, zone: string) {
-  return useMutation<void, ApiError, number>({
+  return useMutation<void, ApiError, NodeRef>({
     mutationFn: duplicateElement,
     ...useStandardMutationOptions(pageId, zone),
   });

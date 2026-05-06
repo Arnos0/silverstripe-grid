@@ -39,7 +39,7 @@ export function useDuplicateToAction(node: ElementNode): UseDuplicateToActionRes
   const handleConfirm = useCallback(
     (targetPageId: number, targetZone: string, targetParent: NodeRef) => {
       duplicateToElement.mutate(
-        { id: node.id, targetPageId, targetZone, targetParent },
+        { element: node.self, targetPageId, targetZone, targetParent },
         {
           onSuccess: () => {
             setDialogOpen(false);
@@ -51,7 +51,7 @@ export function useDuplicateToAction(node: ElementNode): UseDuplicateToActionRes
         },
       );
     },
-    [duplicateToElement, node.id],
+    [duplicateToElement, node.self],
   );
 
   if (!node.canCreate) {

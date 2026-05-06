@@ -410,7 +410,7 @@ final class GridControllerTest extends FunctionalTest
 
         $response = $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => (int) $tree['column']->ID,
+            'parent' => $this->ref($tree['column']),
         ]);
 
         self::assertSame(204, $response->getStatusCode());
@@ -422,7 +422,7 @@ final class GridControllerTest extends FunctionalTest
 
         $response = $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => (int) $tree['section']->ID,
+            'parent' => $this->ref($tree['section']),
         ]);
 
         self::assertSame(400, $response->getStatusCode());
@@ -440,10 +440,11 @@ final class GridControllerTest extends FunctionalTest
     public function testPublishReturns204(): void
     {
         $tree = $this->buildTree();
-        $sectionId = (int) $tree['section']->ID;
+        $section = $tree['section'];
+        $sectionId = (int) $section->ID;
 
         $response = $this->jsonPatch(self::BASE_URL . '/publish', [
-            'id' => $sectionId,
+            'element' => $this->ref($section),
         ]);
 
         self::assertSame(204, $response->getStatusCode());
@@ -460,7 +461,7 @@ final class GridControllerTest extends FunctionalTest
     public function testPublishReturns400ForNonExistentElement(): void
     {
         $response = $this->jsonPatch(self::BASE_URL . '/publish', [
-            'id' => 999999,
+            'element' => $this->syntheticRef('section', 999999),
         ]);
 
         self::assertSame(400, $response->getStatusCode());
@@ -476,7 +477,7 @@ final class GridControllerTest extends FunctionalTest
         $sectionId = (int) $section->ID;
 
         $response = $this->jsonPatch(self::BASE_URL . '/unpublish', [
-            'id' => $sectionId,
+            'element' => $this->ref($section),
         ]);
 
         self::assertSame(204, $response->getStatusCode());
@@ -493,7 +494,7 @@ final class GridControllerTest extends FunctionalTest
     public function testUnpublishReturns400ForNonExistentElement(): void
     {
         $response = $this->jsonPatch(self::BASE_URL . '/unpublish', [
-            'id' => 999999,
+            'element' => $this->syntheticRef('section', 999999),
         ]);
 
         self::assertSame(400, $response->getStatusCode());
@@ -507,6 +508,7 @@ final class GridControllerTest extends FunctionalTest
         $contentId = (int) $tree['content']->ID;
 
         $response = $this->jsonDelete(self::BASE_URL . '/delete', [
+            'type' => 'element',
             'id' => $contentId,
         ]);
 
@@ -520,6 +522,7 @@ final class GridControllerTest extends FunctionalTest
     public function testDeleteReturns400ForNonExistentElement(): void
     {
         $response = $this->jsonDelete(self::BASE_URL . '/delete', [
+            'type' => 'element',
             'id' => 999999,
         ]);
 
@@ -531,7 +534,6 @@ final class GridControllerTest extends FunctionalTest
     public function testDuplicateReturns204(): void
     {
         $tree = $this->buildTree();
-        $sectionId = (int) $tree['section']->ID;
 
         $sectionCountBefore = Section::get()->filter([
             'ParentID' => (int) $this->page()->ID,
@@ -539,7 +541,7 @@ final class GridControllerTest extends FunctionalTest
         ])->count();
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicate', [
-            'id' => $sectionId,
+            'element' => $this->ref($tree['section']),
         ]);
 
         self::assertSame(204, $response->getStatusCode());
@@ -554,7 +556,7 @@ final class GridControllerTest extends FunctionalTest
     public function testDuplicateReturns400ForNonExistentElement(): void
     {
         $response = $this->jsonPost(self::BASE_URL . '/duplicate', [
-            'id' => 999999,
+            'element' => $this->syntheticRef('section', 999999),
         ]);
 
         self::assertSame(400, $response->getStatusCode());
@@ -569,7 +571,7 @@ final class GridControllerTest extends FunctionalTest
         $page2Id = (int) $page2->ID;
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'targetPageId' => $page2Id,
             'targetZone' => 'main',
             'targetParent' => $this->ref($page2),
@@ -597,7 +599,7 @@ final class GridControllerTest extends FunctionalTest
         // parent). The previous 422 shape is impossible now: mismatched types
         // are caught earlier.
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => $pageId,
             'targetZone' => 'main',
             'targetParent' => $this->ref($tree['column']),
@@ -695,10 +697,11 @@ final class GridControllerTest extends FunctionalTest
     public function testUpdateGridSettingsDefaultReturns204(): void
     {
         $tree = $this->buildTree();
-        $columnId = (int) $tree['column']->ID;
+        $column = $tree['column'];
+        $columnId = (int) $column->ID;
 
         $response = $this->jsonPatch(self::BASE_URL . '/updateGridSettings', [
-            'id' => $columnId,
+            'element' => $this->ref($column),
             'viewport' => 'md',
             'width' => 6,
             'offset' => 0,
@@ -718,10 +721,11 @@ final class GridControllerTest extends FunctionalTest
     public function testUpdateGridSettingsOverrideReturns204(): void
     {
         $tree = $this->buildTree();
-        $columnId = (int) $tree['column']->ID;
+        $column = $tree['column'];
+        $columnId = (int) $column->ID;
 
         $response = $this->jsonPatch(self::BASE_URL . '/updateGridSettings', [
-            'id' => $columnId,
+            'element' => $this->ref($column),
             'viewport' => 'lg',
             'width' => 4,
             'offset' => 2,
@@ -743,7 +747,7 @@ final class GridControllerTest extends FunctionalTest
         $tree = $this->buildTree();
 
         $response = $this->jsonPatch(self::BASE_URL . '/updateGridSettings', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'viewport' => 'md',
             'width' => 6,
             'offset' => 0,
@@ -929,7 +933,7 @@ final class GridControllerTest extends FunctionalTest
     {
         $response = $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => 999999,
+            'parent' => $this->syntheticRef('column', 999999),
         ]);
 
         self::assertSame(400, $response->getStatusCode());
@@ -950,7 +954,7 @@ final class GridControllerTest extends FunctionalTest
         });
 
         // Delete the content element
-        $this->jsonDelete(self::BASE_URL . '/delete', ['id' => $contentId]);
+        $this->jsonDelete(self::BASE_URL . '/delete', ['type' => 'element', 'id' => $contentId]);
 
         // Page draft version should have been bumped by touchOwningPage
         $draftPage = SiteTree::get()->byID($page->ID);
@@ -993,7 +997,7 @@ final class GridControllerTest extends FunctionalTest
 
         $response = $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => (int) $restricted['column']->ID,
+            'parent' => $this->ref($restricted['column']),
         ]);
 
         self::assertSame(403, $response->getStatusCode());
@@ -1004,7 +1008,7 @@ final class GridControllerTest extends FunctionalTest
         $restricted = $this->buildRestrictedTree();
 
         $response = $this->jsonPatch(self::BASE_URL . '/publish', [
-            'id' => (int) $restricted['section']->ID,
+            'element' => $this->ref($restricted['section']),
         ]);
 
         self::assertSame(403, $response->getStatusCode());
@@ -1015,6 +1019,7 @@ final class GridControllerTest extends FunctionalTest
         $restricted = $this->buildRestrictedTree();
 
         $response = $this->jsonDelete(self::BASE_URL . '/delete', [
+            'type' => 'element',
             'id' => (int) $restricted['content']->ID,
         ]);
 
@@ -1026,7 +1031,7 @@ final class GridControllerTest extends FunctionalTest
         $restricted = $this->buildRestrictedTree();
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicate', [
-            'id' => (int) $restricted['section']->ID,
+            'element' => $this->ref($restricted['section']),
         ]);
 
         self::assertSame(403, $response->getStatusCode());
@@ -1039,7 +1044,7 @@ final class GridControllerTest extends FunctionalTest
         $restricted = $this->buildRestrictedTree();
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => (int) $restricted['page']->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($restricted['section']),
@@ -1142,7 +1147,7 @@ final class GridControllerTest extends FunctionalTest
 
         // Section's target parent must equal targetPageId, but we provide a different page
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'targetPageId' => (int) $this->page()->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($page2),
@@ -1158,7 +1163,7 @@ final class GridControllerTest extends FunctionalTest
 
         // Row lives in 'main' zone, but we claim target zone is 'sidebar'
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => $pageId,
             'targetZone' => 'sidebar',
             'targetParent' => $this->ref($tree['section']),
@@ -1192,7 +1197,7 @@ final class GridControllerTest extends FunctionalTest
 
         // Row expects a Section target parent — 999999 does not exist
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => $pageId,
             'targetZone' => 'main',
             'targetParent' => $this->syntheticRef('section', 999999),
@@ -1241,7 +1246,7 @@ final class GridControllerTest extends FunctionalTest
         // Create new content element inserted after content1
         $response = $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => (int) $column->ID,
+            'parent' => $this->ref($column),
             'insertAfterElementID' => (int) $content1->ID,
         ]);
 
@@ -1272,7 +1277,7 @@ final class GridControllerTest extends FunctionalTest
         // Update 'lg' to match the default values (width=12, offset=0, visible=true)
         // This should remove the override since it's now redundant
         $response = $this->jsonPatch(self::BASE_URL . '/updateGridSettings', [
-            'id' => $columnId,
+            'element' => $this->ref($column),
             'viewport' => 'lg',
             'width' => 12,
             'offset' => 0,
@@ -1493,6 +1498,7 @@ final class GridControllerTest extends FunctionalTest
         ));
 
         $response = $this->jsonDelete(self::BASE_URL . '/delete', [
+            'type' => 'element',
             'id' => $contentId,
         ]);
 
@@ -1500,9 +1506,9 @@ final class GridControllerTest extends FunctionalTest
         self::assertSame(204, $response->getStatusCode());
     }
 
-    public function testPublishReturns400ForMissingElementId(): void
+    public function testPublishReturns400ForMissingElement(): void
     {
-        // Body without 'id' — parseElementId returns fail → jsonError(400)
+        // Body without 'element' — parseElementRef returns fail → jsonError(400)
         $response = $this->jsonPatch(self::BASE_URL . '/publish', []);
 
         self::assertSame(400, $response->getStatusCode());
@@ -1541,7 +1547,7 @@ final class GridControllerTest extends FunctionalTest
         // Row's target parent is a valid section on page1, but targetPageId
         // points to page2 — owningPage.ID !== targetPageId → 400
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => (int) $page2->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($tree['section']),
@@ -1620,7 +1626,7 @@ final class GridControllerTest extends FunctionalTest
         $sectionId = (int) $tree['section']->ID;
         $pageId = (int) $this->page()->ID;
 
-        $this->jsonPost(self::BASE_URL . '/duplicate', ['id' => $sectionId]);
+        $this->jsonPost(self::BASE_URL . '/duplicate', ['element' => $this->ref($tree['section'])]);
 
         // Find the cloned section (not the original)
         $sections = Section::get()->filter([
@@ -1646,7 +1652,7 @@ final class GridControllerTest extends FunctionalTest
 
         // Duplicate section (with its row+column+content) to page2
         $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'targetPageId' => $page2Id,
             'targetZone' => 'main',
             'targetParent' => $this->ref($page2),
@@ -1674,7 +1680,7 @@ final class GridControllerTest extends FunctionalTest
         $page2Id = (int) $page2->ID;
 
         $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'targetPageId' => $page2Id,
             'targetZone' => 'sidebar',
             'targetParent' => $this->ref($page2),
@@ -1816,7 +1822,7 @@ final class GridControllerTest extends FunctionalTest
 
         $this->jsonPost(self::BASE_URL . '/createContent', [
             'className' => ContentElement::class,
-            'parentId' => (int) $tree['column']->ID,
+            'parent' => $this->ref($tree['column']),
         ]);
 
         self::assertGreaterThan($liveVersion, (int) SiteTree::get()->byID($pageId)->Version);
@@ -1828,7 +1834,7 @@ final class GridControllerTest extends FunctionalTest
         [$liveVersion, $pageId] = $this->publishAndCaptureLiveVersion($this->page());
 
         $this->jsonPost(self::BASE_URL . '/duplicate', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
         ]);
 
         self::assertGreaterThan($liveVersion, (int) SiteTree::get()->byID($pageId)->Version);
@@ -1841,7 +1847,7 @@ final class GridControllerTest extends FunctionalTest
         [$liveVersion, $page2Id] = $this->publishAndCaptureLiveVersion($page2);
 
         $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['section']->ID,
+            'element' => $this->ref($tree['section']),
             'targetPageId' => $page2Id,
             'targetZone' => 'main',
             'targetParent' => $this->ref($page2),
@@ -1873,7 +1879,7 @@ final class GridControllerTest extends FunctionalTest
         [$liveVersion, $pageId] = $this->publishAndCaptureLiveVersion($this->page());
 
         $this->jsonPatch(self::BASE_URL . '/updateGridSettings', [
-            'id' => (int) $tree['column']->ID,
+            'element' => $this->ref($tree['column']),
             'viewport' => 'md',
             'width' => 6,
             'offset' => 0,
@@ -1922,7 +1928,7 @@ final class GridControllerTest extends FunctionalTest
         $targetSection = GridTreeFactory::section($page2, 'main');
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['row']->ID,
+            'element' => $this->ref($tree['row']),
             'targetPageId' => (int) $page2->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($targetSection),
@@ -1940,7 +1946,7 @@ final class GridControllerTest extends FunctionalTest
         $targetRow = GridTreeFactory::row($targetSection);
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['column']->ID,
+            'element' => $this->ref($tree['column']),
             'targetPageId' => (int) $page2->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($targetRow),
@@ -1959,7 +1965,7 @@ final class GridControllerTest extends FunctionalTest
         $targetColumn = GridTreeFactory::column($targetRow);
 
         $response = $this->jsonPost(self::BASE_URL . '/duplicateTo', [
-            'id' => (int) $tree['content']->ID,
+            'element' => $this->ref($tree['content']),
             'targetPageId' => (int) $page2->ID,
             'targetZone' => 'main',
             'targetParent' => $this->ref($targetColumn),

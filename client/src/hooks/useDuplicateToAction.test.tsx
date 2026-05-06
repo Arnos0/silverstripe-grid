@@ -115,7 +115,7 @@ describe('useDuplicateToAction', () => {
       const body = JSON.parse(init?.body as string);
       expect(body).toEqual(
         expect.objectContaining({
-          id: 42,
+          element: { type: 'element', id: 42 },
           targetPageId: 5,
           targetZone: 'sidebar',
           targetParent: { type: 'column', id: 99 },

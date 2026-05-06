@@ -287,7 +287,7 @@ describe('ColumnBlock', () => {
 
       expect(url).toContain('updateGridSettings');
       expect(body).toMatchObject({
-        id: 50,
+        element: { type: 'column', id: 50 },
         viewport: 'md',
         width: 8,
         visible: true,
@@ -321,7 +321,7 @@ describe('ColumnBlock', () => {
       const body = JSON.parse(init!.body as string);
 
       expect(body).toMatchObject({
-        id: 51,
+        element: { type: 'column', id: 51 },
         viewport: 'md',
         visible: false,
       });
@@ -354,7 +354,7 @@ describe('ColumnBlock', () => {
       const body = JSON.parse(init!.body as string);
 
       expect(body).toMatchObject({
-        id: 52,
+        element: { type: 'column', id: 52 },
         width: 10,
         offset: 2,
         visible: true,
@@ -449,7 +449,7 @@ describe('ColumnBlock', () => {
       const body = JSON.parse(init!.body as string);
 
       expect(body).toMatchObject({
-        id: 53,
+        element: { type: 'column', id: 53 },
         viewport: 'md',
         offset: 3,
       });
@@ -573,7 +573,7 @@ describe('ColumnBlock', () => {
       expect(url).toContain('createContent');
       expect(body).toMatchObject({
         className: 'App\\Model\\TextBlock',
-        parentId: 60,
+        parent: { type: 'column', id: 60 },
       });
     });
   });

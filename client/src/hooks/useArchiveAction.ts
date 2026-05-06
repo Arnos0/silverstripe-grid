@@ -57,12 +57,12 @@ export function useArchiveAction(node: ElementNode): UseArchiveActionResult {
 
   const handleConfirm = useCallback(() => {
     setDialogOpen(false);
-    archiveElement.mutate(node.id, {
+    archiveElement.mutate(node.self, {
       onError: (error) => {
         showToast(error.message);
       },
     });
-  }, [archiveElement, node.id]);
+  }, [archiveElement, node.self]);
 
   if (!node.canDelete) {
     return { action: null, dialog: null };
