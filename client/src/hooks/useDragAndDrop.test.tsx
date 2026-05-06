@@ -599,9 +599,7 @@ describe('useDragAndDrop', () => {
       expect(pending).not.toBeNull();
       const targetCol = ((pending?.nodes[0] as typeof section).children?.[0] as typeof row)
         .children?.[1];
-      expect((targetCol as typeof col2).children?.map((c) => c.self.id)).toEqual([
-        50, 51, 52, 40,
-      ]);
+      expect((targetCol as typeof col2).children?.map((c) => c.self.id)).toEqual([50, 51, 52, 40]);
     });
   });
 

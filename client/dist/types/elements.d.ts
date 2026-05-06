@@ -12,8 +12,8 @@ export interface BlockSchema {
 interface BaseFields {
     /**
      * Scoped identity of this node. Canonical form for lookups and API payloads
-     * — always prefer `self`/`nodeKey` over the bare `id` to avoid polymorphic
-     * collisions with pages.
+     * — always prefer `self`/`nodeKey` over a bare numeric id to avoid
+     * polymorphic collisions with pages.
      */
     self: NodeRef;
     /**
@@ -25,15 +25,6 @@ interface BaseFields {
     nodeKey: NodeKey;
     /** Precomputed composite key for this node's parent. */
     parentKey: NodeKey;
-    /**
-     * Numeric record ID of this node. Equal to `self.id`. Safe to use for the
-     * unambiguous GridElement-only endpoints (publish, unpublish, delete,
-     * duplicate, updateGridSettings) that accept a bare id because they query
-     * `GridElement::get()` exclusively. **Do not use as a Map key or for
-     * display identity** — use `nodeKey` instead so page/element ID collisions
-     * are eliminated.
-     */
-    id: number;
     title: string;
     blockSchema: BlockSchema;
     obsoleteClassName: string | null;
@@ -53,7 +44,15 @@ interface BaseFields {
     summary?: string;
     extensions?: Record<string, unknown>;
 }
+/**
+ * Leaf (non-container) element. Carries an explicit `containerType?: never`
+ * so the {@link ElementNode} discriminated union narrows correctly via the
+ * `containerType in node` checks in the type guards below — without this,
+ * any future field accidentally named `containerType` would silently break
+ * narrowing.
+ */
 export interface SimpleElementNode extends BaseFields {
+    containerType?: never;
 }
 export interface ViewportSettings {
     width: number;
