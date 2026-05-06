@@ -40,9 +40,20 @@ const viewportSettingsSchema = z.object({
   visible: z.boolean(),
 });
 
+/**
+ * PHP `json_encode([])` emits `[]` for empty associative arrays — there is no
+ * way to distinguish an empty list from an empty map at encode time. The
+ * affected response fields (`gridSettings.overrides`, `allowedTypes`) are
+ * conceptually maps, so coerce the empty-array case back to an empty object
+ * before validating.
+ */
+function emptyArrayToObject(value: unknown): unknown {
+  return Array.isArray(value) && value.length === 0 ? {} : value;
+}
+
 const gridSettingsSchema = z.object({
   default: viewportSettingsSchema,
-  overrides: z.record(z.string(), viewportSettingsSchema),
+  overrides: z.preprocess(emptyArrayToObject, z.record(z.string(), viewportSettingsSchema)),
 });
 
 const allowedTypeInfoSchema = z.object({
@@ -99,21 +110,26 @@ const childrenSchema: z.ZodType<ElementNodeWire[] | null> = z.lazy(() =>
   z.array(elementNodeWireSchema).nullable(),
 );
 
+const allowedTypesSchema = z.preprocess(
+  emptyArrayToObject,
+  z.record(z.string(), allowedTypeInfoSchema).nullable(),
+);
+
 const sectionWireSchema = baseFieldsWireSchema.extend({
   containerType: z.literal('section'),
-  allowedTypes: z.record(z.string(), allowedTypeInfoSchema).nullable(),
+  allowedTypes: allowedTypesSchema,
   children: childrenSchema,
 });
 
 const rowWireSchema = baseFieldsWireSchema.extend({
   containerType: z.literal('row'),
-  allowedTypes: z.record(z.string(), allowedTypeInfoSchema).nullable(),
+  allowedTypes: allowedTypesSchema,
   children: childrenSchema,
 });
 
 const columnWireSchema = baseFieldsWireSchema.extend({
   containerType: z.literal('column'),
-  allowedTypes: z.record(z.string(), allowedTypeInfoSchema).nullable(),
+  allowedTypes: allowedTypesSchema,
   children: childrenSchema,
   gridSettings: gridSettingsSchema,
 });
