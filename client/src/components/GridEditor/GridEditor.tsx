@@ -119,12 +119,7 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
   );
 
   return (
-    <div
-      className={rootClassName}
-      data-page-id={pageId}
-      data-zone={zone}
-      data-testid="grid-editor"
-    >
+    <div className={rootClassName} data-page-id={pageId} data-zone={zone} data-testid="grid-editor">
       {isLoading && (
         <p className="grid-editor__loading" data-testid="grid-editor-loading">
           {t('WeDevelopGrid.GridEditor.LOADING', 'Loading elements...')}

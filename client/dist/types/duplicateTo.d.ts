@@ -1,7 +1,8 @@
+import { ContainerType } from './elements';
 export interface AcceptableContainer {
     id: number;
     title: string;
-    type: string;
+    type: ContainerType;
 }
 export interface PageEntry {
     id: number;
