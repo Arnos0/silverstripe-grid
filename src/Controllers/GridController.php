@@ -279,12 +279,11 @@ class GridController extends AdminController
 
         $body = $parseResult->unwrap();
 
-        /** @var GridElement|null $parent */
-        $parent = Versioned::withVersionedMode(static function () use ($body): ?GridElement {
-            Versioned::set_stage(Versioned::DRAFT);
+        if ($body->parent->type !== NodeType::Column) {
+            $this->jsonError(400);
+        }
 
-            return GridElement::get()->byID($body->parentId);
-        });
+        $parent = $this->elementRepository->findByRef($body->parent);
         if ($parent === null) {
             $this->jsonError(400);
         }
@@ -309,9 +308,9 @@ class GridController extends AdminController
 
     public function apiPublish(HTTPRequest $request): HTTPResponse
     {
-        $id = $this->requireElementIdFromRequest($request);
+        $ref = $this->requireElementRefFromRequest($request);
         $element = $this->requireElementWithPermission(
-            $id,
+            $ref,
             static fn (GridElement $e): bool => $e->canPublish(),
         );
 
@@ -322,9 +321,9 @@ class GridController extends AdminController
 
     public function apiUnpublish(HTTPRequest $request): HTTPResponse
     {
-        $id = $this->requireElementIdFromRequest($request);
+        $ref = $this->requireElementRefFromRequest($request);
         $element = $this->requireElementWithPermission(
-            $id,
+            $ref,
             static function (GridElement $e): bool {
                 $result = $e->canUnpublish();
                 assert(is_bool($result));
@@ -340,9 +339,9 @@ class GridController extends AdminController
 
     public function apiDelete(HTTPRequest $request): HTTPResponse
     {
-        $id = $this->requireElementIdFromQuery($request);
+        $ref = $this->requireElementRefFromQuery($request);
         $element = $this->requireElementWithPermission(
-            $id,
+            $ref,
             static fn (GridElement $e): bool => $e->canDelete(),
         );
 
@@ -358,9 +357,9 @@ class GridController extends AdminController
 
     public function apiDuplicate(HTTPRequest $request): HTTPResponse
     {
-        $id = $this->requireElementIdFromRequest($request);
+        $ref = $this->requireElementRefFromRequest($request);
         $element = $this->requireElementWithPermission(
-            $id,
+            $ref,
             static fn (GridElement $e): bool => $e->canCreate(),
         );
 
@@ -390,7 +389,7 @@ class GridController extends AdminController
         $body = $parseResult->unwrap();
 
         $element = $this->requireElementWithPermission(
-            $body->id,
+            $body->element,
             static fn (GridElement $e): bool => $e->canCreate(),
         );
 
@@ -507,8 +506,12 @@ class GridController extends AdminController
 
         $body = $parseResult->unwrap();
 
+        if ($body->element->type !== NodeType::Column) {
+            $this->jsonError(400);
+        }
+
         $element = $this->requireElementWithPermission(
-            $body->id,
+            $body->element,
             static fn (GridElement $e): bool => $e->canEdit(),
         );
 
@@ -789,14 +792,12 @@ class GridController extends AdminController
     }
 
     /**
-     * Parse and validate the element ID from the JSON request body.
-     *
-     * @return positive-int
+     * Parse a NodeRef-shaped `element` field from the JSON request body.
      */
-    private function requireElementIdFromRequest(HTTPRequest $request): int
+    private function requireElementRefFromRequest(HTTPRequest $request): NodeRef
     {
         $data = $this->parseJsonBody($request);
-        $parseResult = $this->requestBodyParser->parseElementId($data);
+        $parseResult = $this->requestBodyParser->parseElementRef($data);
         if ($parseResult->isErr()) {
             $this->jsonError(400);
         }
@@ -805,20 +806,24 @@ class GridController extends AdminController
     }
 
     /**
-     * Parse and validate the element ID from the query string.
+     * Parse a NodeRef from the query string (DELETE requests).
      *
-     * DELETE requests carry parameters on the query string, not in a request
-     * body — raw query values are always strings, so coerce to int before
-     * handing off to the shared positive-int validator.
-     *
-     * @return positive-int
+     * DELETE bodies are not universally supported, so the element identity
+     * arrives as `?type=section&id=42`. Both segments are coerced and handed
+     * to the shared NodeRef validator.
      */
-    private function requireElementIdFromQuery(HTTPRequest $request): int
+    private function requireElementRefFromQuery(HTTPRequest $request): NodeRef
     {
-        $raw = $request->getVar('id');
-        $id = filter_var($raw, FILTER_VALIDATE_INT);
+        $rawType = $request->getVar('type');
+        $rawId = $request->getVar('id');
+        $id = filter_var($rawId, FILTER_VALIDATE_INT);
 
-        $parseResult = $this->requestBodyParser->parseElementId(['id' => $id === false ? null : $id]);
+        $parseResult = $this->requestBodyParser->parseElementRef([
+            'element' => [
+                'type' => is_string($rawType) ? $rawType : null,
+                'id' => $id === false ? null : $id,
+            ],
+        ]);
         if ($parseResult->isErr()) {
             $this->jsonError(400);
         }
@@ -850,14 +855,17 @@ class GridController extends AdminController
     }
 
     /**
-     * Load a grid element by ID, or 400/403 on failure.
+     * Load a grid element by NodeRef, or 400/403 on failure.
      *
-     * @param positive-int $id
+     * Uses NodeRef rather than a bare ID so the lookup is collision-free
+     * across SilverStripe's polymorphic ID namespaces (page IDs and grid
+     * element IDs share the numeric space but live in separate tables).
+     *
      * @param callable(GridElement): bool $permissionCheck
      */
-    private function requireElementWithPermission(int $id, callable $permissionCheck): GridElement
+    private function requireElementWithPermission(NodeRef $ref, callable $permissionCheck): GridElement
     {
-        $element = $this->elementRepository->findById($id);
+        $element = $this->elementRepository->findByRef($ref);
         if ($element === null) {
             $this->jsonError(400);
         }

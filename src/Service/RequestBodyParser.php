@@ -72,7 +72,6 @@ final readonly class RequestBodyParser
     public function parseCreateContentBody(array $data): Result
     {
         $className = $data['className'] ?? null;
-        $parentId = $data['parentId'] ?? null;
         $afterElementID = $data['insertAfterElementID'] ?? null;
 
         if (!is_string($className)) {
@@ -87,8 +86,10 @@ final readonly class RequestBodyParser
             return Result::fail(new ValidationError('className must be a ContentElement subclass.'));
         }
 
-        if (!is_int($parentId) || $parentId < 1) {
-            return Result::fail(new ValidationError('parentId must be a positive integer.'));
+        try {
+            $parent = NodeRef::fromArray($data['parent'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return Result::fail(new ValidationError('parent: ' . $e->getMessage()));
         }
 
         if ($afterElementID !== null && (!is_int($afterElementID) || $afterElementID < 1)) {
@@ -96,7 +97,7 @@ final readonly class RequestBodyParser
         }
 
         /** @var class-string<ContentElement> $className */
-        return Result::ok(new CreateContentRequest($className, $parentId, $afterElementID));
+        return Result::ok(new CreateContentRequest($className, $parent, $afterElementID));
     }
 
     /**
@@ -144,14 +145,15 @@ final readonly class RequestBodyParser
      */
     public function parseUpdateGridSettingsBody(array $data): Result
     {
-        $id = $data['id'] ?? null;
         $viewport = $data['viewport'] ?? null;
         $width = $data['width'] ?? null;
         $offset = $data['offset'] ?? null;
         $visible = $data['visible'] ?? null;
 
-        if (!is_int($id) || $id < 1) {
-            return Result::fail(new ValidationError('id must be a positive integer.'));
+        try {
+            $element = NodeRef::fromArray($data['element'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return Result::fail(new ValidationError('element: ' . $e->getMessage()));
         }
 
         if (!is_string($viewport)) {
@@ -180,7 +182,7 @@ final readonly class RequestBodyParser
             return Result::fail(new ValidationError('visible must be a boolean.'));
         }
 
-        return Result::ok(new UpdateGridSettingsRequest($id, $viewport, $width, $offset, $visible));
+        return Result::ok(new UpdateGridSettingsRequest($element, $viewport, $width, $offset, $visible));
     }
 
     /**
@@ -189,12 +191,17 @@ final readonly class RequestBodyParser
      */
     public function parseDuplicateToBody(array $data): Result
     {
-        $id = $data['id'] ?? null;
         $targetPageId = $data['targetPageId'] ?? null;
         $targetZone = $data['targetZone'] ?? null;
 
-        if (!is_int($id) || $id < 1) {
-            return Result::fail(new ValidationError('id must be a positive integer.'));
+        try {
+            $element = NodeRef::fromArray($data['element'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return Result::fail(new ValidationError('element: ' . $e->getMessage()));
+        }
+
+        if ($element->type === NodeType::Page) {
+            return Result::fail(new ValidationError('element type cannot be "page".'));
         }
 
         if (!is_int($targetPageId) || $targetPageId < 1) {
@@ -212,7 +219,7 @@ final readonly class RequestBodyParser
         }
 
         /** @var non-empty-string $targetZone Narrowed by === '' guard */
-        return Result::ok(new DuplicateToRequest($id, $targetPageId, $targetZone, $targetParent));
+        return Result::ok(new DuplicateToRequest($element, $targetPageId, $targetZone, $targetParent));
     }
 
     /**
@@ -256,17 +263,26 @@ final readonly class RequestBodyParser
     }
 
     /**
+     * Parse a NodeRef-shaped element identifier from a decoded JSON body
+     * keyed under `element`. Used by the single-target mutation endpoints
+     * (publish, unpublish, archive, duplicate) so every mutation request
+     * carries the same `{type, id}` envelope.
+     *
      * @param array<string, mixed> $data
-     * @return Result<positive-int>
+     * @return Result<NodeRef>
      */
-    public function parseElementId(array $data): Result
+    public function parseElementRef(array $data): Result
     {
-        $id = $data['id'] ?? null;
-
-        if (!is_int($id) || $id < 1) {
-            return Result::fail(new ValidationError('id must be a positive integer.'));
+        try {
+            $element = NodeRef::fromArray($data['element'] ?? null);
+        } catch (InvalidArgumentException $e) {
+            return Result::fail(new ValidationError('element: ' . $e->getMessage()));
         }
 
-        return Result::ok($id);
+        if ($element->type === NodeType::Page) {
+            return Result::fail(new ValidationError('element type cannot be "page".'));
+        }
+
+        return Result::ok($element);
     }
 }

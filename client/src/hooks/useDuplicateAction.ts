@@ -15,12 +15,12 @@ export function useDuplicateAction(node: ElementNode): UseDuplicateActionResult 
   const duplicateElement = useDuplicateElement(pageId, zone);
 
   const handleDuplicate = useCallback(() => {
-    duplicateElement.mutate(node.id, {
+    duplicateElement.mutate(node.self, {
       onError: (error) => {
         showToast(error.message);
       },
     });
-  }, [duplicateElement, node.id]);
+  }, [duplicateElement, node.self]);
 
   if (!node.canCreate) {
     return { action: null };

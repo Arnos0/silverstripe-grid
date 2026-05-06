@@ -133,13 +133,13 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const updateSettings = useCallback(
     (patch: Partial<ViewportSettings>) => {
       updateGridSettings.mutate({
-        id: column.id,
+        element: column.self,
         viewport: activeViewport,
         ...settings,
         ...patch,
       });
     },
-    [column.id, activeViewport, settings, updateGridSettings],
+    [column.self, activeViewport, settings, updateGridSettings],
   );
 
   const handleWidthSelect = useCallback(
@@ -175,10 +175,10 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
     (className: string) => {
       createContentElement.mutate({
         className,
-        parentId: column.id,
+        parent: column.self,
       });
     },
-    [createContentElement, column.id],
+    [createContentElement, column.self],
   );
 
   const children = column.children ?? [];

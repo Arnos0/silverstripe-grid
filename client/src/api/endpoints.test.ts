@@ -111,38 +111,43 @@ describe('createElement', () => {
 });
 
 describe('publishElement', () => {
-  it('sends PATCH to /api/publish', async () => {
-    await publishElement(5);
+  it('sends PATCH to /api/publish with element NodeRef', async () => {
+    await publishElement({ type: 'section', id: 5 });
     const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/publish');
     expect(init?.method).toBe('PATCH');
-    expect(JSON.parse(init?.body as string)).toEqual({ id: 5 });
+    expect(JSON.parse(init?.body as string)).toEqual({ element: { type: 'section', id: 5 } });
   });
 });
 
 describe('unpublishElement', () => {
-  it('sends PATCH to /api/unpublish', async () => {
-    await unpublishElement(5);
-    const [url] = getFetchCalls()[0];
+  it('sends PATCH to /api/unpublish with element NodeRef', async () => {
+    await unpublishElement({ type: 'section', id: 5 });
+    const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/unpublish');
+    expect(JSON.parse(init?.body as string)).toEqual({ element: { type: 'section', id: 5 } });
   });
 });
 
 describe('archiveElement', () => {
-  it('sends DELETE to /api/delete with id as query string', async () => {
-    await archiveElement(5);
+  it('sends DELETE to /api/delete with type and id on the query string', async () => {
+    await archiveElement({ type: 'element', id: 5 });
     const [url, init] = getFetchCalls()[0];
-    expect(String(url)).toBe('/admin/grid/api/delete?id=5');
+    const urlString = String(url);
+    expect(urlString).toContain('/admin/grid/api/delete?');
+    expect(urlString).toContain('type=element');
+    expect(urlString).toContain('id=5');
     expect(init?.method).toBe('DELETE');
     expect(init?.body).toBeUndefined();
   });
 });
 
 describe('duplicateElement', () => {
-  it('sends POST to /api/duplicate', async () => {
-    await duplicateElement(5);
-    const [url] = getFetchCalls()[0];
+  it('sends POST to /api/duplicate with element NodeRef', async () => {
+    await duplicateElement({ type: 'section', id: 5 });
+    const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/duplicate');
+    expect(JSON.parse(init?.body as string)).toEqual({ element: { type: 'section', id: 5 } });
   });
 });
 
@@ -174,20 +179,33 @@ describe('reorderElement', () => {
 });
 
 describe('createContentElement', () => {
-  it('sends POST to /api/createContent', async () => {
-    await createContentElement({ className: 'TextBlock', parentId: 10 });
-    const [url] = getFetchCalls()[0];
+  it('sends POST to /api/createContent with parent NodeRef', async () => {
+    await createContentElement({
+      className: 'TextBlock',
+      parent: { type: 'column', id: 10 },
+    });
+    const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/createContent');
+    expect(JSON.parse(init?.body as string)).toEqual({
+      className: 'TextBlock',
+      parent: { type: 'column', id: 10 },
+    });
   });
 });
 
 describe('updateGridSettings', () => {
-  it('sends PATCH to /api/updateGridSettings', async () => {
-    await updateGridSettings({ id: 1, viewport: 'md', width: 6, offset: 0, visible: true });
+  it('sends PATCH to /api/updateGridSettings with element NodeRef', async () => {
+    await updateGridSettings({
+      element: { type: 'column', id: 1 },
+      viewport: 'md',
+      width: 6,
+      offset: 0,
+      visible: true,
+    });
     const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/updateGridSettings');
     expect(JSON.parse(init?.body as string)).toEqual({
-      id: 1,
+      element: { type: 'column', id: 1 },
       viewport: 'md',
       width: 6,
       offset: 0,
@@ -210,16 +228,18 @@ describe('resetGridSettingsOverrides', () => {
 });
 
 describe('duplicateToElement', () => {
-  it('sends POST to /api/duplicateTo with targetParent NodeRef', async () => {
+  it('sends POST to /api/duplicateTo with element + targetParent NodeRefs', async () => {
     await duplicateToElement({
-      id: 1,
+      element: { type: 'element', id: 1 },
       targetPageId: 2,
       targetZone: 'main',
       targetParent: { type: 'column', id: 3 },
     });
     const [url, init] = getFetchCalls()[0];
     expect(url).toBe('/admin/grid/api/duplicateTo');
-    expect(JSON.parse(init?.body as string).targetParent).toEqual({ type: 'column', id: 3 });
+    const body = JSON.parse(init?.body as string);
+    expect(body.element).toEqual({ type: 'element', id: 1 });
+    expect(body.targetParent).toEqual({ type: 'column', id: 3 });
   });
 });
 

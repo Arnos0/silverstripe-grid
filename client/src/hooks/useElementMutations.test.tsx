@@ -82,7 +82,7 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useCreateContentElement(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate({ className: 'Content', parentId: 10 });
+        result.current.mutate({ className: 'Content', parent: { type: 'column', id: 10 } });
       });
 
       await waitFor(() => {
@@ -102,7 +102,7 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useCreateContentElement(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate({ className: 'Content', parentId: 10 });
+        result.current.mutate({ className: 'Content', parent: { type: 'column', id: 10 } });
       });
 
       await waitFor(() => {
@@ -123,7 +123,13 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useUpdateGridSettings(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate({ id: 5, viewport: 'md', width: 6, offset: 0, visible: true });
+        result.current.mutate({
+          element: { type: 'column', id: 5 },
+          viewport: 'md',
+          width: 6,
+          offset: 0,
+          visible: true,
+        });
       });
 
       await waitFor(() => {
@@ -143,7 +149,13 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useUpdateGridSettings(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate({ id: 5, viewport: 'md', width: 6, offset: 0, visible: true });
+        result.current.mutate({
+          element: { type: 'column', id: 5 },
+          viewport: 'md',
+          width: 6,
+          offset: 0,
+          visible: true,
+        });
       });
 
       await waitFor(() => {
@@ -208,7 +220,7 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => usePublishElement(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate(5);
+        result.current.mutate({ type: 'section', id: 5 });
       });
 
       await waitFor(() => {
@@ -235,7 +247,7 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useUnpublishElement(1, 'main'), { wrapper });
 
       act(() => {
-        result.current.mutate(5);
+        result.current.mutate({ type: 'section', id: 5 });
       });
 
       await waitFor(() => {
@@ -550,7 +562,10 @@ describe('useElementMutations', () => {
       const { result } = renderHook(() => useCreateContentElement(1, 'main'), { wrapper });
 
       await act(async () => {
-        await result.current.mutateAsync({ className: 'Content', parentId: 10 });
+        await result.current.mutateAsync({
+          className: 'Content',
+          parent: { type: 'column', id: 10 },
+        });
       });
 
       expect(invalidateSpy).toHaveBeenCalledWith({

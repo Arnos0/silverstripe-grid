@@ -83,24 +83,26 @@ export async function createElement(params: CreateElementParams): Promise<void> 
   await apiPost(`${base}/api/create`, params);
 }
 
-export async function publishElement(id: number): Promise<void> {
+export async function publishElement(element: NodeRef): Promise<void> {
   const base = getControllerLink();
-  await apiPatch(`${base}/api/publish`, { id });
+  await apiPatch(`${base}/api/publish`, { element });
 }
 
-export async function unpublishElement(id: number): Promise<void> {
+export async function unpublishElement(element: NodeRef): Promise<void> {
   const base = getControllerLink();
-  await apiPatch(`${base}/api/unpublish`, { id });
+  await apiPatch(`${base}/api/unpublish`, { element });
 }
 
-export async function archiveElement(id: number): Promise<void> {
+export async function archiveElement(element: NodeRef): Promise<void> {
   const base = getControllerLink();
-  await apiDelete(`${base}/api/delete`, { id });
+  // DELETE bodies are not universally honoured by intermediaries — send the
+  // identity components on the query string instead.
+  await apiDelete(`${base}/api/delete`, { type: element.type, id: element.id });
 }
 
-export async function duplicateElement(id: number): Promise<void> {
+export async function duplicateElement(element: NodeRef): Promise<void> {
   const base = getControllerLink();
-  await apiPost(`${base}/api/duplicate`, { id });
+  await apiPost(`${base}/api/duplicate`, { element });
 }
 
 export interface ReorderElementParams {
@@ -116,7 +118,7 @@ export async function reorderElement(params: ReorderElementParams): Promise<void
 
 export interface CreateContentElementParams {
   className: string;
-  parentId: number;
+  parent: NodeRef;
   insertAfterElementID?: number;
 }
 
@@ -126,7 +128,7 @@ export async function createContentElement(params: CreateContentElementParams): 
 }
 
 export interface UpdateGridSettingsParams {
-  id: number;
+  element: NodeRef;
   viewport: string;
   width: number;
   offset: number;
@@ -160,7 +162,7 @@ export async function resetGridSettingsOverrides(
 // --- Duplicate To ---
 
 export interface DuplicateToParams {
-  id: number;
+  element: NodeRef;
   targetPageId: number;
   targetZone: string;
   targetParent: NodeRef;

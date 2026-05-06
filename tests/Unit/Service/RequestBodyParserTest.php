@@ -153,7 +153,7 @@ final class RequestBodyParserTest extends TestCase
     {
         $result = $this->parser->parseCreateContentBody([
             'className' => ContentElement::class,
-            'parentId' => 1,
+            'parent' => ['type' => 'column', 'id' => 1],
             'insertAfterElementID' => 1,
         ]);
 
@@ -162,7 +162,7 @@ final class RequestBodyParserTest extends TestCase
         $request = $result->unwrap();
         self::assertInstanceOf(CreateContentRequest::class, $request);
         self::assertSame(ContentElement::class, $request->className);
-        self::assertSame(1, $request->parentId);
+        self::assertTrue($request->parent->equals(new NodeRef(NodeType::Column, 1)));
         self::assertSame(1, $request->insertAfterElementID);
     }
 
@@ -175,7 +175,7 @@ final class RequestBodyParserTest extends TestCase
         $result = $this->parser->parseCreateContentBody($input);
 
         self::assertTrue($result->isErr());
-        self::assertSame($expectedMessage, $result->errors()[0]->message);
+        self::assertStringContainsString($expectedMessage, $result->errors()[0]->message);
     }
 
     /**
@@ -183,33 +183,35 @@ final class RequestBodyParserTest extends TestCase
      */
     public static function createContentBodyErrorProvider(): iterable
     {
+        $validParent = ['type' => 'column', 'id' => 1];
+
         yield 'non-string className' => [
-            ['className' => 123, 'parentId' => 1],
+            ['className' => 123, 'parent' => $validParent],
             'className must be a string.',
         ];
 
         yield 'non-existent class' => [
-            ['className' => 'NonExistent\\Class', 'parentId' => 1],
+            ['className' => 'NonExistent\\Class', 'parent' => $validParent],
             'className does not refer to an existing class.',
         ];
 
         yield 'not a ContentElement subclass' => [
-            ['className' => stdClass::class, 'parentId' => 1],
+            ['className' => stdClass::class, 'parent' => $validParent],
             'className must be a ContentElement subclass.',
         ];
 
-        yield 'non-int parentId' => [
-            ['className' => ContentElement::class, 'parentId' => 'abc'],
-            'parentId must be a positive integer.',
+        yield 'missing parent' => [
+            ['className' => ContentElement::class],
+            'parent: ',
         ];
 
-        yield 'zero parentId' => [
-            ['className' => ContentElement::class, 'parentId' => 0],
-            'parentId must be a positive integer.',
+        yield 'parent with zero id' => [
+            ['className' => ContentElement::class, 'parent' => ['type' => 'column', 'id' => 0]],
+            'parent: ',
         ];
 
         yield 'non-int insertAfterElementID' => [
-            ['className' => ContentElement::class, 'parentId' => 1, 'insertAfterElementID' => 'abc'],
+            ['className' => ContentElement::class, 'parent' => $validParent, 'insertAfterElementID' => 'abc'],
             'insertAfterElementID must be a positive integer or null.',
         ];
     }
@@ -308,7 +310,7 @@ final class RequestBodyParserTest extends TestCase
     public function testParseUpdateGridSettingsBodyValid(): void
     {
         $result = $this->parser->parseUpdateGridSettingsBody([
-            'id' => 1,
+            'element' => ['type' => 'column', 'id' => 1],
             'viewport' => 'md',
             'width' => 6,
             'offset' => 0,
@@ -319,7 +321,7 @@ final class RequestBodyParserTest extends TestCase
 
         $request = $result->unwrap();
         self::assertInstanceOf(UpdateGridSettingsRequest::class, $request);
-        self::assertSame(1, $request->id);
+        self::assertTrue($request->element->equals(new NodeRef(NodeType::Column, 1)));
         self::assertSame('md', $request->viewport);
         self::assertSame(6, $request->width);
         self::assertSame(0, $request->offset);
@@ -335,7 +337,7 @@ final class RequestBodyParserTest extends TestCase
         $result = $this->parser->parseUpdateGridSettingsBody($input);
 
         self::assertTrue($result->isErr());
-        self::assertSame($expectedMessage, $result->errors()[0]->message);
+        self::assertStringContainsString($expectedMessage, $result->errors()[0]->message);
     }
 
     /**
@@ -343,16 +345,22 @@ final class RequestBodyParserTest extends TestCase
      */
     public static function updateGridSettingsBodyErrorProvider(): iterable
     {
-        $valid = ['id' => 1, 'viewport' => 'md', 'width' => 6, 'offset' => 0, 'visible' => true];
-
-        yield 'non-int id' => [
-            array_merge($valid, ['id' => 'abc']),
-            'id must be a positive integer.',
+        $valid = [
+            'element' => ['type' => 'column', 'id' => 1],
+            'viewport' => 'md',
+            'width' => 6,
+            'offset' => 0,
+            'visible' => true,
         ];
 
-        yield 'zero id' => [
-            array_merge($valid, ['id' => 0]),
-            'id must be a positive integer.',
+        yield 'missing element' => [
+            array_diff_key($valid, ['element' => null]),
+            'element: ',
+        ];
+
+        yield 'element with zero id' => [
+            array_merge($valid, ['element' => ['type' => 'column', 'id' => 0]]),
+            'element: ',
         ];
 
         yield 'invalid viewport' => [
@@ -381,7 +389,7 @@ final class RequestBodyParserTest extends TestCase
     public function testParseDuplicateToBodyValid(): void
     {
         $result = $this->parser->parseDuplicateToBody([
-            'id' => 1,
+            'element' => ['type' => 'section', 'id' => 1],
             'targetPageId' => 1,
             'targetZone' => 'sidebar',
             'targetParent' => ['type' => 'page', 'id' => 1],
@@ -391,7 +399,7 @@ final class RequestBodyParserTest extends TestCase
 
         $request = $result->unwrap();
         self::assertInstanceOf(DuplicateToRequest::class, $request);
-        self::assertSame(1, $request->id);
+        self::assertTrue($request->element->equals(new NodeRef(NodeType::Section, 1)));
         self::assertSame(1, $request->targetPageId);
         self::assertSame('sidebar', $request->targetZone);
         self::assertTrue($request->targetParent->equals(new NodeRef(NodeType::Page, 1)));
@@ -414,17 +422,28 @@ final class RequestBodyParserTest extends TestCase
      */
     public static function duplicateToBodyErrorProvider(): iterable
     {
+        $validElement = ['type' => 'row', 'id' => 5];
         $validTargetParent = ['type' => 'column', 'id' => 15];
-        $valid = ['id' => 5, 'targetPageId' => 10, 'targetZone' => 'main', 'targetParent' => $validTargetParent];
-
-        yield 'non-int id' => [
-            array_merge($valid, ['id' => 'abc']),
-            'id must be a positive integer.',
+        $valid = [
+            'element' => $validElement,
+            'targetPageId' => 10,
+            'targetZone' => 'main',
+            'targetParent' => $validTargetParent,
         ];
 
-        yield 'zero id' => [
-            array_merge($valid, ['id' => 0]),
-            'id must be a positive integer.',
+        yield 'missing element' => [
+            ['targetPageId' => 10, 'targetZone' => 'main', 'targetParent' => $validTargetParent],
+            'element: ',
+        ];
+
+        yield 'element with zero id' => [
+            array_merge($valid, ['element' => ['type' => 'row', 'id' => 0]]),
+            'element: ',
+        ];
+
+        yield 'element type is page' => [
+            array_merge($valid, ['element' => ['type' => 'page', 'id' => 1]]),
+            'element type cannot be "page"',
         ];
 
         yield 'non-int targetPageId' => [
@@ -438,7 +457,7 @@ final class RequestBodyParserTest extends TestCase
         ];
 
         yield 'missing targetParent' => [
-            ['id' => 5, 'targetPageId' => 10, 'targetZone' => 'main'],
+            ['element' => $validElement, 'targetPageId' => 10, 'targetZone' => 'main'],
             'targetParent: ',
         ];
 
@@ -544,35 +563,40 @@ final class RequestBodyParserTest extends TestCase
         ];
     }
 
-    // ── parseElementId ──────────────────────────────────────────
+    // ── parseElementRef ─────────────────────────────────────────
 
-    public function testParseElementIdValid(): void
+    public function testParseElementRefValid(): void
     {
-        $result = $this->parser->parseElementId(['id' => 1]);
+        $result = $this->parser->parseElementRef(['element' => ['type' => 'section', 'id' => 1]]);
 
         self::assertTrue($result->isOk());
-        self::assertSame(1, $result->unwrap());
+        self::assertTrue($result->unwrap()->equals(new NodeRef(NodeType::Section, 1)));
     }
 
     /**
      * @param array<string, mixed> $input
      */
-    #[DataProvider('elementIdErrorProvider')]
-    public function testParseElementIdRejectsInvalidInput(array $input): void
+    #[DataProvider('elementRefErrorProvider')]
+    public function testParseElementRefRejectsInvalidInput(array $input, string $expectedMessage): void
     {
-        $result = $this->parser->parseElementId($input);
+        $result = $this->parser->parseElementRef($input);
 
         self::assertTrue($result->isErr());
-        self::assertSame('id must be a positive integer.', $result->errors()[0]->message);
+        self::assertStringContainsString($expectedMessage, $result->errors()[0]->message);
     }
 
     /**
-     * @return iterable<string, array{array<string, mixed>}>
+     * @return iterable<string, array{array<string, mixed>, string}>
      */
-    public static function elementIdErrorProvider(): iterable
+    public static function elementRefErrorProvider(): iterable
     {
-        yield 'non-int' => [['id' => 'abc']];
-        yield 'zero' => [['id' => 0]];
-        yield 'missing' => [[]];
+        yield 'missing element' => [[], 'element: '];
+        yield 'element zero id' => [['element' => ['type' => 'section', 'id' => 0]], 'element: '];
+        yield 'element non-int id' => [['element' => ['type' => 'section', 'id' => 'abc']], 'element: '];
+        yield 'element unknown type' => [['element' => ['type' => 'foo', 'id' => 1]], 'element: '];
+        yield 'element type page' => [
+            ['element' => ['type' => 'page', 'id' => 1]],
+            'element type cannot be "page"',
+        ];
     }
 }

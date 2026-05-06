@@ -10,12 +10,11 @@ final readonly class CreateContentRequest
 {
     /**
      * @param class-string<ContentElement> $className
-     * @param positive-int $parentId
      * @param positive-int|null $insertAfterElementID
      */
     public function __construct(
         public string $className,
-        public int $parentId,
+        public NodeRef $parent,
         public ?int $insertAfterElementID,
     ) {
     }
