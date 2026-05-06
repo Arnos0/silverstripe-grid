@@ -68,7 +68,7 @@ describe('usePendingTree', () => {
       let moveResult: ReturnType<typeof result.current.applyPendingMove> = null;
       act(() => {
         moveResult = result.current.applyPendingMove(
-          createParsedDraggableId('element', element.id),
+          createParsedDraggableId('element', element.self.id),
           NodeIdentity.toKey('column', 20),
           null,
           tree,
@@ -81,7 +81,7 @@ describe('usePendingTree', () => {
       const newMaps = moveResult!.maps;
       const col2Children = newMaps.childrenByParentKey.get(NodeIdentity.toKey('column', 20));
       expect(col2Children).toHaveLength(1);
-      expect(col2Children?.[0].id).toBe(element.id);
+      expect(col2Children?.[0].self.id).toBe(element.self.id);
 
       const col1Children = newMaps.childrenByParentKey.get(NodeIdentity.toKey('column', 10));
       expect(col1Children).toHaveLength(0);
@@ -93,7 +93,7 @@ describe('usePendingTree', () => {
 
       act(() => {
         result.current.applyPendingMove(
-          createParsedDraggableId('element', element.id),
+          createParsedDraggableId('element', element.self.id),
           NodeIdentity.toKey('column', 20),
           null,
           tree,
@@ -109,7 +109,7 @@ describe('usePendingTree', () => {
 
       act(() => {
         result.current.applyPendingMove(
-          createParsedDraggableId('element', element.id),
+          createParsedDraggableId('element', element.self.id),
           NodeIdentity.toKey('column', 20),
           null,
           tree,
@@ -119,7 +119,7 @@ describe('usePendingTree', () => {
       const pendingItems = result.current.collisionRefs.pendingContainerItemsRef.current;
       expect(pendingItems).not.toBeNull();
       expect(pendingItems?.size).toBe(1);
-      expect(pendingItems?.has(`element-${element.id}`)).toBe(true);
+      expect(pendingItems?.has(`element-${element.self.id}`)).toBe(true);
     });
 
     it('returns null for a no-op move (same position)', () => {
@@ -165,7 +165,7 @@ describe('usePendingTree', () => {
 
       act(() => {
         result.current.applyPendingMove(
-          createParsedDraggableId('element', element.id),
+          createParsedDraggableId('element', element.self.id),
           NodeIdentity.toKey('column', 20),
           null,
           tree,
@@ -186,7 +186,7 @@ describe('usePendingTree', () => {
       act(() => {
         result.current.setSourceSiblings(new Set(['element-1']));
         result.current.applyPendingMove(
-          createParsedDraggableId('element', element.id),
+          createParsedDraggableId('element', element.self.id),
           NodeIdentity.toKey('column', 20),
           null,
           tree,

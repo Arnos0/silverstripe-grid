@@ -275,8 +275,8 @@ describe('useElementMutations', () => {
       await act(async () => {
         result.current.mutate({
           params: {
-            element: { type: 'element', id: elemB.id },
-            parent: { type: 'column', id: column.id },
+            element: { type: 'element', id: elemB.self.id },
+            parent: { type: 'column', id: column.self.id },
             after: null,
           },
           tree,
@@ -290,7 +290,7 @@ describe('useElementMutations', () => {
       const cachedSection = cached?.nodes[0] as ContainerNode;
       const cachedRow = cachedSection.children?.[0] as ContainerNode;
       const cachedColumn = cachedRow.children?.[0] as ContainerNode;
-      expect(cachedColumn.children?.map((c) => c.id)).toEqual([elemB.id, elemA.id]);
+      expect(cachedColumn.children?.map((c) => c.self.id)).toEqual([elemB.self.id, elemA.self.id]);
 
       await waitFor(() => {
         expect(getFetchCalls().length).toBeGreaterThan(0);
@@ -315,8 +315,8 @@ describe('useElementMutations', () => {
       act(() => {
         result.current.mutate({
           params: {
-            element: { type: 'element', id: elemB.id },
-            parent: { type: 'column', id: column.id },
+            element: { type: 'element', id: elemB.self.id },
+            parent: { type: 'column', id: column.self.id },
             after: null,
           },
           tree,
@@ -361,8 +361,8 @@ describe('useElementMutations', () => {
         await result.current
           .mutateAsync({
             params: {
-              element: { type: 'element', id: elemB.id },
-              parent: { type: 'column', id: column.id },
+              element: { type: 'element', id: elemB.self.id },
+              parent: { type: 'column', id: column.self.id },
               after: null,
             },
             tree,
@@ -408,8 +408,8 @@ describe('useElementMutations', () => {
       act(() => {
         result.current.mutate({
           params: {
-            element: { type: 'element', id: elemB.id },
-            parent: { type: 'column', id: column.id },
+            element: { type: 'element', id: elemB.self.id },
+            parent: { type: 'column', id: column.self.id },
             after: null,
           },
           tree,
@@ -463,7 +463,7 @@ describe('useElementMutations', () => {
         await result.current
           .mutateAsync({
             params: {
-              element: { type: 'element', id: elem!.id },
+              element: { type: 'element', id: elem!.self.id },
               parent: { type: 'column', id: 300 },
               after: null,
             },
@@ -502,8 +502,8 @@ describe('useElementMutations', () => {
       await act(async () => {
         result.current.mutate({
           params: {
-            element: { type: 'element', id: elemB.id },
-            parent: { type: 'column', id: column.id },
+            element: { type: 'element', id: elemB.self.id },
+            parent: { type: 'column', id: column.self.id },
             after: null,
           },
           tree,
@@ -529,8 +529,8 @@ describe('useElementMutations', () => {
       await act(async () => {
         await result.current.mutateAsync({
           params: {
-            element: { type: 'element', id: elemB.id },
-            parent: { type: 'column', id: column.id },
+            element: { type: 'element', id: elemB.self.id },
+            parent: { type: 'column', id: column.self.id },
             after: null,
           },
           tree,
