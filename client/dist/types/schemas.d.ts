@@ -15,11 +15,11 @@ declare const gridSettingsSchema: z.ZodObject<{
         offset: z.ZodNumber;
         visible: z.ZodBoolean;
     }, z.core.$strip>;
-    overrides: z.ZodRecord<z.ZodString, z.ZodObject<{
+    overrides: z.ZodPreprocess<z.ZodRecord<z.ZodString, z.ZodObject<{
         width: z.ZodNumber;
         offset: z.ZodNumber;
         visible: z.ZodBoolean;
-    }, z.core.$strip>>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 declare const allowedTypeInfoSchema: z.ZodObject<{
     label: z.ZodString;
