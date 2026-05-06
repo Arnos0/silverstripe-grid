@@ -6,6 +6,19 @@ export const DRAGGABLE_TYPES = ['section', 'row', 'column', 'element'] as const;
 
 export type DraggableType = (typeof DRAGGABLE_TYPES)[number];
 
+/**
+ * Minimal viewport rectangle used by drop-placement logic. Compatible with
+ * {@link DOMRect} and dnd-kit's `ClientRect` — both have these four fields
+ * plus extras we don't read. Defined here so consumers don't each reinvent
+ * a `RectLike` / `Rect` shape.
+ */
+export interface ViewportRect {
+  readonly left: number;
+  readonly top: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 export interface ParsedDraggableId {
   readonly type: DraggableType;
   readonly id: number;

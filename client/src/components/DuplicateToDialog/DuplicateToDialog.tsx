@@ -2,25 +2,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePages, useZones, useAcceptableContainers } from '@/hooks/useDuplicateToQueries';
 import { t } from '@/i18n';
 import type { NodeRef, NodeType } from '@/types/identity';
+import type { ElementTypeKey } from '@/utils/getElementType';
 import './DuplicateToDialog.scss';
 
 type Step = 'page' | 'zone' | 'container' | 'confirm';
 
 /**
- * Maps a draggable/grid element type to the type of its expected parent.
- * Sections live under pages; rows live under sections; columns live under rows;
- * leaf elements live under columns.
+ * Maps a grid element type to the type of its expected parent. Total over
+ * {@link ElementTypeKey} — the type system enforces exhaustiveness, so no
+ * runtime fallback is needed.
  */
-const PARENT_TYPE_FOR_ELEMENT: Record<string, NodeType> = {
+const PARENT_TYPE_FOR_ELEMENT = {
   section: 'page',
   row: 'section',
   column: 'row',
   element: 'column',
-};
+} as const satisfies Record<ElementTypeKey, NodeType>;
 
 interface DuplicateToDialogProps {
   readonly isOpen: boolean;
-  readonly elementType: string;
+  readonly elementType: ElementTypeKey;
   readonly currentPageId: number;
   readonly onConfirm: (targetPageId: number, targetZone: string, targetParent: NodeRef) => void;
   readonly onCancel: () => void;
@@ -141,7 +142,7 @@ export default function DuplicateToDialog({
       // Section duplication — page is the parent.
       onConfirm(selectedPageId, selectedZone, { type: 'page', id: selectedPageId });
     } else if (selectedContainerId !== null) {
-      const parentType = PARENT_TYPE_FOR_ELEMENT[elementType] ?? 'column';
+      const parentType = PARENT_TYPE_FOR_ELEMENT[elementType];
       onConfirm(selectedPageId, selectedZone, { type: parentType, id: selectedContainerId });
     }
   }, [onConfirm, selectedPageId, selectedZone, selectedContainerId, step, elementType]);

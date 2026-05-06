@@ -1,5 +1,5 @@
 import { getAdapterConfig } from '@/api/config';
-import type { AdapterConfig, ViewportConfig } from '@/types/adapter';
+import type { AdapterConfig, OffsetStrategy, ViewportConfig } from '@/types/adapter';
 import type { GridSettings, ViewportSettings } from '@/types/elements';
 import type { GridSettingsOption } from '@/types/gridSettings';
 
@@ -34,7 +34,7 @@ export function getRowClasses(): string {
   return config().rowClasses;
 }
 
-export function getOffsetStrategy(): 'margin' | 'grid-placement' {
+export function getOffsetStrategy(): OffsetStrategy {
   return config().offsetStrategy;
 }
 
