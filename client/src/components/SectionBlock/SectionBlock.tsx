@@ -69,24 +69,37 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
       data-drop-target={showDropTarget ? '' : undefined}
     >
       <div data-testid="section-header">
-        <DragHandle
-          listeners={listeners}
-          attributes={attributes}
-          label={t('WeDevelopGrid.SectionBlock.MOVE_LABEL', 'Move {title}', {
-            title: section.title,
-          })}
-        />
-        <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={section.blockSchema.icon} />
-        <h2 data-testid="section-title">
-          {section.editLink !== null ? (
-            <a href={section.editLink} data-testid="section-edit-link">
-              {section.title}
-            </a>
-          ) : (
-            section.title
+        <div data-role="header-title">
+          <DragHandle
+            listeners={listeners}
+            attributes={attributes}
+            label={t('WeDevelopGrid.SectionBlock.MOVE_LABEL', 'Move {title}', {
+              title: section.title,
+            })}
+          />
+          <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
+          <i className={section.blockSchema.icon} aria-hidden="true" />
+          <h2 data-testid="section-title">
+            {section.editLink !== null ? (
+              <a href={section.editLink} data-testid="section-edit-link">
+                {section.title}
+              </a>
+            ) : (
+              section.title
+            )}
+          </h2>
+          {status === 'modified' && (
+            <span
+              data-role="modified-dot"
+              data-testid="section-modified-indicator"
+              aria-label={t(
+                'WeDevelopGrid.SectionBlock.MODIFIED_LABEL',
+                'Has unpublished changes',
+              )}
+              role="img"
+            />
           )}
-        </h2>
+        </div>
         <ElementActions node={section} />
       </div>
       <div>
@@ -128,9 +141,22 @@ function ReadonlySectionBlock({ section }: SectionBlockProps) {
       data-collapsed={isCollapsed ? '' : undefined}
     >
       <div data-testid="section-header">
-        <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={section.blockSchema.icon} />
-        <h2 data-testid="section-title">{section.title}</h2>
+        <div data-role="header-title">
+          <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
+          <i className={section.blockSchema.icon} aria-hidden="true" />
+          <h2 data-testid="section-title">{section.title}</h2>
+          {status === 'modified' && (
+            <span
+              data-role="modified-dot"
+              data-testid="section-modified-indicator"
+              aria-label={t(
+                'WeDevelopGrid.SectionBlock.MODIFIED_LABEL',
+                'Has unpublished changes',
+              )}
+              role="img"
+            />
+          )}
+        </div>
       </div>
       <div>
         {section.children?.map((row) => (

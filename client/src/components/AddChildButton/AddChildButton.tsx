@@ -46,11 +46,14 @@ export default function AddChildButton({
 
   const button = (
     <button type="button" data-testid="add-child-button" disabled={isPending} onClick={handleClick}>
-      {isPending
-        ? t('WeDevelopGrid.AddChildButton.ADDING_LABEL', 'Adding {childLabel}\u2026', {
-            childLabel,
-          })
-        : t('WeDevelopGrid.AddChildButton.ADD_LABEL', 'Add {childLabel}', { childLabel })}
+      <i className="font-icon-plus" aria-hidden="true" />
+      <span>
+        {isPending
+          ? t('WeDevelopGrid.AddChildButton.ADDING_LABEL', 'Adding {childLabel}\u2026', {
+              childLabel,
+            })
+          : t('WeDevelopGrid.AddChildButton.ADD_LABEL', 'Add {childLabel}', { childLabel })}
+      </span>
     </button>
   );
 

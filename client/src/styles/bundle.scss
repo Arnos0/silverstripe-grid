@@ -1,5 +1,7 @@
 @use './tokens';
 @use './viewport-switcher';
+@use './section-block';
+@use './add-child-button';
 
 .grid-editor-holder > [data-react-mount="grid-editor"] {
   flex: 0 0 100%;

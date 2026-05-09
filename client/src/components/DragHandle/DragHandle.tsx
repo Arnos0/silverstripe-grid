@@ -20,7 +20,11 @@ export default function DragHandle({
       {...listeners}
       {...attributes}
     >
-      <span data-testid="drag-handle-icon" aria-hidden="true" />
+      <span
+        data-testid="drag-handle-icon"
+        className="font-icon-drag-handle"
+        aria-hidden="true"
+      />
     </button>
   );
 }
