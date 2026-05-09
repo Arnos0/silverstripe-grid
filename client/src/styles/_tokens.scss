@@ -1,0 +1,94 @@
+// Design tokens for the grid editor UI.
+//
+// Two layers:
+//   1. PRIMITIVES — raw values pulled from the Figma design (Grid Module file,
+//      tKXlvnElwNfihjPeEeF6cH). Change these to retheme the module wholesale.
+//   2. SEMANTICS  — intent-named tokens that components reference. These point
+//      at primitives via var(), so primitive overrides cascade automatically.
+//
+// All tokens are namespaced --ssgrid-* to avoid colliding with the SilverStripe
+// Admin shell or any other module's tokens. Declared on :root so portals
+// (dialogs, dropdowns mounted to body) inherit them.
+
+:root {
+  // ---------------------------------------------------------------------------
+  // Primitives — color
+  // ---------------------------------------------------------------------------
+
+  // Brand — the only chromatic accent used for solid action colors.
+  --ssgrid-color-brand-500: #4f39f6;
+
+  // Modified status — the only secondary chromatic color in the design,
+  // used exclusively for the "Modified=true" element card variant.
+  --ssgrid-color-modified-500: #fe9a00;
+
+  // Neutrals — extreme ends + the single page wash.
+  --ssgrid-color-neutral-0: #ffffff;
+  --ssgrid-color-neutral-100: #f2f2f2;
+  --ssgrid-color-neutral-1000: #000000;
+
+  // Alpha overlays — the design uses translucent black and brand fills as
+  // surface tints and borders. Kept as static rgba so they read consistently;
+  // switch to color-mix() if/when the brand becomes project-themable.
+  --ssgrid-color-overlay-black-2: rgb(0 0 0 / 2%);
+  --ssgrid-color-overlay-black-3: rgb(0 0 0 / 3%);
+  --ssgrid-color-overlay-black-10: rgb(0 0 0 / 10%);
+  --ssgrid-color-overlay-black-15: rgb(0 0 0 / 15%);
+  --ssgrid-color-overlay-brand-5: rgb(79 57 246 / 5%);
+  --ssgrid-color-overlay-brand-10: rgb(79 57 246 / 10%);
+
+  // ---------------------------------------------------------------------------
+  // Primitives — radius
+  // ---------------------------------------------------------------------------
+
+  --ssgrid-radius-sm: 4px;
+  --ssgrid-radius-md: 8px;
+
+  // ---------------------------------------------------------------------------
+  // Primitives — elevation
+  // ---------------------------------------------------------------------------
+
+  --ssgrid-shadow-1: 0 2px 2px 0 rgb(0 0 0 / 10%);
+
+  // ---------------------------------------------------------------------------
+  // Semantics — surfaces
+  // ---------------------------------------------------------------------------
+
+  --ssgrid-surface-page: var(--ssgrid-color-neutral-100);
+  --ssgrid-surface-default: var(--ssgrid-color-neutral-0);
+  --ssgrid-surface-muted: var(--ssgrid-color-overlay-black-2);
+  --ssgrid-surface-sunken: var(--ssgrid-color-overlay-black-3);
+  --ssgrid-surface-selected: var(--ssgrid-color-overlay-brand-5);
+  --ssgrid-surface-hover: var(--ssgrid-color-overlay-brand-10);
+  --ssgrid-surface-action: var(--ssgrid-color-brand-500);
+  --ssgrid-surface-modified: var(--ssgrid-color-modified-500);
+
+  // ---------------------------------------------------------------------------
+  // Semantics — borders
+  // ---------------------------------------------------------------------------
+
+  --ssgrid-border-default: var(--ssgrid-color-overlay-black-15);
+  --ssgrid-border-subtle: var(--ssgrid-color-overlay-black-10);
+  --ssgrid-border-focus: var(--ssgrid-color-brand-500);
+  --ssgrid-border-modified: var(--ssgrid-color-modified-500);
+
+  // ---------------------------------------------------------------------------
+  // Semantics — text and icons
+  // ---------------------------------------------------------------------------
+
+  --ssgrid-text-default: var(--ssgrid-color-neutral-1000);
+  --ssgrid-text-brand: var(--ssgrid-color-brand-500);
+  --ssgrid-text-on-action: var(--ssgrid-color-neutral-0);
+  --ssgrid-icon-default: var(--ssgrid-color-neutral-1000);
+  --ssgrid-icon-brand: var(--ssgrid-color-brand-500);
+
+  // ---------------------------------------------------------------------------
+  // Semantics — status (consumed via [data-status] on element cards)
+  // ---------------------------------------------------------------------------
+  //
+  // The design currently encodes only the "Modified" status (orange Card
+  // variant). Draft/Published mappings are intentionally undefined here —
+  // add them once the design covers those states.
+
+  --ssgrid-status-modified: var(--ssgrid-color-modified-500);
+}
