@@ -1,6 +1,7 @@
 @use './tokens';
 @use './viewport-switcher';
 @use './section-block';
+@use './row-block';
 @use './add-child-button';
 
 .grid-editor-holder > [data-react-mount="grid-editor"] {

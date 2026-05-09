@@ -1,8 +1,9 @@
 // Section block — outer container, toolbar header, and modified-status dot.
 // All values from the Figma "Section" frame: rounded muted surface with a
-// status-aware border; toolbar splits into a left "title cluster" group and
-// a right "actions" group. Drag/collapse buttons render via shared
-// DragHandle/CollapseToggle components and inherit toolbar icon sizing here.
+// status-aware border. The header is a single flat flex row; the actions
+// menu is pushed to the right edge with margin-left: auto, so the title and
+// metadata can sit naturally next to the drag/collapse buttons without an
+// intermediate wrapper.
 
 [data-testid='section-block'] {
   background: var(--ssgrid-surface-muted);
@@ -18,14 +19,13 @@
 [data-testid='section-header'] {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 
-  > [data-role='header-title'] {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
+  // Type icon next to the title.
+  > i {
+    color: var(--ssgrid-text-default);
+    font-size: 16px;
+    line-height: 1;
   }
 
   h2 {
@@ -49,10 +49,9 @@
     }
   }
 
-  > [data-role='header-title'] > i {
-    color: var(--ssgrid-text-default);
-    font-size: 16px;
-    line-height: 1;
+  // Push the actions menu to the right edge of the header.
+  [data-testid='actions-menu-trigger'] {
+    margin-left: auto;
   }
 
   // Toolbar buttons: 16px icon-only square hit area, transparent background,

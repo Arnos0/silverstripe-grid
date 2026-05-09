@@ -72,7 +72,6 @@ function EditableRowBlock({ row }: RowBlockProps) {
           label={t('WeDevelopGrid.RowBlock.MOVE_LABEL', 'Move {title}', { title: row.title })}
         />
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
-        <i className={row.blockSchema.icon} />
         <h3 data-testid="row-title">
           {row.editLink !== null ? (
             <a href={row.editLink} data-testid="row-edit-link">
@@ -82,6 +81,21 @@ function EditableRowBlock({ row }: RowBlockProps) {
             row.title
           )}
         </h3>
+        {status === 'modified' && (
+          <span
+            data-role="modified-dot"
+            data-testid="row-modified-indicator"
+            aria-label={t('WeDevelopGrid.RowBlock.MODIFIED_LABEL', 'Has unpublished changes')}
+            role="img"
+          />
+        )}
+        {row.children !== null && row.children.length > 0 && (
+          <span data-role="row-meta" data-testid="row-column-count">
+            {t('WeDevelopGrid.RowBlock.COLUMN_COUNT', '{count} columns', {
+              count: row.children.length,
+            })}
+          </span>
+        )}
         <ElementActions node={row} />
       </div>
       <div
@@ -129,8 +143,22 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
     <div data-testid="row-block" data-status={status} data-collapsed={isCollapsed ? '' : undefined}>
       <div data-testid="row-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
-        <i className={row.blockSchema.icon} />
         <h3 data-testid="row-title">{row.title}</h3>
+        {status === 'modified' && (
+          <span
+            data-role="modified-dot"
+            data-testid="row-modified-indicator"
+            aria-label={t('WeDevelopGrid.RowBlock.MODIFIED_LABEL', 'Has unpublished changes')}
+            role="img"
+          />
+        )}
+        {row.children !== null && row.children.length > 0 && (
+          <span data-role="row-meta" data-testid="row-column-count">
+            {t('WeDevelopGrid.RowBlock.COLUMN_COUNT', '{count} columns', {
+              count: row.children.length,
+            })}
+          </span>
+        )}
       </div>
       <div
         data-testid="row-block-columns"
