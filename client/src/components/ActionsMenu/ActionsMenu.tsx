@@ -134,7 +134,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
         aria-label={t('WeDevelopGrid.ActionsMenu.TRIGGER_LABEL', 'Actions')}
         onClick={handleTriggerClick}
       >
-        <span aria-hidden="true" />
+        <span className="font-icon-dot-3-h" aria-hidden="true" />
       </button>
       {isOpen && (
         <div

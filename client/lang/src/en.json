@@ -38,6 +38,7 @@
   "WeDevelopGrid.GridEditorErrorBoundary.RENDER_FALLBACK": "The grid editor failed to render. Try reloading the page.",
   "WeDevelopGrid.GridEditorErrorBoundary.TOAST_ERROR": "The grid editor encountered an error and could not render.",
   "WeDevelopGrid.RowBlock.MOVE_LABEL": "Move {title}",
+  "WeDevelopGrid.SectionBlock.MODIFIED_LABEL": "Has unpublished changes",
   "WeDevelopGrid.SectionBlock.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.useArchiveAction.ACTION_LABEL": "Archive",
   "WeDevelopGrid.useArchiveAction.CONFIRM_MESSAGE_MANY_CHILDREN": "Archive \"{title}\" and all {count} child elements?",

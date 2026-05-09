@@ -23,7 +23,10 @@ export default function CollapseToggle({ isCollapsed, onToggle, label }: Collaps
         onToggle();
       }}
     >
-      <span aria-hidden="true" />
+      <span
+        className={isCollapsed ? 'font-icon-down-open' : 'font-icon-up-open'}
+        aria-hidden="true"
+      />
     </button>
   );
 }
