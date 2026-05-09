@@ -4,6 +4,10 @@ import { useResetOverridesAction } from '@/hooks/useResetOverridesAction';
 import { getViewports } from '@/utils/gridAdapter';
 import { t } from '@/i18n';
 import ConfirmDialog from '@/components/ConfirmDialog/ConfirmDialog';
+import {
+  getViewportIcon,
+  getViewportRangeLabel,
+} from './viewportPresentation';
 
 export default function ViewportSwitcher() {
   const readonly = useReadonly();
@@ -12,14 +16,15 @@ export default function ViewportSwitcher() {
   const reset = useResetOverridesAction();
 
   return (
-    <div data-testid="viewport-switcher">
-      {/* biome-ignore lint/a11y/useSemanticElements: no HTML element maps to role="group" for a toolbar-style button cluster; <fieldset> implies form grouping. */}
+    <>
       <div
-        role="group"
+        role="toolbar"
         aria-label={t('WeDevelopGrid.ViewportSwitcher.GROUP_LABEL', 'Viewport size')}
+        data-testid="viewport-switcher"
       >
         {viewports.map((viewport) => {
           const isActive = viewport.key === activeViewport;
+          const range = getViewportRangeLabel(viewport, viewports);
 
           return (
             <button
@@ -34,7 +39,9 @@ export default function ViewportSwitcher() {
                 }
               }}
             >
-              {viewport.label}
+              <i className={getViewportIcon(viewport.minWidth)} aria-hidden="true" />
+              <span data-role="label">{viewport.label}</span>
+              {range !== null && <span data-role="range">{range}</span>}
             </button>
           );
         })}
@@ -55,6 +62,6 @@ export default function ViewportSwitcher() {
           destructive
         />
       )}
-    </div>
+    </>
   );
 }

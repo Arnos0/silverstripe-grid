@@ -1,14 +1,7 @@
 // Design tokens for the grid editor UI.
-//
-// Two layers:
-//   1. PRIMITIVES — raw values pulled from the Figma design (Grid Module file,
-//      tKXlvnElwNfihjPeEeF6cH). Change these to retheme the module wholesale.
-//   2. SEMANTICS  — intent-named tokens that components reference. These point
-//      at primitives via var(), so primitive overrides cascade automatically.
-//
-// All tokens are namespaced --ssgrid-* to avoid colliding with the SilverStripe
-// Admin shell or any other module's tokens. Declared on :root so portals
-// (dialogs, dropdowns mounted to body) inherit them.
+// Two layers: PRIMITIVES (raw Figma values) and SEMANTICS (intent-named
+// tokens that reference primitives via var()). Namespaced --ssgrid-* and
+// declared on :root so portaled UI (dialogs, dropdowns) inherits them.
 
 :root {
   // ---------------------------------------------------------------------------
@@ -23,9 +16,9 @@
   --ssgrid-color-modified-500: #fe9a00;
 
   // Neutrals — extreme ends + the single page wash.
-  --ssgrid-color-neutral-0: #ffffff;
+  --ssgrid-color-neutral-0: #fff;
   --ssgrid-color-neutral-100: #f2f2f2;
-  --ssgrid-color-neutral-1000: #000000;
+  --ssgrid-color-neutral-1000: #000;
 
   // Alpha overlays — the design uses translucent black and brand fills as
   // surface tints and borders. Kept as static rgba so they read consistently;
@@ -83,12 +76,10 @@
   --ssgrid-icon-brand: var(--ssgrid-color-brand-500);
 
   // ---------------------------------------------------------------------------
-  // Semantics — status (consumed via [data-status] on element cards)
+  // Semantics — status (consumed via [data-status] on element cards).
+  // Design currently only encodes "Modified" (orange Card variant).
+  // Draft/Published are intentionally absent until the design covers them.
   // ---------------------------------------------------------------------------
-  //
-  // The design currently encodes only the "Modified" status (orange Card
-  // variant). Draft/Published mappings are intentionally undefined here —
-  // add them once the design covers those states.
 
   --ssgrid-status-modified: var(--ssgrid-color-modified-500);
 }

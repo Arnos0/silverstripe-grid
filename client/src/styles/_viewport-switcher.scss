@@ -1,0 +1,56 @@
+// Viewport switcher toolbar — styles the Figma "Tabs" frame onto a
+// role="toolbar" container holding aria-pressed toggle buttons.
+
+[role='toolbar'] {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--ssgrid-surface-page);
+  border: 1px solid var(--ssgrid-border-subtle);
+  border-radius: var(--ssgrid-radius-sm);
+
+  > button {
+    display: inline-flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 11px 16px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--ssgrid-radius-sm);
+    color: var(--ssgrid-text-default);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+
+    > i {
+      color: var(--ssgrid-icon-brand);
+    }
+
+    > [data-role='label'] {
+      font-weight: 500;
+    }
+
+    > [data-role='range'] {
+      font-weight: 400;
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--ssgrid-surface-default);
+      box-shadow: var(--ssgrid-shadow-1);
+      cursor: default;
+    }
+
+    &:not([aria-pressed='true']):hover {
+      background: var(--ssgrid-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ssgrid-border-focus);
+      outline-offset: -2px;
+    }
+  }
+}
