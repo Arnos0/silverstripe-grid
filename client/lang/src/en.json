@@ -6,6 +6,7 @@
   "WeDevelopGrid.CollapseToggle.COLLAPSE_LABEL": "Collapse {label}",
   "WeDevelopGrid.CollapseToggle.EXPAND_LABEL": "Expand {label}",
   "WeDevelopGrid.ColumnBlock.ADD_CONTENT_BUTTON": "+ Add content",
+  "WeDevelopGrid.ColumnBlock.MODIFIED_LABEL": "Has unpublished changes",
   "WeDevelopGrid.ColumnBlock.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.ColumnBlock.NO_CONTENT_BLOCKS": "No content blocks",
   "WeDevelopGrid.ConfirmDialog.CANCEL_BUTTON": "Cancel",
