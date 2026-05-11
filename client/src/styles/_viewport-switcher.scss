@@ -1,7 +1,9 @@
-// Viewport switcher toolbar — styles the Figma "Tabs" frame onto a
-// role="toolbar" container holding aria-pressed toggle buttons.
+// Viewport switcher toolbar — Figma "Tabs" frame: a rounded page-washed strip
+// of aria-pressed toggle buttons, the active one lifted onto a white surface.
+// The "reset overrides" button is a sibling of the strip (not nested), shown
+// only when at least one column carries a per-viewport override.
 
-[role='toolbar'] {
+.ssgrid-viewport-switcher {
   display: flex;
   gap: 4px;
   padding: 4px;
@@ -9,7 +11,7 @@
   border: 1px solid var(--ssgrid-border-subtle);
   border-radius: var(--ssgrid-radius-sm);
 
-  > button {
+  &__button {
     display: inline-flex;
     flex: 1 1 0;
     align-items: center;
@@ -26,18 +28,6 @@
     line-height: 1;
     cursor: pointer;
 
-    > i {
-      color: var(--ssgrid-icon-brand);
-    }
-
-    > [data-role='label'] {
-      font-weight: 500;
-    }
-
-    > [data-role='range'] {
-      font-weight: 400;
-    }
-
     &[aria-pressed='true'] {
       background: var(--ssgrid-surface-default);
       box-shadow: var(--ssgrid-shadow-1);
@@ -51,6 +41,41 @@
     &:focus-visible {
       outline: 2px solid var(--ssgrid-border-focus);
       outline-offset: -2px;
+    }
+  }
+
+  &__icon {
+    color: var(--ssgrid-icon-brand);
+  }
+
+  &__label {
+    font-weight: 500;
+  }
+
+  &__range {
+    font-weight: 400;
+  }
+
+  &__reset {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-sm);
+    color: var(--ssgrid-text-default);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--ssgrid-border-focus);
+      color: var(--ssgrid-text-brand);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ssgrid-border-focus);
+      outline-offset: 2px;
     }
   }
 }

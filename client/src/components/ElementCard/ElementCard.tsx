@@ -38,7 +38,7 @@ function EditableElementCard({ element }: ElementCardProps) {
 
   const header: ReactNode = (
     <>
-      <div data-role="element-card-header">
+      <div className="ssgrid-block__header">
         <DragHandle
           listeners={listeners}
           attributes={attributes}
@@ -47,14 +47,16 @@ function EditableElementCard({ element }: ElementCardProps) {
           })}
         />
         <i
-          className={element.blockSchema.icon}
+          className={`ssgrid-block__icon ${element.blockSchema.icon}`}
           data-testid="element-card-icon"
           aria-hidden="true"
         />
-        <h4 data-testid="element-card-title">{element.title}</h4>
+        <h4 className="ssgrid-block__title" data-testid="element-card-title">
+          {element.title}
+        </h4>
         {status === 'modified' && (
           <span
-            data-role="modified-dot"
+            className="ssgrid-modified-dot"
             data-testid="element-card-modified-indicator"
             aria-label={t('WeDevelopGrid.ElementCard.MODIFIED_LABEL', 'Has unpublished changes')}
             role="img"
@@ -62,7 +64,11 @@ function EditableElementCard({ element }: ElementCardProps) {
         )}
         <ElementActions node={element} />
       </div>
-      {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
+      {element.summary ? (
+        <p className="ssgrid-block__body" data-testid="element-card-summary">
+          {element.summary}
+        </p>
+      ) : null}
     </>
   );
 
@@ -94,6 +100,7 @@ function EditableElementCard({ element }: ElementCardProps) {
         ref={setNodeRef}
         href={editLink}
         style={style}
+        className="ssgrid-block"
         data-testid="element-card"
         data-state="clickable"
         data-status={status}
@@ -105,7 +112,13 @@ function EditableElementCard({ element }: ElementCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} data-testid="element-card" data-status={status}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="ssgrid-block"
+      data-testid="element-card"
+      data-status={status}
+    >
       {header}
     </div>
   );
@@ -115,24 +128,30 @@ function ReadonlyElementCard({ element }: ElementCardProps) {
   const status = element.status;
 
   return (
-    <div data-testid="element-card" data-status={status}>
-      <div data-role="element-card-header">
+    <div className="ssgrid-block" data-testid="element-card" data-status={status}>
+      <div className="ssgrid-block__header">
         <i
-          className={element.blockSchema.icon}
+          className={`ssgrid-block__icon ${element.blockSchema.icon}`}
           data-testid="element-card-icon"
           aria-hidden="true"
         />
-        <h4 data-testid="element-card-title">{element.title}</h4>
+        <h4 className="ssgrid-block__title" data-testid="element-card-title">
+          {element.title}
+        </h4>
         {status === 'modified' && (
           <span
-            data-role="modified-dot"
+            className="ssgrid-modified-dot"
             data-testid="element-card-modified-indicator"
             aria-label={t('WeDevelopGrid.ElementCard.MODIFIED_LABEL', 'Has unpublished changes')}
             role="img"
           />
         )}
       </div>
-      {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
+      {element.summary ? (
+        <p className="ssgrid-block__body" data-testid="element-card-summary">
+          {element.summary}
+        </p>
+      ) : null}
     </div>
   );
 }

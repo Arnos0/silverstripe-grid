@@ -1,10 +1,10 @@
-// Element card — the content "Block" sitting inside a Column. Figma "Block"
-// component: white surface, 15% black border, 8px radius, no padding of its
-// own. A Header frame (16px padding, drag/collapse/type-icon/title/modified
-// badge/actions) and, when the element exposes a summary, a Body frame below
-// it (16px padding, 1px top border splitting it from the header).
+// Element card — the content "Block" inside a Column. Figma "Block" component:
+// white surface, 15% black border, 8px radius, no padding of its own. A 16px-
+// padded Header (drag handle, brand-tinted type-icon chip, title, modified dot,
+// actions kebab) and, when the element exposes a summary, a 16px-padded Body
+// below it, separated by a 1px top hairline.
 
-[data-testid='element-card'] {
+.ssgrid-block {
   display: flex;
   flex-direction: column;
   background: var(--ssgrid-surface-default);
@@ -32,17 +32,17 @@
   &[style*='transform'] {
     z-index: 1;
   }
-}
 
-[data-role='element-card-header'] {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+  }
 
   // Type icon — brand-tinted rounded chip (Figma: 24px square, 10% brand fill,
   // 4px radius, 16px brand glyph).
-  > [data-testid='element-card-icon'] {
+  &__icon {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -56,7 +56,7 @@
     line-height: 1;
   }
 
-  h4 {
+  &__title {
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
@@ -69,62 +69,16 @@
     white-space: nowrap;
   }
 
-  // Drag handle + actions kebab — same 16px transparent icon-button treatment
-  // as the section/row/column toolbars.
-  [data-testid='drag-handle'],
-  [data-testid='actions-menu-trigger'] {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    background: transparent;
-    border: 0;
+  // Body — the summary text. Only rendered when the element has a summary; the
+  // 1px top border is what visually separates it from the header.
+  &__body {
+    margin: 0;
+    padding: 16px;
+    border-top: 1px solid var(--ssgrid-border-default);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.625;
     color: var(--ssgrid-text-default);
-    cursor: pointer;
-    line-height: 1;
-
-    > span {
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    &:hover > span {
-      color: var(--ssgrid-text-brand);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--ssgrid-border-focus);
-      outline-offset: 2px;
-      border-radius: var(--ssgrid-radius-sm);
-    }
+    overflow-wrap: anywhere;
   }
-
-  [data-testid='drag-handle'] {
-    cursor: grab;
-  }
-
-  // Modified-status dot — orange disc, matches the section/row toolbars.
-  [data-role='modified-dot'] {
-    flex: 0 0 auto;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--ssgrid-color-modified-500);
-  }
-}
-
-// Body — the summary text frame. Only rendered when the element has a summary;
-// the 1px top border is what visually separates it from the header.
-[data-testid='element-card-summary'] {
-  margin: 0;
-  padding: 16px;
-  border-top: 1px solid var(--ssgrid-border-default);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.625;
-  color: var(--ssgrid-text-default);
-  overflow-wrap: anywhere;
 }

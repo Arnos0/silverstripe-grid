@@ -174,16 +174,22 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const hasAllowedTypes = Object.keys(allowedTypes).length > 0;
 
   return (
-    <div ref={setNodeRef} style={columnStyle} data-testid="column-block-outer">
+    <div
+      ref={setNodeRef}
+      style={columnStyle}
+      className="ssgrid-column"
+      data-testid="column-block-outer"
+    >
       <div
+        className="ssgrid-column__card"
         data-testid="column-block"
         data-status={status}
         data-collapsed={isCollapsed ? '' : undefined}
         data-drop-target={showDropTarget ? '' : undefined}
         data-hidden={!settings.visible ? '' : undefined}
       >
-        <div data-testid="column-header">
-          <div data-role="column-toolbar">
+        <div className="ssgrid-column__header" data-testid="column-header">
+          <div className="ssgrid-column__toolbar">
             <DragHandle
               listeners={listeners}
               attributes={attributes}
@@ -192,8 +198,8 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
               })}
             />
             <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-            <i className={column.blockSchema.icon} aria-hidden="true" />
-            <span data-testid="column-title">
+            <i className={`ssgrid-column__icon ${column.blockSchema.icon}`} aria-hidden="true" />
+            <span className="ssgrid-column__title" data-testid="column-title">
               {column.editLink !== null ? (
                 <a href={column.editLink} data-testid="column-edit-link">
                   {column.title}
@@ -204,7 +210,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
             </span>
             {status === 'modified' && (
               <span
-                data-role="modified-dot"
+                className="ssgrid-modified-dot"
                 data-testid="column-modified-indicator"
                 aria-label={t(
                   'WeDevelopGrid.ColumnBlock.MODIFIED_LABEL',
@@ -215,8 +221,9 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
             )}
             <ElementActions node={column} />
           </div>
-          <div data-role="column-layout-settings">
+          <div className="ssgrid-column__layout-settings">
             <GridSettingsPicker
+              className="ssgrid-column__badge"
               label={widthLabel}
               options={widthOptions}
               selectedValue={widthSelectedValue}
@@ -225,6 +232,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
               onSelect={handleWidthSelect}
             />
             <GridSettingsPicker
+              className="ssgrid-column__badge"
               label={offsetLabel}
               options={offsetOptions}
               selectedValue={settings.offset}
@@ -234,7 +242,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
             />
           </div>
         </div>
-        <div>
+        <div className="ssgrid-column__body">
           <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
             {hasChildren
               ? children.map((child) => <ElementCard key={child.nodeKey} element={child} />)
@@ -245,7 +253,12 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
                 )}
           </SortableContext>
           {hasAllowedTypes && (
-            <button type="button" data-testid="add-content-button" onClick={handleOpenPicker}>
+            <button
+              type="button"
+              className="ssgrid-column__add-content"
+              data-testid="add-content-button"
+              onClick={handleOpenPicker}
+            >
               {t('WeDevelopGrid.ColumnBlock.ADD_CONTENT_BUTTON', '+ Add content')}
             </button>
           )}
@@ -276,21 +289,24 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
   const children = column.children ?? [];
 
   return (
-    <div style={columnStyle} data-testid="column-block-outer">
+    <div style={columnStyle} className="ssgrid-column" data-testid="column-block-outer">
       <div
+        className="ssgrid-column__card"
         data-testid="column-block"
         data-status={status}
         data-collapsed={isCollapsed ? '' : undefined}
         data-hidden={!settings.visible ? '' : undefined}
       >
-        <div data-testid="column-header">
-          <div data-role="column-toolbar">
+        <div className="ssgrid-column__header" data-testid="column-header">
+          <div className="ssgrid-column__toolbar">
             <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-            <i className={column.blockSchema.icon} aria-hidden="true" />
-            <span data-testid="column-title">{column.title}</span>
+            <i className={`ssgrid-column__icon ${column.blockSchema.icon}`} aria-hidden="true" />
+            <span className="ssgrid-column__title" data-testid="column-title">
+              {column.title}
+            </span>
             {status === 'modified' && (
               <span
-                data-role="modified-dot"
+                className="ssgrid-modified-dot"
                 data-testid="column-modified-indicator"
                 aria-label={t(
                   'WeDevelopGrid.ColumnBlock.MODIFIED_LABEL',
@@ -301,7 +317,7 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
             )}
           </div>
         </div>
-        <div>
+        <div className="ssgrid-column__body">
           {children.length > 0 ? (
             children.map((child) => <ElementCard key={child.nodeKey} element={child} />)
           ) : (
