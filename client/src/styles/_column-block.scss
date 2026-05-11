@@ -29,9 +29,11 @@
 }
 
 [data-testid='column-block-outer'] {
-  // The outer wrapper carries the column's responsive width via CSS variables
-  // (--col-width / --col-span). Stretch self by default so its single child
-  // (the visible card) fills the slot height.
+  // The outer wrapper carries the column's responsive width/offset via CSS
+  // variables (set inline by ColumnBlock, consumed by row-block-columns).
+  // border-box keeps the 8px gutter padding inside var(--col-width) instead of
+  // overflowing it. Column-direction flex so the visible card fills the slot.
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
