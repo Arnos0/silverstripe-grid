@@ -9,6 +9,7 @@ interface GridSettingsPickerProps {
   readonly selectedValue: number | 'hidden';
   readonly disabled: boolean;
   readonly testId: string;
+  readonly className?: string;
   readonly onSelect: (value: number | 'hidden') => void;
 }
 
@@ -18,6 +19,7 @@ export default function GridSettingsPicker({
   selectedValue,
   disabled,
   testId,
+  className,
   onSelect,
 }: GridSettingsPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -123,10 +125,15 @@ export default function GridSettingsPicker({
   }
 
   return (
-    <div ref={wrapperRef}>
+    <div ref={wrapperRef} className="ssgrid-settings-picker">
       <button
         ref={triggerRef}
         type="button"
+        className={
+          className !== undefined
+            ? `ssgrid-settings-picker__trigger ${className}`
+            : 'ssgrid-settings-picker__trigger'
+        }
         data-testid={testId}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -140,6 +147,7 @@ export default function GridSettingsPicker({
         <div
           id={listboxId}
           ref={listboxRef}
+          className="ssgrid-settings-picker__listbox"
           role="listbox"
           tabIndex={-1}
           aria-activedescendant={getOptionId(activeIndex)}
@@ -151,6 +159,7 @@ export default function GridSettingsPicker({
             <div
               key={option.value}
               id={getOptionId(index)}
+              className="ssgrid-settings-picker__option"
               role="option"
               aria-selected={option.value === selectedValue}
               data-separator={option.value === 'hidden' ? 'true' : undefined}

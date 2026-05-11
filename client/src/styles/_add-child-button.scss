@@ -1,57 +1,60 @@
-// Add-child button — Figma "Add row" / "Add section" button: outlined,
-// brand-tinted, 32px tall, plus icon + label, full width inside its parent.
-// Both `append` and `empty-state` variants render the same inner <button>;
-// only the wrapping `<div>` and surrounding paragraph differ in JSX.
+// Add-child button — Figma "Add row" / "Add section" button: outlined, brand-
+// tinted, 32px tall, plus icon + label, full width inside its parent. The
+// append variant is just the button; the empty-state variant adds a hint line
+// above it.
 
-:where([data-testid='add-child-append'], [data-testid='add-child-empty']) > button {
-  display: inline-flex;
-  width: 100%;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 0 8px;
-  background: var(--ssgrid-surface-selected);
-  border: 1px solid var(--ssgrid-border-focus);
-  border-radius: var(--ssgrid-radius-sm);
-  color: var(--ssgrid-text-brand);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
-  cursor: pointer;
-
-  > i {
-    color: var(--ssgrid-text-brand);
-    font-size: 16px;
-    line-height: 1;
+.ssgrid-add-child {
+  &--empty {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px 0;
   }
 
-  &:hover:not(:disabled) {
-    background: var(--ssgrid-surface-hover);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--ssgrid-border-focus);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    cursor: progress;
-    opacity: 0.6;
-  }
-}
-
-[data-testid='add-child-empty'] {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-  padding: 16px 0;
-
-  > p {
+  &__hint {
     margin: 0;
     color: var(--ssgrid-text-default);
     font-size: 14px;
     text-align: center;
+  }
+
+  &__button {
+    display: inline-flex;
+    width: 100%;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 8px;
+    background: var(--ssgrid-surface-selected);
+    border: 1px solid var(--ssgrid-border-focus);
+    border-radius: var(--ssgrid-radius-sm);
+    color: var(--ssgrid-text-brand);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--ssgrid-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ssgrid-border-focus);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: progress;
+      opacity: 0.6;
+    }
+  }
+
+  &__icon {
+    color: var(--ssgrid-text-brand);
+    font-size: 16px;
+    line-height: 1;
   }
 }

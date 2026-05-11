@@ -15,6 +15,7 @@ export default function DragHandle({
   return (
     <button
       type="button"
+      className="ssgrid-icon-button ssgrid-icon-button--drag"
       data-testid="drag-handle"
       aria-label={label}
       {...listeners}
@@ -22,7 +23,7 @@ export default function DragHandle({
     >
       <span
         data-testid="drag-handle-icon"
-        className="font-icon-drag-handle"
+        className="ssgrid-icon-button__glyph font-icon-drag-handle"
         aria-hidden="true"
       />
     </button>

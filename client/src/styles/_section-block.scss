@@ -1,11 +1,8 @@
-// Section block — outer container, toolbar header, and modified-status dot.
-// All values from the Figma "Section" frame: rounded muted surface with a
-// status-aware border. The header is a single flat flex row; the actions
-// menu is pushed to the right edge with margin-left: auto, so the title and
-// metadata can sit naturally next to the drag/collapse buttons without an
-// intermediate wrapper.
+// Section block — outermost grid container. Figma "Section" frame: rounded
+// muted surface with a status-aware border. The header is a single flat flex
+// row; the title flexes to fill so the actions kebab lands at the right edge.
 
-[data-testid='section-block'] {
+.ssgrid-section {
   background: var(--ssgrid-surface-muted);
   border: 1px solid var(--ssgrid-border-default);
   border-radius: var(--ssgrid-radius-md);
@@ -14,28 +11,33 @@
   &[data-status='modified'] {
     border-color: var(--ssgrid-border-modified);
   }
-}
 
-[data-testid='section-header'] {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  &[data-collapsed] > :not(.ssgrid-section__header) {
+    display: none;
+  }
 
-  // Type icon next to the title.
-  > i {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
     color: var(--ssgrid-text-default);
     font-size: 16px;
     line-height: 1;
   }
 
-  h2 {
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
     margin: 0;
+    overflow: hidden;
     font-size: 14px;
     font-weight: 500;
     line-height: 18px;
     color: var(--ssgrid-text-default);
-    min-width: 0;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 
@@ -49,55 +51,7 @@
     }
   }
 
-  // Push the actions menu to the right edge of the header.
-  [data-testid='actions-menu-trigger'] {
-    margin-left: auto;
+  &__body {
+    margin-top: 16px;
   }
-
-  // Toolbar buttons: 16px icon-only square hit area, transparent background,
-  // no chrome. Hover/focus states ride on the existing :hover and :focus-visible.
-  [data-testid='drag-handle'],
-  [data-testid='collapse-toggle'],
-  [data-testid='actions-menu-trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    color: var(--ssgrid-text-default);
-    cursor: pointer;
-    line-height: 1;
-
-    > span {
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    &:hover > span {
-      color: var(--ssgrid-text-brand);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--ssgrid-border-focus);
-      outline-offset: 2px;
-      border-radius: var(--ssgrid-radius-sm);
-    }
-  }
-
-  [data-testid='drag-handle'] {
-    cursor: grab;
-  }
-}
-
-// Modified-status dot in the section header — orange disc, 8px square,
-// rendered only when [data-status='modified'] is set on the section.
-[data-role='modified-dot'] {
-  flex: 0 0 auto;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ssgrid-color-modified-500);
 }

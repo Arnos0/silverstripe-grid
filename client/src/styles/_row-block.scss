@@ -1,11 +1,8 @@
-// Row block — rendered inside a Section card, the row itself has no card
-// chrome in the Figma design (no border, no background). It is a horizontal
-// stack of: a header toolbar (drag/collapse/title/meta + actions) and a
-// columns body underneath. The drop-target hover state matches the rectangle
-// the design uses to indicate a pending drop (2% black tint, 15% black border,
-// 8px radius).
+// Row block — rendered inside a Section. No card chrome in the Figma design;
+// it's a vertical stack of a header toolbar and a columns body. The drop-target
+// hover state matches the Figma drop-indicator rectangle.
 
-[data-testid='row-block'] {
+.ssgrid-row {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -21,26 +18,33 @@
   & + & {
     margin-top: 8px;
   }
-}
 
-[data-testid='row-header'] {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  // Push the actions menu to the right edge of the header.
-  [data-testid='actions-menu-trigger'] {
-    margin-left: auto;
+  &[data-collapsed] > :not(.ssgrid-row__header) {
+    display: none;
   }
 
-  h3 {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  // Readonly variant wraps the title group in this element for structural
+  // parity with the editable header; display:contents lets its children sit in
+  // the header flex row directly so both variants lay out identically.
+  &__header-title {
+    display: contents;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
     margin: 0;
+    overflow: hidden;
     font-size: 14px;
     font-weight: 500;
     line-height: 18px;
     color: var(--ssgrid-text-default);
-    min-width: 0;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 
@@ -54,99 +58,57 @@
     }
   }
 
-  // Toolbar buttons inside the row header — same treatment as the section
-  // toolbar buttons: 16px icon-only square, transparent chrome, brand-tinted
-  // hover.
-  [data-testid='drag-handle'],
-  [data-testid='collapse-toggle'],
-  [data-testid='actions-menu-trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    color: var(--ssgrid-text-default);
-    cursor: pointer;
-    line-height: 1;
-
-    > span {
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    &:hover > span {
-      color: var(--ssgrid-text-brand);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--ssgrid-border-focus);
-      outline-offset: 2px;
-      border-radius: var(--ssgrid-radius-sm);
-    }
-  }
-
-  [data-testid='drag-handle'] {
-    cursor: grab;
-  }
-
-  // Subtle column-count pill — sits next to the title as a meta hint, mirrors
-  // the "3 columns" label in the Figma row toolbar.
-  [data-role='row-meta'] {
+  // Subtle column-count hint next to the title (the "3 columns" label).
+  &__meta {
     flex: 0 0 auto;
     color: var(--ssgrid-text-default);
     font-size: 12px;
-    font-weight: 400;
     line-height: 1;
     opacity: 0.6;
   }
-}
 
-// Columns container. Each column carries its responsive width/offset as CSS
-// custom properties set inline by ColumnBlock (--col-width / --col-offset in
-// flex mode, --col-span / --col-start in grid mode); this container is what
-// actually consumes them, so omitting these rules collapses every column to
-// content width. Flex mode realises the 16px gutter as 8px horizontal padding
-// on each column plus a -8px inline margin on the track, rather than `gap`: a
-// flex `gap` combined with percentage flex-basis overflows the line and forces
-// an unwanted wrap (two 6/12 columns => 100% + gap > 100%). The padding gutter
-// keeps the percentages exact.
-[data-testid='row-block-columns'] {
-  &[data-layout-mode='flex'] {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    row-gap: 16px;
-    margin: 0 -8px;
+  // Columns container. Each column carries its responsive width/offset as CSS
+  // custom properties set inline by ColumnBlock (--col-width / --col-offset in
+  // flex mode, --col-span / --col-start in grid mode); this container consumes
+  // them. Flex mode realises the 16px gutter as 8px horizontal padding per
+  // column plus a -8px track margin rather than `gap`: a flex `gap` combined
+  // with a percentage flex-basis overflows the line and forces an unwanted
+  // wrap (two 6/12 columns => 100% + gap > 100%).
+  &__columns {
+    &[data-layout-mode='flex'] {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      row-gap: 16px;
+      margin: 0 -8px;
 
-    > [data-testid='column-block-outer'] {
-      flex: 0 0 var(--col-width);
-      max-width: var(--col-width);
-      margin-left: var(--col-offset, 0);
-      padding: 0 8px;
+      > .ssgrid-column {
+        flex: 0 0 var(--col-width);
+        max-width: var(--col-width);
+        margin-left: var(--col-offset, 0);
+        padding: 0 8px;
+      }
+
+      > .ssgrid-add-child--append,
+      > .ssgrid-add-child--empty {
+        flex: 0 0 100%;
+        padding: 0 8px;
+      }
     }
 
-    > [data-testid='add-child-append'],
-    > [data-testid='add-child-empty'] {
-      flex: 0 0 100%;
-      padding: 0 8px;
-    }
-  }
+    &[data-layout-mode='grid'] {
+      display: grid;
+      grid-template-columns: repeat(var(--grid-columns, 12), 1fr);
+      gap: 16px;
 
-  &[data-layout-mode='grid'] {
-    display: grid;
-    grid-template-columns: repeat(var(--grid-columns, 12), 1fr);
-    gap: 16px;
+      > .ssgrid-column {
+        grid-column: var(--col-start, auto) / span var(--col-span);
+      }
 
-    > [data-testid='column-block-outer'] {
-      grid-column: var(--col-start, auto) / span var(--col-span);
-    }
-
-    > [data-testid='add-child-append'],
-    > [data-testid='add-child-empty'] {
-      grid-column: 1 / -1;
+      > .ssgrid-add-child--append,
+      > .ssgrid-add-child--empty {
+        grid-column: 1 / -1;
+      }
     }
   }
 }

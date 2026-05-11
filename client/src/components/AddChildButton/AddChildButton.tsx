@@ -45,8 +45,14 @@ export default function AddChildButton({
   }
 
   const button = (
-    <button type="button" data-testid="add-child-button" disabled={isPending} onClick={handleClick}>
-      <i className="font-icon-plus" aria-hidden="true" />
+    <button
+      type="button"
+      className="ssgrid-add-child__button"
+      data-testid="add-child-button"
+      disabled={isPending}
+      onClick={handleClick}
+    >
+      <i className="ssgrid-add-child__icon font-icon-plus" aria-hidden="true" />
       <span>
         {isPending
           ? t('WeDevelopGrid.AddChildButton.ADDING_LABEL', 'Adding {childLabel}\u2026', {
@@ -59,8 +65,8 @@ export default function AddChildButton({
 
   if (variant === 'empty-state') {
     return (
-      <div data-testid="add-child-empty">
-        <p>
+      <div className="ssgrid-add-child ssgrid-add-child--empty" data-testid="add-child-empty">
+        <p className="ssgrid-add-child__hint">
           {t('WeDevelopGrid.AddChildButton.EMPTY_MESSAGE', 'No {childLabel}s yet', {
             childLabel: childLabel.toLowerCase(),
           })}
@@ -70,5 +76,9 @@ export default function AddChildButton({
     );
   }
 
-  return <div data-testid="add-child-append">{button}</div>;
+  return (
+    <div className="ssgrid-add-child ssgrid-add-child--append" data-testid="add-child-append">
+      {button}
+    </div>
+  );
 }

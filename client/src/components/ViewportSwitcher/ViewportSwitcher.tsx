@@ -4,10 +4,7 @@ import { useResetOverridesAction } from '@/hooks/useResetOverridesAction';
 import { getViewports } from '@/utils/gridAdapter';
 import { t } from '@/i18n';
 import ConfirmDialog from '@/components/ConfirmDialog/ConfirmDialog';
-import {
-  getViewportIcon,
-  getViewportRangeLabel,
-} from './viewportPresentation';
+import { getViewportIcon, getViewportRangeLabel } from './viewportPresentation';
 
 export default function ViewportSwitcher() {
   const readonly = useReadonly();
@@ -18,6 +15,7 @@ export default function ViewportSwitcher() {
   return (
     <>
       <div
+        className="ssgrid-viewport-switcher"
         role="toolbar"
         aria-label={t('WeDevelopGrid.ViewportSwitcher.GROUP_LABEL', 'Viewport size')}
         data-testid="viewport-switcher"
@@ -30,6 +28,7 @@ export default function ViewportSwitcher() {
             <button
               key={viewport.key}
               type="button"
+              className="ssgrid-viewport-switcher__button"
               data-testid={`viewport-button-${viewport.key}`}
               aria-pressed={isActive}
               aria-disabled={isActive || undefined}
@@ -39,15 +38,23 @@ export default function ViewportSwitcher() {
                 }
               }}
             >
-              <i className={getViewportIcon(viewport.minWidth)} aria-hidden="true" />
-              <span data-role="label">{viewport.label}</span>
-              {range !== null && <span data-role="range">{range}</span>}
+              <i
+                className={`ssgrid-viewport-switcher__icon ${getViewportIcon(viewport.minWidth)}`}
+                aria-hidden="true"
+              />
+              <span className="ssgrid-viewport-switcher__label">{viewport.label}</span>
+              {range !== null && <span className="ssgrid-viewport-switcher__range">{range}</span>}
             </button>
           );
         })}
       </div>
       {!readonly && reset.showReset && (
-        <button type="button" data-testid="reset-overrides-button" onClick={reset.onResetClick}>
+        <button
+          type="button"
+          className="ssgrid-viewport-switcher__reset"
+          data-testid="reset-overrides-button"
+          onClick={reset.onResetClick}
+        >
           {reset.label}
         </button>
       )}

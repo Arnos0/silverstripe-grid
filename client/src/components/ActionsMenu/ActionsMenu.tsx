@@ -127,6 +127,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
       <button
         ref={triggerRef}
         type="button"
+        className="ssgrid-icon-button"
         data-testid="actions-menu-trigger"
         aria-haspopup="menu"
         aria-expanded={isOpen}
@@ -134,7 +135,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
         aria-label={t('WeDevelopGrid.ActionsMenu.TRIGGER_LABEL', 'Actions')}
         onClick={handleTriggerClick}
       >
-        <span className="font-icon-dot-3-h" aria-hidden="true" />
+        <span className="ssgrid-icon-button__glyph font-icon-dot-3-h" aria-hidden="true" />
       </button>
       {isOpen && (
         <div

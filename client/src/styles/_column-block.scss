@@ -1,168 +1,170 @@
-// Column block — outlined card sitting inside a Row.
-// Figma "Column" component: 3% black surface tint, 15% black border, 8px
-// radius, 16px padding, 16px internal gap. The header has two stacked rows:
-// a toolbar (drag/collapse/icon/title/modified-dot/actions) and a layout
-// settings row (width + offset dropdowns side-by-side). The body renders
-// content blocks vertically.
+// Column block — outlined card inside a Row. Figma "Column" component: 3%
+// black surface, 15% black border, 8px radius, 16px padding, 16px internal
+// gap. The header has two stacked rows — a toolbar (drag/collapse/icon/title/
+// modified-dot/actions) and a layout-settings row (width + offset pickers,
+// side-by-side, equal width). The body renders content blocks vertically.
 
-[data-testid='column-block'] {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-  background: var(--ssgrid-surface-sunken);
-  border: 1px solid var(--ssgrid-border-default);
-  border-radius: var(--ssgrid-radius-md);
-
-  &[data-status='modified'] {
-    border-color: var(--ssgrid-border-modified);
-  }
-
-  &[data-drop-target] {
-    background: var(--ssgrid-surface-selected);
-    border-color: var(--ssgrid-border-focus);
-  }
-
-  &[data-hidden] {
-    opacity: 0.5;
-  }
-}
-
-[data-testid='column-block-outer'] {
-  // The outer wrapper carries the column's responsive width/offset via CSS
-  // variables (set inline by ColumnBlock, consumed by row-block-columns).
-  // border-box keeps the 8px gutter padding inside var(--col-width) instead of
-  // overflowing it. Column-direction flex so the visible card fills the slot.
+.ssgrid-column {
+  // Outer wrapper — carries the responsive width/offset CSS vars (set inline by
+  // ColumnBlock, consumed by .ssgrid-row__columns). border-box keeps the gutter
+  // padding inside var(--col-width).
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-}
 
-[data-testid='column-header'] {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  > [data-role='column-toolbar'] {
+  &__card {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--ssgrid-surface-sunken);
+    border: 1px solid var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-md);
 
-    > i {
-      color: var(--ssgrid-text-default);
-      font-size: 16px;
-      line-height: 1;
+    &[data-status='modified'] {
+      border-color: var(--ssgrid-border-modified);
     }
 
-    [data-testid='column-title'] {
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 18px;
-      color: var(--ssgrid-text-default);
-
-      a {
-        color: inherit;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
+    &[data-drop-target] {
+      background: var(--ssgrid-surface-selected);
+      border-color: var(--ssgrid-border-focus);
     }
 
-    // Drag/collapse buttons + actions kebab — same square icon-button
-    // treatment as section/row headers.
-    [data-testid='drag-handle'],
-    [data-testid='collapse-toggle'],
-    [data-testid='actions-menu-trigger'] {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 16px;
-      height: 16px;
-      padding: 0;
-      background: transparent;
-      border: 0;
-      color: var(--ssgrid-text-default);
-      cursor: pointer;
-      line-height: 1;
-
-      > span {
-        font-size: 16px;
-        line-height: 1;
-      }
-
-      &:hover > span {
-        color: var(--ssgrid-text-brand);
-      }
-
-      &:focus-visible {
-        outline: 2px solid var(--ssgrid-border-focus);
-        outline-offset: 2px;
-        border-radius: var(--ssgrid-radius-sm);
-      }
+    &[data-hidden] {
+      opacity: 0.5;
     }
 
-    [data-testid='drag-handle'] {
-      cursor: grab;
+    &[data-collapsed] > :not(.ssgrid-column__header) {
+      display: none;
     }
   }
 
-  > [data-role='column-layout-settings'] {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    color: var(--ssgrid-text-default);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--ssgrid-text-default);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__layout-settings {
     display: flex;
     align-items: stretch;
     gap: 16px;
 
-    // Each picker wrapper takes equal share of the row.
+    // Each picker wrapper takes an equal share of the row.
     > * {
       flex: 1 1 0;
       min-width: 0;
     }
   }
-}
 
-// GridSettingsPicker trigger — the inline "4 columns" / "0 offset" dropdowns
-// in the Figma design. Outlined chip with chevron-style affordance from
-// the trailing label only (no separate caret slot in the existing component).
-[data-testid='column-badge'],
-[data-testid='column-offset-badge'] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 32px;
-  padding: 4px 8px;
-  background: var(--ssgrid-surface-muted);
-  border: 1px solid var(--ssgrid-border-default);
-  border-radius: var(--ssgrid-radius-sm);
-  color: var(--ssgrid-text-default);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
-  cursor: pointer;
+  // The width / offset picker triggers — outlined chips. (GridSettingsPicker
+  // gets this class via its `className` prop; the chevron affordance is the
+  // trailing label only, the component has no separate caret slot.)
+  &__badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 32px;
+    padding: 4px 8px;
+    background: var(--ssgrid-surface-muted);
+    border: 1px solid var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-sm);
+    color: var(--ssgrid-text-default);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
 
-  &:hover:not(:disabled) {
-    background: var(--ssgrid-surface-hover);
-    border-color: var(--ssgrid-border-focus);
+    &:hover:not(:disabled) {
+      background: var(--ssgrid-surface-hover);
+      border-color: var(--ssgrid-border-focus);
+    }
+
+    &[aria-expanded='true'] {
+      background: var(--ssgrid-surface-selected);
+      border-color: var(--ssgrid-border-focus);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ssgrid-border-focus);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 
-  &[aria-expanded='true'] {
-    background: var(--ssgrid-surface-selected);
-    border-color: var(--ssgrid-border-focus);
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--ssgrid-border-focus);
-    outline-offset: 2px;
-  }
+  // Inline "+ Add content" trigger (opens the element type picker) — dashed
+  // outline so it reads as a placeholder slot rather than a primary action.
+  &__add-content {
+    display: inline-flex;
+    width: 100%;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    background: transparent;
+    border: 1px dashed var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-sm);
+    color: var(--ssgrid-text-default);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
 
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+    &:hover {
+      border-color: var(--ssgrid-border-focus);
+      color: var(--ssgrid-text-brand);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ssgrid-border-focus);
+      outline-offset: 2px;
+    }
   }
 }

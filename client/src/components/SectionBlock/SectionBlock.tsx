@@ -63,12 +63,13 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
     <section
       ref={setNodeRef}
       style={style}
+      className="ssgrid-section"
       data-testid="section-block"
       data-status={status}
       data-collapsed={isCollapsed ? '' : undefined}
       data-drop-target={showDropTarget ? '' : undefined}
     >
-      <div data-testid="section-header">
+      <div className="ssgrid-section__header" data-testid="section-header">
         <DragHandle
           listeners={listeners}
           attributes={attributes}
@@ -77,8 +78,8 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
           })}
         />
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={section.blockSchema.icon} aria-hidden="true" />
-        <h2 data-testid="section-title">
+        <i className={`ssgrid-section__icon ${section.blockSchema.icon}`} aria-hidden="true" />
+        <h2 className="ssgrid-section__title" data-testid="section-title">
           {section.editLink !== null ? (
             <a href={section.editLink} data-testid="section-edit-link">
               {section.title}
@@ -89,7 +90,7 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
         </h2>
         {status === 'modified' && (
           <span
-            data-role="modified-dot"
+            className="ssgrid-modified-dot"
             data-testid="section-modified-indicator"
             aria-label={t('WeDevelopGrid.SectionBlock.MODIFIED_LABEL', 'Has unpublished changes')}
             role="img"
@@ -97,7 +98,7 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
         )}
         <ElementActions node={section} />
       </div>
-      <div>
+      <div className="ssgrid-section__body">
         <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
           {section.children !== null && section.children.length > 0 ? (
             <>
@@ -131,24 +132,27 @@ function ReadonlySectionBlock({ section }: SectionBlockProps) {
 
   return (
     <section
+      className="ssgrid-section"
       data-testid="section-block"
       data-status={status}
       data-collapsed={isCollapsed ? '' : undefined}
     >
-      <div data-testid="section-header">
+      <div className="ssgrid-section__header" data-testid="section-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={section.blockSchema.icon} aria-hidden="true" />
-        <h2 data-testid="section-title">{section.title}</h2>
+        <i className={`ssgrid-section__icon ${section.blockSchema.icon}`} aria-hidden="true" />
+        <h2 className="ssgrid-section__title" data-testid="section-title">
+          {section.title}
+        </h2>
         {status === 'modified' && (
           <span
-            data-role="modified-dot"
+            className="ssgrid-modified-dot"
             data-testid="section-modified-indicator"
             aria-label={t('WeDevelopGrid.SectionBlock.MODIFIED_LABEL', 'Has unpublished changes')}
             role="img"
           />
         )}
       </div>
-      <div>
+      <div className="ssgrid-section__body">
         {section.children?.map((row) => (
           <RowBlock key={row.nodeKey} row={row} />
         ))}

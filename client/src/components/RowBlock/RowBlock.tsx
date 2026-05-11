@@ -60,19 +60,20 @@ function EditableRowBlock({ row }: RowBlockProps) {
     <div
       ref={setNodeRef}
       style={style}
+      className="ssgrid-row"
       data-testid="row-block"
       data-status={status}
       data-collapsed={isCollapsed ? '' : undefined}
       data-drop-target={showDropTarget ? '' : undefined}
     >
-      <div data-testid="row-header">
+      <div className="ssgrid-row__header" data-testid="row-header">
         <DragHandle
           listeners={listeners}
           attributes={attributes}
           label={t('WeDevelopGrid.RowBlock.MOVE_LABEL', 'Move {title}', { title: row.title })}
         />
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
-        <h3 data-testid="row-title">
+        <h3 className="ssgrid-row__title" data-testid="row-title">
           {row.editLink !== null ? (
             <a href={row.editLink} data-testid="row-edit-link">
               {row.title}
@@ -83,14 +84,14 @@ function EditableRowBlock({ row }: RowBlockProps) {
         </h3>
         {status === 'modified' && (
           <span
-            data-role="modified-dot"
+            className="ssgrid-modified-dot"
             data-testid="row-modified-indicator"
             aria-label={t('WeDevelopGrid.RowBlock.MODIFIED_LABEL', 'Has unpublished changes')}
             role="img"
           />
         )}
         {row.children !== null && row.children.length > 0 && (
-          <span data-role="row-meta" data-testid="row-column-count">
+          <span className="ssgrid-row__meta" data-testid="row-column-count">
             {t('WeDevelopGrid.RowBlock.COLUMN_COUNT', '{count} columns', {
               count: row.children.length,
             })}
@@ -99,6 +100,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
         <ElementActions node={row} />
       </div>
       <div
+        className="ssgrid-row__columns"
         data-testid="row-block-columns"
         data-layout-mode={layoutMode}
         style={
@@ -140,21 +142,28 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
   const { isCollapsed, onToggle } = useRowCollapse(row);
 
   return (
-    <div data-testid="row-block" data-status={status} data-collapsed={isCollapsed ? '' : undefined}>
-      <div data-testid="row-header">
-        <div data-role="header-title">
+    <div
+      className="ssgrid-row"
+      data-testid="row-block"
+      data-status={status}
+      data-collapsed={isCollapsed ? '' : undefined}
+    >
+      <div className="ssgrid-row__header" data-testid="row-header">
+        <div className="ssgrid-row__header-title">
           <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={row.title} />
-          <h3 data-testid="row-title">{row.title}</h3>
+          <h3 className="ssgrid-row__title" data-testid="row-title">
+            {row.title}
+          </h3>
           {status === 'modified' && (
             <span
-              data-role="modified-dot"
+              className="ssgrid-modified-dot"
               data-testid="row-modified-indicator"
               aria-label={t('WeDevelopGrid.RowBlock.MODIFIED_LABEL', 'Has unpublished changes')}
               role="img"
             />
           )}
           {row.children !== null && row.children.length > 0 && (
-            <span data-role="row-meta" data-testid="row-column-count">
+            <span className="ssgrid-row__meta" data-testid="row-column-count">
               {t('WeDevelopGrid.RowBlock.COLUMN_COUNT', '{count} columns', {
                 count: row.children.length,
               })}
@@ -163,6 +172,7 @@ function ReadonlyRowBlock({ row }: RowBlockProps) {
         </div>
       </div>
       <div
+        className="ssgrid-row__columns"
         data-testid="row-block-columns"
         data-layout-mode={layoutMode}
         style={
