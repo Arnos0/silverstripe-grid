@@ -23,10 +23,23 @@ describe('ElementActions', () => {
     expect(screen.getByTestId('element-toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('element-action-duplicate')).toBeEnabled();
     expect(screen.getByTestId('element-action-archive')).toBeEnabled();
+    // History links to the element's CMS edit form, so it follows `editLink`,
+    // which the factory populates by default.
+    expect(screen.getByTestId('element-action-history')).toBeEnabled();
 
     // "Duplicate to page" has no toolbar glyph, so it lives in the overflow menu.
     await user.click(screen.getByTestId('actions-menu-trigger'));
     expect(screen.getByText(/duplicate to/i)).toBeInTheDocument();
+  });
+
+  it('disables the history action when the element has no CMS edit link', () => {
+    mockFetchSuccess({});
+
+    const node = createSimpleElement({ editLink: null });
+
+    renderWithProviders(<ElementActions node={node} />);
+
+    expect(screen.getByTestId('element-action-history')).toBeDisabled();
   });
 
   it('renders the toolbar without overflow menu and with disabled actions when not permitted', () => {
