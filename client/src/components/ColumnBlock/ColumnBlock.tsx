@@ -22,12 +22,20 @@ import DragHandle from '@/components/DragHandle/DragHandle';
 import CollapseToggle from '@/components/CollapseToggle/CollapseToggle';
 import ElementActions from '@/components/ElementActions/ElementActions';
 import GridSettingsPicker from '@/components/GridSettingsPicker/GridSettingsPicker';
+import ColumnInsertButton from '@/components/ColumnInsertButton/ColumnInsertButton';
 import ElementCard from '@/components/ElementCard/ElementCard';
 import EmptyState from '@/components/EmptyState/EmptyState';
 import ElementTypePicker from '@/components/ElementTypePicker/ElementTypePicker';
 
+/** Identifies the column gutter just before this column as a "+ insert a column here" slot. */
+interface ColumnInsertBeforeRef {
+  readonly rowId: number;
+  readonly afterColumnId: number;
+}
+
 interface ColumnBlockProps {
   readonly column: ColumnNode;
+  readonly insertBefore?: ColumnInsertBeforeRef;
 }
 
 function useColumnCollapse(column: ColumnNode) {
@@ -50,12 +58,12 @@ function useChildElementKeys(column: ColumnNode): NodeKey[] {
  * `resolveViewportSettings` so that viewport switching in the history
  * viewer still re-layouts the readonly tree.
  */
-export default function ColumnBlock({ column }: ColumnBlockProps) {
+export default function ColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const readonly = useReadonly();
   return readonly ? (
     <ReadonlyColumnBlock column={column} />
   ) : (
-    <EditableColumnBlock column={column} />
+    <EditableColumnBlock column={column} insertBefore={insertBefore} />
   );
 }
 
@@ -83,7 +91,7 @@ function buildColumnStyle(
   } as React.CSSProperties;
 }
 
-function EditableColumnBlock({ column }: ColumnBlockProps) {
+function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const { activeViewport } = useViewportContext();
   const { pageId, zone } = useGridEditorContext();
   const columnCount = getColumnCount();
@@ -180,6 +188,13 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
       className="ssgrid-column"
       data-testid="column-block-outer"
     >
+      {insertBefore !== undefined && (
+        <ColumnInsertButton
+          rowId={insertBefore.rowId}
+          placement="between"
+          afterColumnId={insertBefore.afterColumnId}
+        />
+      )}
       <div
         className="ssgrid-column__card"
         data-testid="column-block"

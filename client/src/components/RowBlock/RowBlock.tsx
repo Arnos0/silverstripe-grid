@@ -13,6 +13,7 @@ import DragHandle from '@/components/DragHandle/DragHandle';
 import CollapseToggle from '@/components/CollapseToggle/CollapseToggle';
 import ElementActions from '@/components/ElementActions/ElementActions';
 import ColumnBlock from '@/components/ColumnBlock/ColumnBlock';
+import ColumnInsertButton from '@/components/ColumnInsertButton/ColumnInsertButton';
 import AddChildButton from '@/components/AddChildButton/AddChildButton';
 
 interface RowBlockProps {
@@ -55,6 +56,8 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const style = buildSortableStyle(transform, transition, isDragging);
 
   const childKeys = useChildColumnKeys(row);
+  const columns = row.children ?? [];
+  const hasColumns = columns.length > 0;
 
   return (
     <div
@@ -99,41 +102,51 @@ function EditableRowBlock({ row }: RowBlockProps) {
         )}
         <ElementActions node={row} collapse={{ isCollapsed, onToggle, label: row.title }} />
       </div>
-      <div
-        className="ssgrid-row__columns"
-        data-testid="row-block-columns"
-        data-layout-mode={layoutMode}
-        style={
-          layoutMode === 'grid'
-            ? ({ '--grid-columns': String(getColumnCount()) } as React.CSSProperties)
-            : undefined
-        }
-      >
-        <SortableContext
-          items={childKeys}
-          strategy={pendingActive ? noopSortingStrategy : horizontalListSortingStrategy}
+      <div className="ssgrid-row__columns-area" data-testid="row-block-columns-area">
+        {hasColumns && <ColumnInsertButton rowId={row.self.id} placement="start" />}
+        <div
+          className="ssgrid-row__columns"
+          data-testid="row-block-columns"
+          data-layout-mode={layoutMode}
+          style={
+            layoutMode === 'grid'
+              ? ({ '--grid-columns': String(getColumnCount()) } as React.CSSProperties)
+              : undefined
+          }
         >
-          {row.children !== null && row.children.length > 0 ? (
-            <>
-              {row.children.map((column) => (
-                <ColumnBlock key={column.nodeKey} column={column} />
-              ))}
+          <SortableContext
+            items={childKeys}
+            strategy={pendingActive ? noopSortingStrategy : horizontalListSortingStrategy}
+          >
+            {hasColumns ? (
+              columns.map((column, index) => (
+                <ColumnBlock
+                  key={column.nodeKey}
+                  column={column}
+                  insertBefore={
+                    index > 0
+                      ? { rowId: row.self.id, afterColumnId: columns[index - 1].self.id }
+                      : undefined
+                  }
+                />
+              ))
+            ) : (
               <AddChildButton
                 parentId={row.self.id}
                 childType="column"
                 childLabel="Column"
-                variant="append"
+                variant="empty-state"
               />
-            </>
-          ) : (
-            <AddChildButton
-              parentId={row.self.id}
-              childType="column"
-              childLabel="Column"
-              variant="empty-state"
-            />
-          )}
-        </SortableContext>
+            )}
+          </SortableContext>
+        </div>
+        {hasColumns && (
+          <ColumnInsertButton
+            rowId={row.self.id}
+            placement="end"
+            afterColumnId={columns[columns.length - 1].self.id}
+          />
+        )}
       </div>
     </div>
   );

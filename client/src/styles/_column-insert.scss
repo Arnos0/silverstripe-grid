@@ -1,0 +1,98 @@
+// Column-insert affordances on a Row (ColumnInsertButton). Three placements,
+// all creating a new Column under the row:
+// - `start` / `end` — the Figma "+" squares flanking the row's columns. Always
+//   visible, 24×24, solid brand, white "+".
+// - `between` — the Figma "Dot" handle sitting in a column gutter: an 8px brand
+//   ring by default that, on hover/focus, blooms into the same 24×24 "+" square
+//   (lifted with the design's 0 4px 8px / 15% drop shadow). Absolutely positioned
+//   so it never disturbs the column width math in `.ssgrid-row__columns`.
+
+.ssgrid-column-insert {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ssgrid-border-focus);
+    outline-offset: 2px;
+  }
+
+  &__icon {
+    color: var(--ssgrid-text-on-action);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  // The brand ring — only rendered for the `between` placement (see below).
+  &__dot {
+    display: none;
+  }
+
+  // --- Edge squares (placement=start | end) ---------------------------------
+  &[data-placement='start'],
+  &[data-placement='end'] {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ssgrid-radius-sm);
+    background: var(--ssgrid-surface-action);
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+    }
+  }
+
+  // --- Gutter handle (placement=between) ------------------------------------
+  &[data-placement='between'] {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    z-index: 2;
+    width: 24px; // generous hit area straddling the 16px gutter
+    height: 24px;
+    transform: translate(-50%, -50%);
+    border-radius: var(--ssgrid-radius-sm);
+    transition:
+      background 120ms ease,
+      box-shadow 120ms ease;
+
+    .ssgrid-column-insert__dot {
+      display: block;
+      width: 8px;
+      height: 8px;
+      border: 2px solid var(--ssgrid-border-focus);
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .ssgrid-column-insert__icon {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--ssgrid-surface-action);
+      box-shadow: 0 4px 8px var(--ssgrid-color-overlay-black-15);
+
+      .ssgrid-column-insert__dot {
+        background: var(--ssgrid-border-focus);
+      }
+
+      .ssgrid-column-insert__icon {
+        opacity: 1;
+      }
+    }
+  }
+}
