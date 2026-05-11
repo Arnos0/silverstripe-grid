@@ -21,7 +21,7 @@
     line-height: 1;
   }
 
-  &:hover > .ssgrid-icon-button__glyph {
+  &:hover:not(:disabled) > .ssgrid-icon-button__glyph {
     color: var(--ssgrid-text-brand);
   }
 
@@ -29,6 +29,11 @@
     outline: 2px solid var(--ssgrid-border-focus);
     outline-offset: 2px;
     border-radius: var(--ssgrid-radius-sm);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
   }
 
   &--drag {

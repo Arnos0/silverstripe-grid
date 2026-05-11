@@ -97,7 +97,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
             })}
           </span>
         )}
-        <ElementActions node={row} />
+        <ElementActions node={row} collapse={{ isCollapsed, onToggle, label: row.title }} />
       </div>
       <div
         className="ssgrid-row__columns"
