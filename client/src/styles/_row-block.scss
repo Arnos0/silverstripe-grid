@@ -104,20 +104,49 @@
   }
 }
 
-// Columns container: in flex mode, lay out children horizontally with a 16px
-// gap (matches the Figma "Body" frame's itemSpacing). In grid-placement mode,
-// CSS Grid uses --grid-columns from the row to set up an N-column track.
+// Columns container. Each column carries its responsive width/offset as CSS
+// custom properties set inline by ColumnBlock (--col-width / --col-offset in
+// flex mode, --col-span / --col-start in grid mode); this container is what
+// actually consumes them, so omitting these rules collapses every column to
+// content width. Flex mode realises the 16px gutter as 8px horizontal padding
+// on each column plus a -8px inline margin on the track, rather than `gap`: a
+// flex `gap` combined with percentage flex-basis overflows the line and forces
+// an unwanted wrap (two 6/12 columns => 100% + gap > 100%). The padding gutter
+// keeps the percentages exact.
 [data-testid='row-block-columns'] {
   &[data-layout-mode='flex'] {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
     align-items: stretch;
+    row-gap: 16px;
+    margin: 0 -8px;
+
+    > [data-testid='column-block-outer'] {
+      flex: 0 0 var(--col-width);
+      max-width: var(--col-width);
+      margin-left: var(--col-offset, 0);
+      padding: 0 8px;
+    }
+
+    > [data-testid='add-child-append'],
+    > [data-testid='add-child-empty'] {
+      flex: 0 0 100%;
+      padding: 0 8px;
+    }
   }
 
   &[data-layout-mode='grid'] {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns, 12), 1fr);
     gap: 16px;
+
+    > [data-testid='column-block-outer'] {
+      grid-column: var(--col-start, auto) / span var(--col-span);
+    }
+
+    > [data-testid='add-child-append'],
+    > [data-testid='add-child-empty'] {
+      grid-column: 1 / -1;
+    }
   }
 }
