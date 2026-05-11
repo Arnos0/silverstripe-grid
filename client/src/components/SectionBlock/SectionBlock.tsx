@@ -6,7 +6,7 @@ import type { NodeKey } from '@/types/identity';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useCollapse } from '@/hooks/useCollapseState';
-import { buildSortableStyle } from '@/utils/sortableStyles';
+import { buildSortableStyle, noopSortingStrategy } from '@/utils/sortableStyles';
 import { t } from '@/i18n';
 import DragHandle from '@/components/DragHandle/DragHandle';
 import CollapseToggle from '@/components/CollapseToggle/CollapseToggle';
@@ -48,7 +48,7 @@ function useChildSortableKeys(section: SectionNode): NodeKey[] {
 function EditableSectionBlock({ section }: SectionBlockProps) {
   const status = section.status;
   const { isCollapsed, onToggle } = useSectionCollapse(section);
-  const { activeType } = useDragContext();
+  const { activeType, pendingActive } = useDragContext();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: section.nodeKey });
@@ -101,7 +101,10 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
         <ElementActions node={section} collapse={{ isCollapsed, onToggle, label: section.title }} />
       </div>
       <div className="ssgrid-section__body">
-        <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={childKeys}
+          strategy={pendingActive ? noopSortingStrategy : verticalListSortingStrategy}
+        >
           {hasRows ? (
             <>
               {rows.map((row, index) => (

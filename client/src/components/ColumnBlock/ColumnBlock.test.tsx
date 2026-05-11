@@ -49,14 +49,14 @@ vi.mock('@dnd-kit/core', async (importOriginal) => {
 });
 
 vi.mock('@/hooks/useDragAndDrop', () => ({
-  useDragContext: vi.fn(() => ({ activeType: null })),
+  useDragContext: vi.fn(() => ({ activeType: null, pendingActive: false })),
 }));
 
 afterEach(() => {
   vi.mocked(useSortable).mockReturnValue({ ...defaultSortable } as unknown as ReturnType<
     typeof useSortable
   >);
-  vi.mocked(useDragContext).mockReturnValue({ activeType: null });
+  vi.mocked(useDragContext).mockReturnValue({ activeType: null, pendingActive: false });
 });
 
 describe('ColumnBlock', () => {
@@ -194,7 +194,7 @@ describe('ColumnBlock', () => {
         ...defaultSortable,
         isOver: true,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'column' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'column', pendingActive: false });
       mockFetchSuccess({});
 
       const column = createColumnNode({});
@@ -209,7 +209,7 @@ describe('ColumnBlock', () => {
         ...defaultSortable,
         isOver: true,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'row' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'row', pendingActive: false });
       mockFetchSuccess({});
 
       const column = createColumnNode({});
@@ -224,7 +224,7 @@ describe('ColumnBlock', () => {
         ...defaultSortable,
         isOver: false,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'column' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'column', pendingActive: false });
       mockFetchSuccess({});
 
       const column = createColumnNode({});
@@ -593,7 +593,7 @@ describe('ColumnBlock', () => {
   });
 
   it('disables width picker when a drag is active', () => {
-    vi.mocked(useDragContext).mockReturnValue({ activeType: 'column' });
+    vi.mocked(useDragContext).mockReturnValue({ activeType: 'column', pendingActive: false });
     mockFetchSuccess({});
 
     const column = createColumnNode({

@@ -97,8 +97,8 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
   const sectionIds = useMemo(() => sections.map((s) => s.nodeKey), [sections]);
 
   const dragContextValue = useMemo(
-    () => ({ activeType: dragState?.activeType ?? null }),
-    [dragState?.activeType],
+    () => ({ activeType: dragState?.activeType ?? null, pendingActive: pendingTree !== null }),
+    [dragState?.activeType, pendingTree],
   );
 
   const hasSections = sections.length > 0;
