@@ -63,9 +63,9 @@ test.describe('Build page from scratch', () => {
     const newRow = firstSection.getByTestId('row-block').nth(1);
     await expect(newRow.getByTestId('column-block')).toHaveCount(1);
 
-    // Step 6: Add a second column to the first row of the first section
+    // Step 6: Add a second column to the first row via the row's trailing "+" square
     const firstRow = firstSection.getByTestId('row-block').first();
-    await firstRow.getByTestId('add-child-append').filter({ hasText: 'Add Column' }).click();
+    await firstRow.getByTestId('column-insert-end').click();
     await expect(firstRow.getByTestId('column-block')).toHaveCount(2, { timeout: 10_000 });
 
     // Step 7: Publish the page

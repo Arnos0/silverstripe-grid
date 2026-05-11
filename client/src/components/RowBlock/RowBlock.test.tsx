@@ -71,15 +71,31 @@ describe('RowBlock', () => {
     expect(screen.getByText('No columns yet')).toBeInTheDocument();
   });
 
-  it('shows append AddChildButton when children exist', () => {
+  it('flanks the columns with the start/end "+" insert squares when columns exist', () => {
     mockFetchSuccess({});
 
     const row = createRowNode({ columnCount: 1 });
 
     renderWithProviders(<RowBlock row={row} />);
 
-    expect(screen.getByTestId('add-child-append')).toBeInTheDocument();
+    expect(screen.getByTestId('column-insert-start')).toBeInTheDocument();
+    expect(screen.getByTestId('column-insert-end')).toBeInTheDocument();
     expect(screen.queryByTestId('add-child-empty')).not.toBeInTheDocument();
+    // A single column has no internal gutter, so no "between" handle.
+    expect(screen.queryByTestId('column-insert-between')).not.toBeInTheDocument();
+  });
+
+  it('renders a "between" column-insert handle in each internal gutter', () => {
+    mockFetchSuccess({});
+
+    const row = createRowNode({ columnCount: 3 });
+
+    renderWithProviders(<RowBlock row={row} />);
+
+    // 3 columns → 2 internal gutters → 2 "between" handles, plus the 2 edge squares.
+    expect(screen.getAllByTestId('column-insert-between')).toHaveLength(2);
+    expect(screen.getByTestId('column-insert-start')).toBeInTheDocument();
+    expect(screen.getByTestId('column-insert-end')).toBeInTheDocument();
   });
 
   it('shows empty state when children is an empty array', () => {

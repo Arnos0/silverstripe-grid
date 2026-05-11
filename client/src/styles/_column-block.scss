@@ -7,7 +7,10 @@
 .ssgrid-column {
   // Outer wrapper — carries the responsive width/offset CSS vars (set inline by
   // ColumnBlock, consumed by .ssgrid-row__columns). border-box keeps the gutter
-  // padding inside var(--col-width).
+  // padding inside var(--col-width). position:relative anchors the optional
+  // "+ insert a column here" gutter handle (ColumnInsertButton, placement=between)
+  // that EditableColumnBlock renders straddling this column's left edge.
+  position: relative;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

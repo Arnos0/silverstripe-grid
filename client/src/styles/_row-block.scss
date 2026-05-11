@@ -63,6 +63,20 @@
     opacity: 0.6;
   }
 
+  // The Figma row "Body": the columns track flanked by the two "+" insert
+  // squares, all vertically centred. The squares (ColumnInsertButton, placement
+  // start/end) are out of the columns track so they never affect the width math.
+  &__columns-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    > .ssgrid-row__columns {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
   // Columns container. Each column carries its responsive width/offset as CSS
   // custom properties set inline by ColumnBlock (--col-width / --col-offset in
   // flex mode, --col-span / --col-start in grid mode); this container consumes
