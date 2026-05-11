@@ -4,11 +4,21 @@
 // unpublished changes (the design's "this area is being edited" cue), and is
 // otherwise the neutral 15%-black hairline.
 
-// The CMS form field wrapper hands the editor the full column width.
+// The CMS edit form wraps every field in a Bootstrap `.row` (`.form-group`)
+// whose negative `-.5 * --bs-gutter-x` inline margin is meant to be cancelled
+// by the `.col` padding on its `.form__field-label` / `.form__field-holder`
+// children. Our React mount is the field's only child and isn't a `.col`, so
+// we reinstate that half-gutter padding here — without it the editor bleeds the
+// full gutter past the field area and sits flush against the panel edges
+// instead of lining up with every other field. (`--bs-gutter-x` is set on the
+// surrounding `.cms-edit-form .form-group`; the fallback covers contexts where
+// it isn't, e.g. the history viewer's React form.)
 .grid-editor-holder > [data-react-mount='grid-editor'] {
   flex: 0 0 100%;
   max-width: 100%;
   margin-left: 0;
+  padding-right: calc(var(--bs-gutter-x, 40px) * 0.5);
+  padding-left: calc(var(--bs-gutter-x, 40px) * 0.5);
 }
 
 .ssgrid-editor {

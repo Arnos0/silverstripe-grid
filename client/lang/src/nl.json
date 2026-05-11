@@ -46,6 +46,7 @@
   "WeDevelopGrid.ElementTypePicker.TITLE": "Inhoudselement toevoegen",
   "WeDevelopGrid.GridEditor.ACTION_CLEAR": "Alle secties verwijderen",
   "WeDevelopGrid.GridEditor.ACTION_COLLAPSE_ALL": "Alle secties inklappen",
+  "WeDevelopGrid.GridEditor.ACTION_EXPAND_ALL": "Alle secties uitklappen",
   "WeDevelopGrid.GridEditor.ACTION_OPEN": "Pagina openen",
   "WeDevelopGrid.GridEditor.ACTION_RESET": "Wijzigingen resetten",
   "WeDevelopGrid.GridEditor.AREA_TITLE": "Grid-gebied",

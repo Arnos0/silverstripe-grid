@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createTreeApiResponse, createSectionNode, resetIdCounter } from '@/testing/factories';
@@ -143,6 +144,51 @@ describe('GridEditor', () => {
     const editor = screen.getByTestId('grid-editor');
     expect(editor).toHaveAttribute('data-page-id', '1');
     expect(editor).toHaveAttribute('data-zone', 'main');
+  });
+
+  describe('grid area header', () => {
+    it('toggles between "collapse all" and "expand all"', async () => {
+      resetIdCounter();
+      const user = userEvent.setup();
+
+      mockFetchSuccess(
+        createTreeApiResponse({
+          pageId: 1,
+          sections: [
+            createSectionNode({ id: 10, parent: { type: 'page', id: 1 }, title: 'Hero' }),
+            createSectionNode({ id: 20, parent: { type: 'page', id: 1 }, title: 'Content' }),
+          ],
+        }),
+      );
+
+      renderWithProviders(<GridEditor pageId={1} zone="main" />);
+
+      const collapseAll = await screen.findByRole('button', { name: 'Collapse all sections' });
+      await user.click(collapseAll);
+
+      // Every section is now collapsed, so the button flips to expand-all.
+      const expandAll = screen.getByRole('button', { name: 'Expand all sections' });
+      expect(screen.queryByRole('button', { name: 'Collapse all sections' })).not.toBeInTheDocument();
+
+      await user.click(expandAll);
+      expect(screen.getByRole('button', { name: 'Collapse all sections' })).toBeInTheDocument();
+    });
+
+    it('disables the collapse/expand-all toggle in readonly mode', async () => {
+      resetIdCounter();
+
+      mockFetchSuccess(
+        createTreeApiResponse({
+          pageId: 1,
+          sections: [createSectionNode({ id: 10, parent: { type: 'page', id: 1 }, title: 'Hero' })],
+        }),
+      );
+
+      renderWithProviders(<GridEditor pageId={1} zone="main" readonly={true} version={5} />);
+
+      const collapseAll = await screen.findByRole('button', { name: 'Collapse all sections' });
+      expect(collapseAll).toBeDisabled();
+    });
   });
 
   describe('readonly mode', () => {
