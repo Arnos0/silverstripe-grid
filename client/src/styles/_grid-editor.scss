@@ -1,0 +1,92 @@
+// Editor shell — Figma "Frame 1": the viewport tabs, the "Grid area" header
+// row, then the outer canvas that holds the section list. The canvas border is
+// stateful: it turns the modified-orange the moment any section inside has
+// unpublished changes (the design's "this area is being edited" cue), and is
+// otherwise the neutral 15%-black hairline.
+
+// The CMS form field wrapper hands the editor the full column width.
+.grid-editor-holder > [data-react-mount='grid-editor'] {
+  flex: 0 0 100%;
+  max-width: 100%;
+  margin-left: 0;
+}
+
+.ssgrid-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--ssgrid-text-default);
+
+  // --- "Grid area" header row -------------------------------------------------
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  &__header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  // --- Outer canvas -----------------------------------------------------------
+
+  &__canvas {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--ssgrid-surface-muted);
+    border: 1px solid var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-md);
+
+    // Mirrors the per-element pattern: orange ring when something inside is
+    // modified. Driven by `data-status="modified"` on the canvas element.
+    &[data-status='modified'] {
+      border-color: var(--ssgrid-border-modified);
+    }
+  }
+
+  // --- Transient states (loading / error / readonly-empty) --------------------
+
+  &__notice {
+    margin: 0;
+    padding: 16px;
+    background: var(--ssgrid-surface-muted);
+    border: 1px solid var(--ssgrid-border-default);
+    border-radius: var(--ssgrid-radius-md);
+    text-align: center;
+
+    &[data-tone='error'] {
+      color: var(--ssgrid-text-danger);
+      border-color: var(--ssgrid-color-danger-500);
+      background: var(--ssgrid-color-danger-tint);
+    }
+  }
+}
+
+// Empty-state hint (used inside columns for "no content blocks", and standalone
+// for the page-level "no sections" sentinel).
+.ssgrid-empty-state {
+  margin: 0;
+  padding: 12px;
+  color: var(--ssgrid-text-default);
+  opacity: 0.55;
+  font-size: 14px;
+  text-align: center;
+
+  &[data-state='centered'] {
+    padding: 32px 16px;
+  }
+}
