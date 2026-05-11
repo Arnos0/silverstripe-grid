@@ -33,7 +33,7 @@ vi.mock('@dnd-kit/core', async (importOriginal) => {
 });
 
 vi.mock('@/hooks/useDragAndDrop', () => ({
-  useDragContext: () => ({ activeType: null }),
+  useDragContext: () => ({ activeType: null, pendingActive: false }),
   DragContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   },

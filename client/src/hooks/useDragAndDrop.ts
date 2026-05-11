@@ -60,9 +60,22 @@ export interface UseDragAndDropReturn {
 
 export interface DragContextValue {
   activeType: DraggableType | null;
+  /**
+   * True while a cross-container move is being previewed via the pending tree.
+   * Block components use this to switch their `SortableContext` to a no-op
+   * sorting strategy: the pending tree already re-renders the moved item into
+   * its target slot, so dnd-kit's reorder-preview transforms (≈ one block
+   * height) would only double-count the move — and at the design's block sizes
+   * those large shifts push siblings far enough that the next collision cycle,
+   * and the before/after direction at drop, resolve against the wrong rect.
+   */
+  pendingActive: boolean;
 }
 
-export const DragContext = createContext<DragContextValue>({ activeType: null });
+export const DragContext = createContext<DragContextValue>({
+  activeType: null,
+  pendingActive: false,
+});
 
 export function useDragContext(): DragContextValue {
   return useContext(DragContext);

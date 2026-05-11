@@ -6,7 +6,7 @@ import type { NodeKey } from '@/types/identity';
 import { useDragContext } from '@/hooks/useDragAndDrop';
 import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useCollapse } from '@/hooks/useCollapseState';
-import { buildSortableStyle } from '@/utils/sortableStyles';
+import { buildSortableStyle, noopSortingStrategy } from '@/utils/sortableStyles';
 import { getOffsetStrategy, getColumnCount } from '@/utils/gridAdapter';
 import { t } from '@/i18n';
 import DragHandle from '@/components/DragHandle/DragHandle';
@@ -45,7 +45,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const layoutMode = getOffsetStrategy() === 'margin' ? 'flex' : 'grid';
   const status = row.status;
   const { isCollapsed, onToggle } = useRowCollapse(row);
-  const { activeType } = useDragContext();
+  const { activeType, pendingActive } = useDragContext();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: row.nodeKey });
@@ -109,7 +109,10 @@ function EditableRowBlock({ row }: RowBlockProps) {
             : undefined
         }
       >
-        <SortableContext items={childKeys} strategy={horizontalListSortingStrategy}>
+        <SortableContext
+          items={childKeys}
+          strategy={pendingActive ? noopSortingStrategy : horizontalListSortingStrategy}
+        >
           {row.children !== null && row.children.length > 0 ? (
             <>
               {row.children.map((column) => (

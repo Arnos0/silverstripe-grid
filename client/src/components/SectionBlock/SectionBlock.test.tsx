@@ -28,14 +28,14 @@ vi.mock('@dnd-kit/sortable', () => ({
 }));
 
 vi.mock('@/hooks/useDragAndDrop', () => ({
-  useDragContext: vi.fn(() => ({ activeType: null })),
+  useDragContext: vi.fn(() => ({ activeType: null, pendingActive: false })),
 }));
 
 afterEach(() => {
   vi.mocked(useSortable).mockReturnValue({ ...defaultSortable } as unknown as ReturnType<
     typeof useSortable
   >);
-  vi.mocked(useDragContext).mockReturnValue({ activeType: null });
+  vi.mocked(useDragContext).mockReturnValue({ activeType: null, pendingActive: false });
 });
 
 describe('SectionBlock', () => {
@@ -188,7 +188,7 @@ describe('SectionBlock', () => {
         ...defaultSortable,
         isOver: true,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'section' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'section', pendingActive: false });
       mockFetchSuccess({});
 
       const section = createSectionNode({});
@@ -203,7 +203,7 @@ describe('SectionBlock', () => {
         ...defaultSortable,
         isOver: true,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'row' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'row', pendingActive: false });
       mockFetchSuccess({});
 
       const section = createSectionNode({});
@@ -218,7 +218,7 @@ describe('SectionBlock', () => {
         ...defaultSortable,
         isOver: false,
       } as unknown as ReturnType<typeof useSortable>);
-      vi.mocked(useDragContext).mockReturnValue({ activeType: 'section' });
+      vi.mocked(useDragContext).mockReturnValue({ activeType: 'section', pendingActive: false });
       mockFetchSuccess({});
 
       const section = createSectionNode({});

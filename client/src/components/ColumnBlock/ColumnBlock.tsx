@@ -9,7 +9,7 @@ import { useReadonly } from '@/hooks/ReadonlyContext';
 import { useViewportContext } from '@/hooks/ViewportContext';
 import { useCollapse } from '@/hooks/useCollapseState';
 import { useUpdateGridSettings, useCreateContentElement } from '@/hooks/useElementMutations';
-import { buildSortableStyle } from '@/utils/sortableStyles';
+import { buildSortableStyle, noopSortingStrategy } from '@/utils/sortableStyles';
 import {
   getColumnCount,
   getOffsetStrategy,
@@ -90,7 +90,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
   const settings = resolveViewportSettings(column.gridSettings, activeViewport);
   const status = column.status;
   const { isCollapsed, onToggle } = useColumnCollapse(column);
-  const { activeType } = useDragContext();
+  const { activeType, pendingActive } = useDragContext();
   const updateGridSettings = useUpdateGridSettings(pageId, zone);
   const createContentElement = useCreateContentElement(pageId, zone);
   const [isPickerOpen, setPickerOpen] = useState(false);
@@ -243,7 +243,10 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
           </div>
         </div>
         <div className="ssgrid-column__body">
-          <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={childKeys}
+            strategy={pendingActive ? noopSortingStrategy : verticalListSortingStrategy}
+          >
             {hasChildren
               ? children.map((child) => <ElementCard key={child.nodeKey} element={child} />)
               : !hasAllowedTypes && (

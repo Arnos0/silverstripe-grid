@@ -11,11 +11,25 @@ import { getDraggableType, PARENT_CONTAINER_TYPE } from '@/types/dnd';
  * Like closestCenter, but reads live DOM rects via getBoundingClientRect()
  * instead of using dnd-kit's droppableRects (which are pre-CSS-transform
  * and stale after SortableContext shifts items visually).
+ *
+ * Two extra refinements over stock closestCenter:
+ *
+ * 1. Reference point: prefers the live pointer (`pointerCoordinates`) over the
+ *    collision rect's center. The collision rect is the DragOverlay's
+ *    translated rect; its center drifts from the cursor by the grab offset
+ *    (grabbing a wide block at its left edge shifts the center far to the
+ *    right). The pointer is exactly where the user is aiming.
+ * 2. Containment ranks first: a target whose live rect actually surrounds the
+ *    pointer beats a neighbour that merely has a closer center. Without this,
+ *    tall blocks or wide inter-sibling gutters (the design's "+ add" slots)
+ *    push a neighbour's center close enough to the cursor that pure
+ *    center-distance picks the wrong sibling — which, via the parent-container
+ *    fallback, lands the drop at the container's end instead of where aimed.
  */
 const closestCenterLive: CollisionDetection = (args) => {
-  const { collisionRect, droppableContainers } = args;
-  const centerX = collisionRect.left + collisionRect.width / 2;
-  const centerY = collisionRect.top + collisionRect.height / 2;
+  const { collisionRect, droppableContainers, pointerCoordinates } = args;
+  const refX = pointerCoordinates?.x ?? collisionRect.left + collisionRect.width / 2;
+  const refY = pointerCoordinates?.y ?? collisionRect.top + collisionRect.height / 2;
   const collisions: Collision[] = [];
 
   for (const container of droppableContainers) {
@@ -25,16 +39,23 @@ const closestCenterLive: CollisionDetection = (args) => {
     const rect = domNode.getBoundingClientRect();
     const targetCX = rect.left + rect.width / 2;
     const targetCY = rect.top + rect.height / 2;
-    const dx = centerX - targetCX;
-    const dy = centerY - targetCY;
+    const dx = refX - targetCX;
+    const dy = refY - targetCY;
+    const contains =
+      refX >= rect.left && refX <= rect.right && refY >= rect.top && refY <= rect.bottom;
 
     collisions.push({
       id: container.id,
-      data: { droppableContainer: container, value: dx * dx + dy * dy },
+      data: { droppableContainer: container, value: dx * dx + dy * dy, contains },
     });
   }
 
-  return collisions.sort((a, b) => (a.data?.value as number) - (b.data?.value as number));
+  return collisions.sort((a, b) => {
+    const aContains = (a.data as { contains: boolean }).contains;
+    const bContains = (b.data as { contains: boolean }).contains;
+    if (aContains !== bContains) return aContains ? -1 : 1;
+    return (a.data?.value as number) - (b.data?.value as number);
+  });
 };
 
 /**
