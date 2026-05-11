@@ -219,7 +219,7 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
                 role="img"
               />
             )}
-            <ElementActions node={column} />
+            <ElementActions node={column} kebabOnly />
           </div>
           <div className="ssgrid-column__layout-settings">
             <GridSettingsPicker

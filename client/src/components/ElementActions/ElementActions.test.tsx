@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/testing/renderWithProviders';
 import ElementActions from './ElementActions';
 
 describe('ElementActions', () => {
-  it('renders actions menu with correct actions for element with all permissions', async () => {
+  it('renders the action toolbar with duplicate/archive enabled when permitted', async () => {
     const user = userEvent.setup();
     mockFetchSuccess({});
 
@@ -20,15 +20,16 @@ describe('ElementActions', () => {
 
     renderWithProviders(<ElementActions node={node} />);
 
-    // Open the actions menu
-    await user.click(screen.getByTestId('actions-menu-trigger'));
+    expect(screen.getByTestId('element-toolbar')).toBeInTheDocument();
+    expect(screen.getByTestId('element-action-duplicate')).toBeEnabled();
+    expect(screen.getByTestId('element-action-archive')).toBeEnabled();
 
-    // Should have Duplicate, Duplicate to, and Archive actions
-    expect(screen.getByText('Duplicate')).toBeInTheDocument();
-    expect(screen.getByText('Archive')).toBeInTheDocument();
+    // "Duplicate to page" has no toolbar glyph, so it lives in the overflow menu.
+    await user.click(screen.getByTestId('actions-menu-trigger'));
+    expect(screen.getByText(/duplicate to/i)).toBeInTheDocument();
   });
 
-  it('no actions when canDelete and canCreate are false', () => {
+  it('renders the toolbar without overflow menu and with disabled actions when not permitted', () => {
     mockFetchSuccess({});
 
     const node = createSimpleElement({
@@ -38,7 +39,47 @@ describe('ElementActions', () => {
 
     renderWithProviders(<ElementActions node={node} />);
 
-    // ActionsMenu returns null when actions array is empty
+    expect(screen.getByTestId('element-toolbar')).toBeInTheDocument();
+    expect(screen.getByTestId('element-action-duplicate')).toBeDisabled();
+    expect(screen.getByTestId('element-action-archive')).toBeDisabled();
+    // No overflow menu: with no permitted actions there is nothing to surface.
     expect(screen.queryByTestId('actions-menu-trigger')).not.toBeInTheDocument();
+  });
+
+  it('wires the toolbar fold icon to the supplied collapse control', async () => {
+    const user = userEvent.setup();
+    mockFetchSuccess({});
+
+    const node = createSimpleElement({ canDelete: true, canCreate: true });
+    let toggled = 0;
+
+    renderWithProviders(
+      <ElementActions
+        node={node}
+        collapse={{
+          isCollapsed: false,
+          onToggle: () => {
+            toggled += 1;
+          },
+          label: 'My block',
+        }}
+      />,
+    );
+
+    const fold = screen.getByTestId('element-action-collapse');
+    expect(fold).toBeEnabled();
+    await user.click(fold);
+    expect(toggled).toBe(1);
+  });
+
+  it('renders only the overflow menu in kebab-only mode (column header)', () => {
+    mockFetchSuccess({});
+
+    const node = createSimpleElement({ canDelete: true, canCreate: true });
+
+    renderWithProviders(<ElementActions node={node} kebabOnly />);
+
+    expect(screen.queryByTestId('element-toolbar')).not.toBeInTheDocument();
+    expect(screen.getByTestId('actions-menu-trigger')).toBeInTheDocument();
   });
 });
