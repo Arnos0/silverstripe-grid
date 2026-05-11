@@ -11,12 +11,11 @@ test.describe('Duplicate element', () => {
     const fixture = await loadAndNavigate(page, 'duplicate-test');
     await enablePreviewMode(page);
 
-    await test.step('Duplicate "Source Section" via actions menu', async () => {
+    await test.step('Duplicate "Source Section" via the block toolbar', async () => {
       const previewRefresh = waitForPreviewRefresh(page);
 
       const section = page.getByTestId('section-block').filter({ hasText: 'Source Section' });
-      await section.getByTestId('section-header').getByTestId('actions-menu-trigger').click();
-      await page.getByRole('menuitem', { name: 'Duplicate', exact: true }).click();
+      await section.getByTestId('section-header').getByTestId('element-action-duplicate').click();
 
       // Wait for the duplicate to appear
       await expect(page.getByTestId('section-block')).toHaveCount(2, { timeout: 10_000 });

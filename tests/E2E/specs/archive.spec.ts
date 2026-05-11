@@ -17,9 +17,8 @@ test.describe('Archive element actions', () => {
       const columnA1a = page.getByTestId('column-block').filter({ hasText: 'Column A1a' });
       const elementX = columnA1a.getByTestId('element-card').filter({ hasText: 'Content Element X' });
 
-      // Open the actions menu on the element card
-      await elementX.getByTestId('actions-menu-trigger').click();
-      await page.getByRole('menuitem', { name: 'Archive' }).click();
+      // Archive via the block toolbar's archive button
+      await elementX.getByTestId('element-action-archive').click();
 
       // Confirm the archive dialog — scope to the one that's open
       const dialog = page.locator('dialog[open][data-testid="confirm-dialog"]');
@@ -58,9 +57,8 @@ test.describe('Archive element actions', () => {
 
     await test.step('Archive entire Section A', async () => {
       const sectionA = page.getByTestId('section-block').filter({ hasText: 'Section A' });
-      // Use the section header's actions menu (first trigger within the section)
-      await sectionA.getByTestId('section-header').getByTestId('actions-menu-trigger').click();
-      await page.getByRole('menuitem', { name: 'Archive' }).click();
+      // Use the section header's toolbar archive button
+      await sectionA.getByTestId('section-header').getByTestId('element-action-archive').click();
 
       const dialog = page.locator('dialog[open][data-testid="confirm-dialog"]');
       await expect(dialog).toBeVisible();

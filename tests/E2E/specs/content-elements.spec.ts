@@ -55,9 +55,9 @@ test.describe('Content elements', () => {
     // No new element created
     await expect(elementCards).toHaveCount(3);
 
-    // --- Step 4: Click element card to navigate to edit page ---
+    // --- Step 4: Open the element's edit form via the block toolbar's edit action ---
     const firstCard = elementCards.first();
-    await firstCard.click();
+    await firstCard.getByTestId('element-action-edit').click();
 
     // Should navigate to the element edit page via the page editor
     await expect(page).toHaveURL(/\/admin\/pages\/edit\/EditForm\/\d+\/field\/GridEditor\/item\/\d+\/edit/);
