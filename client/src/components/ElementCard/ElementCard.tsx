@@ -38,7 +38,7 @@ function EditableElementCard({ element }: ElementCardProps) {
 
   const header: ReactNode = (
     <>
-      <div>
+      <div data-role="element-card-header">
         <DragHandle
           listeners={listeners}
           attributes={attributes}
@@ -46,8 +46,20 @@ function EditableElementCard({ element }: ElementCardProps) {
             title: element.title,
           })}
         />
-        <i className={element.blockSchema.icon} data-testid="element-card-icon" />
+        <i
+          className={element.blockSchema.icon}
+          data-testid="element-card-icon"
+          aria-hidden="true"
+        />
         <h4 data-testid="element-card-title">{element.title}</h4>
+        {status === 'modified' && (
+          <span
+            data-role="modified-dot"
+            data-testid="element-card-modified-indicator"
+            aria-label={t('WeDevelopGrid.ElementCard.MODIFIED_LABEL', 'Has unpublished changes')}
+            role="img"
+          />
+        )}
         <ElementActions node={element} />
       </div>
       {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
@@ -104,9 +116,21 @@ function ReadonlyElementCard({ element }: ElementCardProps) {
 
   return (
     <div data-testid="element-card" data-status={status}>
-      <div>
-        <i className={element.blockSchema.icon} data-testid="element-card-icon" />
+      <div data-role="element-card-header">
+        <i
+          className={element.blockSchema.icon}
+          data-testid="element-card-icon"
+          aria-hidden="true"
+        />
         <h4 data-testid="element-card-title">{element.title}</h4>
+        {status === 'modified' && (
+          <span
+            data-role="modified-dot"
+            data-testid="element-card-modified-indicator"
+            aria-label={t('WeDevelopGrid.ElementCard.MODIFIED_LABEL', 'Has unpublished changes')}
+            role="img"
+          />
+        )}
       </div>
       {element.summary ? <p data-testid="element-card-summary">{element.summary}</p> : null}
     </div>

@@ -28,6 +28,7 @@
   "WeDevelopGrid.DuplicateToDialog.STEP_PAGE_TITLE": "Select target page",
   "WeDevelopGrid.DuplicateToDialog.STEP_ZONE_TITLE": "Select zone",
   "WeDevelopGrid.ElementActions.ARCHIVE_CONFIRM_LABEL": "Archive",
+  "WeDevelopGrid.ElementCard.MODIFIED_LABEL": "Has unpublished changes",
   "WeDevelopGrid.ElementCard.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.ElementTypePicker.CLOSE_LABEL": "Close",
   "WeDevelopGrid.ElementTypePicker.EMPTY_MESSAGE": "No content element types available",
