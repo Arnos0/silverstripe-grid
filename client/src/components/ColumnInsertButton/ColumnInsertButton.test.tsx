@@ -85,6 +85,28 @@ describe('ColumnInsertButton', () => {
     });
   });
 
+  it('between placement carries the gutter-shift CSS var when given gutterShiftPct', () => {
+    mockFetchSuccess({});
+
+    renderWithProviders(
+      <ColumnInsertButton rowId={1} placement="between" afterColumnId={2} gutterShiftPct={25} />,
+    );
+
+    expect(
+      screen.getByTestId('column-insert-between').style.getPropertyValue('--ssgrid-insert-shift'),
+    ).toBe('25%');
+  });
+
+  it('between placement omits the gutter-shift CSS var when gutterShiftPct is 0 or absent', () => {
+    mockFetchSuccess({});
+
+    renderWithProviders(<ColumnInsertButton rowId={1} placement="between" afterColumnId={2} />);
+
+    expect(
+      screen.getByTestId('column-insert-between').style.getPropertyValue('--ssgrid-insert-shift'),
+    ).toBe('');
+  });
+
   it('is disabled while the mutation is pending', async () => {
     const user = userEvent.setup();
     vi.spyOn(globalThis, 'fetch').mockReturnValue(new Promise(() => {}));

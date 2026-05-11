@@ -13,6 +13,8 @@ import type { NodeRef } from '@/types/identity';
  *   inserts directly after the last column (i.e. appends).
  * - `between` — a small dot handle sitting in a column gutter; on hover it
  *   blooms into a "+" square. Inserts directly after the column to its left.
+ *   When the column it precedes carries a grid offset, `gutterShiftPct` nudges
+ *   it into the centre of that (wider) gutter instead of hugging the column.
  *
  * `start` is the one placement the create API couldn't express before the
  * `insertAtStart` flag — `insertAfterElementID` only ever appended or slotted
@@ -20,10 +22,17 @@ import type { NodeRef } from '@/types/identity';
  */
 type ColumnInsertButtonProps =
   | { readonly rowId: number; readonly placement: 'start' }
+  | { readonly rowId: number; readonly placement: 'end'; readonly afterColumnId: number }
   | {
       readonly rowId: number;
-      readonly placement: 'between' | 'end';
+      readonly placement: 'between';
       readonly afterColumnId: number;
+      /**
+       * Shift the handle left by this percentage of the column's width so it
+       * lands in the centre of the (offset-widened) gutter rather than glued to
+       * the column's edge. 0 / omitted = the default 16px gutter, no shift.
+       */
+      readonly gutterShiftPct?: number;
     };
 
 export default function ColumnInsertButton(props: ColumnInsertButtonProps) {
@@ -46,12 +55,18 @@ export default function ColumnInsertButton(props: ColumnInsertButtonProps) {
         ? t('WeDevelopGrid.ColumnInsertButton.APPEND_LABEL', 'Add a column at the end')
         : t('WeDevelopGrid.ColumnInsertButton.INSERT_HERE_LABEL', 'Add a column here');
 
+  const shiftStyle =
+    props.placement === 'between' && props.gutterShiftPct
+      ? ({ '--ssgrid-insert-shift': `${props.gutterShiftPct}%` } as React.CSSProperties)
+      : undefined;
+
   return (
     <button
       type="button"
       className="ssgrid-column-insert"
       data-placement={props.placement}
       data-testid={`column-insert-${props.placement}`}
+      style={shiftStyle}
       disabled={isPending}
       onClick={handleClick}
       title={label}

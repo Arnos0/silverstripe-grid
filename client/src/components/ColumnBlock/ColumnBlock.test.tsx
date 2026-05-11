@@ -702,4 +702,41 @@ describe('ColumnBlock', () => {
       expect(screen.queryAllByTestId('element-card')).toHaveLength(0);
     });
   });
+
+  describe('between-column insert handle', () => {
+    it('passes an offset-aware gutter shift to the handle when the column has a margin offset', () => {
+      resetAdapterCache();
+      mockFetchSuccess({});
+
+      const column = createColumnNode({
+        gridSettings: { default: { width: 2, offset: 1, visible: true }, overrides: {} },
+      });
+
+      renderWithProviders(
+        <ColumnBlock column={column} insertBefore={{ rowId: 9, afterColumnId: 3 }} />,
+      );
+
+      // (offset / width) * 50 → (1 / 2) * 50 = 25
+      expect(
+        screen.getByTestId('column-insert-between').style.getPropertyValue('--ssgrid-insert-shift'),
+      ).toBe('25%');
+    });
+
+    it('omits the gutter shift when the column has no offset', () => {
+      resetAdapterCache();
+      mockFetchSuccess({});
+
+      const column = createColumnNode({
+        gridSettings: { default: { width: 6, offset: 0, visible: true }, overrides: {} },
+      });
+
+      renderWithProviders(
+        <ColumnBlock column={column} insertBefore={{ rowId: 9, afterColumnId: 3 }} />,
+      );
+
+      expect(
+        screen.getByTestId('column-insert-between').style.getPropertyValue('--ssgrid-insert-shift'),
+      ).toBe('');
+    });
+  });
 });
