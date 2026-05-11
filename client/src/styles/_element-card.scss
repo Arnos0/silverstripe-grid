@@ -12,9 +12,17 @@
   border-radius: var(--ssgrid-radius-md);
 
   // The clickable variant renders as an <a>; strip the inherited link chrome
-  // so the card reads as a card, not a hyperlink.
+  // so the card reads as a card, not a hyperlink. The CMS admin stylesheet
+  // re-adds `text-decoration: underline` on `a:hover`/`a:focus`, which a block
+  // propagates to every in-flow descendant (title, icon chip, action buttons) —
+  // so the override has to repeat on those states too.
   color: var(--ssgrid-text-default);
   text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
 
   &[data-status='modified'] {
     border-color: var(--ssgrid-border-modified);
