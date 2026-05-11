@@ -140,9 +140,19 @@ export default function ElementActions({ node, collapse, kebabOnly = false }: El
       <div className="ssgrid-element-toolbar" data-testid="element-toolbar">
         <ToolbarButton
           glyph="font-icon-back-in-time"
-          label={t('WeDevelopGrid.ElementActions.ACTION_RESET', 'Reset changes')}
-          disabled
-          testId="element-action-reset"
+          label={t('WeDevelopGrid.ElementActions.ACTION_HISTORY', 'View history')}
+          onClick={
+            editLink !== null
+              ? () => {
+                  // The element's CMS edit form carries a `Root.History` tab
+                  // (HistoryViewerField), and SilverStripe renders its tab
+                  // anchor as `#Root_History` — append it to land on history.
+                  window.location.assign(`${editLink}#Root_History`);
+                }
+              : undefined
+          }
+          disabled={editLink === null}
+          testId="element-action-history"
         />
         <ToolbarButton
           glyph={
