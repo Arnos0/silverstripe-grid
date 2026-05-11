@@ -115,6 +115,15 @@ function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const sortableStyle = buildSortableStyle(transform, transition, isDragging);
   const columnStyle = buildColumnStyle(settings, sortableStyle);
 
+  // A margin offset before this column widens the gutter the "+ insert here"
+  // handle sits in; shift the handle (as a % of the column width) back to that
+  // gutter's centre so it doesn't hug the column edge. Grid-placement offsets
+  // are left alone — see _column-insert.scss.
+  const gutterShiftPct =
+    getOffsetStrategy() === 'margin' && settings.offset > 0
+      ? (settings.offset / settings.width) * 50
+      : 0;
+
   const widthOptions = getWidthOptions();
   const offsetOptions = getOffsetOptions(settings.width);
 
@@ -193,6 +202,7 @@ function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
           rowId={insertBefore.rowId}
           placement="between"
           afterColumnId={insertBefore.afterColumnId}
+          gutterShiftPct={gutterShiftPct}
         />
       )}
       <div

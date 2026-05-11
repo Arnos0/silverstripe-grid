@@ -53,12 +53,17 @@
   }
 
   // --- Gutter handle (placement=between) ------------------------------------
+  // Anchored to the left edge of the column it precedes — the centre of a plain
+  // 16px gutter. When that column carries a margin offset the gutter is wider,
+  // so ColumnInsertButton sets --ssgrid-insert-shift (a % of the column width)
+  // to slide the handle back to the new gutter centre instead of hugging the
+  // column. Grid-placement offsets are left alone (the gap math differs).
   &[data-placement='between'] {
     position: absolute;
     inset-block-start: 50%;
-    inset-inline-start: 0;
+    inset-inline-start: calc(-1 * var(--ssgrid-insert-shift, 0%));
     z-index: 2;
-    width: 24px; // generous hit area straddling the 16px gutter
+    width: 24px; // generous hit area straddling the gutter
     height: 24px;
     transform: translate(-50%, -50%);
     border-radius: var(--ssgrid-radius-sm);
