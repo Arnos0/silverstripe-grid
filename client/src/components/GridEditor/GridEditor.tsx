@@ -219,10 +219,10 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
 
 /**
  * The "Grid area" header strip from the Figma — a title plus a small toolbar of
- * area-level actions. `collapse all` is fully wired; `reset / open / clear` are
- * placeholders for actions the design mocked but the editor doesn't expose yet
- * (they render disabled rather than absent so the strip matches the design and
- * the wiring has an obvious home later).
+ * area-level actions. The collapse/expand-all toggle is fully wired; `reset /
+ * open / clear` are placeholders for actions the design mocked but the editor
+ * doesn't expose yet (they render disabled rather than absent so the strip
+ * matches the design and the wiring has an obvious home later).
  */
 function GridAreaHeader({
   sections,
@@ -233,15 +233,24 @@ function GridAreaHeader({
 }) {
   const { isCollapsed, toggle } = useCollapse();
 
-  const collapseAll = useCallback(() => {
+  // When every section is already collapsed the button flips to "expand all";
+  // any expanded section keeps it in "collapse all" mode.
+  const allCollapsed =
+    sections.length > 0 && sections.every((section) => isCollapsed(section.nodeKey));
+
+  const toggleAll = useCallback(() => {
     for (const section of sections) {
-      if (!isCollapsed(section.nodeKey)) {
+      if (isCollapsed(section.nodeKey) === allCollapsed) {
         toggle(section.nodeKey);
       }
     }
-  }, [sections, isCollapsed, toggle]);
+  }, [sections, isCollapsed, toggle, allCollapsed]);
 
-  const canCollapseAll = !readonly && sections.some((section) => !isCollapsed(section.nodeKey));
+  const canToggleAll = !readonly && sections.length > 0;
+
+  const toggleAllLabel = allCollapsed
+    ? t('WeDevelopGrid.GridEditor.ACTION_EXPAND_ALL', 'Expand all sections')
+    : t('WeDevelopGrid.GridEditor.ACTION_COLLAPSE_ALL', 'Collapse all sections');
 
   return (
     <header className="ssgrid-editor__header">
@@ -261,12 +270,15 @@ function GridAreaHeader({
         <button
           type="button"
           className="ssgrid-icon-button"
-          disabled={!canCollapseAll}
-          onClick={collapseAll}
-          title={t('WeDevelopGrid.GridEditor.ACTION_COLLAPSE_ALL', 'Collapse all sections')}
-          aria-label={t('WeDevelopGrid.GridEditor.ACTION_COLLAPSE_ALL', 'Collapse all sections')}
+          disabled={!canToggleAll}
+          onClick={toggleAll}
+          title={toggleAllLabel}
+          aria-label={toggleAllLabel}
         >
-          <span className="ssgrid-icon-button__glyph font-icon-up-open-big" aria-hidden="true" />
+          <span
+            className={`ssgrid-icon-button__glyph ${allCollapsed ? 'font-icon-down-open-big' : 'font-icon-up-open-big'}`}
+            aria-hidden="true"
+          />
         </button>
         <button
           type="button"

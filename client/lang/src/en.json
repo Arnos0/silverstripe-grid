@@ -46,6 +46,7 @@
   "WeDevelopGrid.ElementTypePicker.TITLE": "Add content element",
   "WeDevelopGrid.GridEditor.ACTION_CLEAR": "Remove all sections",
   "WeDevelopGrid.GridEditor.ACTION_COLLAPSE_ALL": "Collapse all sections",
+  "WeDevelopGrid.GridEditor.ACTION_EXPAND_ALL": "Expand all sections",
   "WeDevelopGrid.GridEditor.ACTION_OPEN": "Open page",
   "WeDevelopGrid.GridEditor.ACTION_RESET": "Reset changes",
   "WeDevelopGrid.GridEditor.AREA_TITLE": "Grid area",
