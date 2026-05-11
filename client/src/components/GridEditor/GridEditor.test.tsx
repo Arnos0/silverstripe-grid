@@ -168,7 +168,9 @@ describe('GridEditor', () => {
 
       // Every section is now collapsed, so the button flips to expand-all.
       const expandAll = screen.getByRole('button', { name: 'Expand all sections' });
-      expect(screen.queryByRole('button', { name: 'Collapse all sections' })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Collapse all sections' }),
+      ).not.toBeInTheDocument();
 
       await user.click(expandAll);
       expect(screen.getByRole('button', { name: 'Collapse all sections' })).toBeInTheDocument();
