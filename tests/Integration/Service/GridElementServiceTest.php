@@ -93,6 +93,28 @@ final class GridElementServiceTest extends SapphireTest
         self::assertGreaterThan($newRow->Sort, $row2->Sort);
     }
 
+    public function testCreateElementInsertAtStart(): void
+    {
+        $page = $this->objFromFixture(Page::class, 'test_page');
+        $section = GridTreeFactory::section($page);
+        $row1 = GridTreeFactory::row($section);
+        $row2 = GridTreeFactory::row($section);
+
+        $result = $this->service->createElement($section, ContainerType::Row, 'main', null, insertAtStart: true);
+
+        self::assertTrue($result->isOk());
+
+        $newRow = $result->unwrap();
+
+        // Reload to verify persisted sort order
+        $row1 = GridElement::get()->byID($row1->ID);
+        $newRow = GridElement::get()->byID($newRow->ID);
+        $row2 = GridElement::get()->byID($row2->ID);
+
+        self::assertLessThan($row1->Sort, $newRow->Sort);
+        self::assertLessThan($row2->Sort, $row1->Sort);
+    }
+
     // ─── createContentElement ───────────────────────────────────
 
     public function testCreateContentElementUnderColumn(): void

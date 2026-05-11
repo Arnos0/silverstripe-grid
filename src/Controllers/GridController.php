@@ -259,7 +259,13 @@ class GridController extends AdminController
             $this->jsonError(403);
         }
 
-        $result = $this->elementService->createElement($parent, $body->containerType, $body->zone, $body->insertAfterElementID);
+        $result = $this->elementService->createElement(
+            $parent,
+            $body->containerType,
+            $body->zone,
+            $body->insertAfterElementID,
+            $body->insertAtStart,
+        );
         if ($result->isErr()) {
             return $this->resultToResponse($result);
         }

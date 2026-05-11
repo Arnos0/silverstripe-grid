@@ -50,6 +50,7 @@ final class RequestBodyParserTest extends TestCase
         NodeRef $expectedParent,
         ?int $expectedInsertAfter,
         string $expectedZone,
+        bool $expectedInsertAtStart,
     ): void {
         $result = $this->parser->parseCreateBody($input);
 
@@ -61,26 +62,32 @@ final class RequestBodyParserTest extends TestCase
         self::assertTrue($request->parent->equals($expectedParent));
         self::assertSame($expectedInsertAfter, $request->insertAfterElementID);
         self::assertSame($expectedZone, $request->zone);
+        self::assertSame($expectedInsertAtStart, $request->insertAtStart);
     }
 
     /**
-     * @return iterable<string, array{array<string, mixed>, ContainerType, NodeRef, ?int, string}>
+     * @return iterable<string, array{array<string, mixed>, ContainerType, NodeRef, ?int, string, bool}>
      */
     public static function createBodyValidProvider(): iterable
     {
         yield 'section under page' => [
             ['containerType' => 'section', 'parent' => ['type' => 'page', 'id' => 1], 'insertAfterElementID' => 5, 'zone' => 'sidebar'],
-            ContainerType::Section, new NodeRef(NodeType::Page, 1), 5, 'sidebar',
+            ContainerType::Section, new NodeRef(NodeType::Page, 1), 5, 'sidebar', false,
         ];
 
         yield 'null insertAfterElementID' => [
             ['containerType' => 'row', 'parent' => ['type' => 'section', 'id' => 5], 'insertAfterElementID' => null],
-            ContainerType::Row, new NodeRef(NodeType::Section, 5), null, 'main',
+            ContainerType::Row, new NodeRef(NodeType::Section, 5), null, 'main', false,
         ];
 
         yield 'default zone' => [
             ['containerType' => 'column', 'parent' => ['type' => 'row', 'id' => 3]],
-            ContainerType::Column, new NodeRef(NodeType::Row, 3), null, 'main',
+            ContainerType::Column, new NodeRef(NodeType::Row, 3), null, 'main', false,
+        ];
+
+        yield 'insertAtStart' => [
+            ['containerType' => 'column', 'parent' => ['type' => 'row', 'id' => 3], 'insertAtStart' => true],
+            ContainerType::Column, new NodeRef(NodeType::Row, 3), null, 'main', true,
         ];
     }
 
@@ -139,6 +146,16 @@ final class RequestBodyParserTest extends TestCase
         yield 'zero insertAfterElementID' => [
             ['containerType' => 'section', 'parent' => ['type' => 'page', 'id' => 1], 'insertAfterElementID' => 0],
             'insertAfterElementID must be a positive integer or null.',
+        ];
+
+        yield 'non-bool insertAtStart' => [
+            ['containerType' => 'column', 'parent' => ['type' => 'row', 'id' => 3], 'insertAtStart' => 'yes'],
+            'insertAtStart must be a boolean.',
+        ];
+
+        yield 'insertAtStart combined with insertAfterElementID' => [
+            ['containerType' => 'column', 'parent' => ['type' => 'row', 'id' => 3], 'insertAfterElementID' => 5, 'insertAtStart' => true],
+            'insertAtStart and insertAfterElementID are mutually exclusive.',
         ];
 
         yield 'empty zone' => [

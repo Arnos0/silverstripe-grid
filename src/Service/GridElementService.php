@@ -43,7 +43,8 @@ final readonly class GridElementService
      * Create a container element under the given parent.
      *
      * @param non-empty-string $zone
-     * @param positive-int|null $insertAfterElementID
+     * @param positive-int|null $insertAfterElementID Place the new element directly after this sibling; null = append at the end
+     * @param bool $insertAtStart Place the new element before all existing siblings (ignored when $insertAfterElementID is given)
      * @return Result<GridElement>
      */
     public function createElement(
@@ -51,6 +52,7 @@ final readonly class GridElementService
         ContainerType $containerType,
         string $zone,
         ?int $insertAfterElementID,
+        bool $insertAtStart = false,
     ): Result {
         /** @var GridElement $newElement */
         $newElement = Injector::inst()->create($containerType->toElementClass());
@@ -61,7 +63,7 @@ final readonly class GridElementService
             $newElement->Zone = $zone;
         }
 
-        return $this->writeAndPlace($newElement, $parent, $insertAfterElementID);
+        return $this->writeAndPlace($newElement, $parent, $insertAfterElementID, $insertAtStart);
     }
 
     /**
@@ -243,7 +245,8 @@ final readonly class GridElementService
     }
 
     /**
-     * Write a newly-prepared element and (optionally) place it after a sibling.
+     * Write a newly-prepared element and (optionally) place it after a sibling
+     * or at the start of its parent.
      *
      * Wrapped in a DB transaction: if placement fails (e.g. the reference
      * sibling does not exist, or the hierarchy rule rejects the combination),
@@ -253,19 +256,23 @@ final readonly class GridElementService
      * @param positive-int|null $afterElementId
      * @return Result<GridElement>
      */
-    private function writeAndPlace(GridElement $element, DataObject $parent, ?int $afterElementId): Result
-    {
+    private function writeAndPlace(
+        GridElement $element,
+        DataObject $parent,
+        ?int $afterElementId,
+        bool $insertAtStart = false,
+    ): Result {
         $conn = DB::get_conn();
         if ($conn === null) {
-            return $this->writeThenPlace($element, $parent, $afterElementId);
+            return $this->writeThenPlace($element, $parent, $afterElementId, $insertAtStart);
         }
 
         /** @var Result<GridElement>|null $captured */
         $captured = null;
 
         try {
-            $conn->withTransaction(function () use (&$captured, $element, $parent, $afterElementId): void {
-                $captured = $this->writeThenPlace($element, $parent, $afterElementId);
+            $conn->withTransaction(function () use (&$captured, $element, $parent, $afterElementId, $insertAtStart): void {
+                $captured = $this->writeThenPlace($element, $parent, $afterElementId, $insertAtStart);
                 if ($captured->isErr()) {
                     throw new RuntimeException(self::ROLLBACK_SIGNAL);
                 }
@@ -285,17 +292,35 @@ final readonly class GridElementService
      * No transaction awareness — callers that need rollback-on-failure use
      * {@see writeAndPlace()}.
      *
+     * With neither $afterElementId nor $insertAtStart the element keeps the
+     * appended Sort assigned by {@see GridElement::ensureSortSet()} on write.
+     * $insertAtStart routes through {@see ElementPlacementService::insertAfter()}
+     * with a null reference, which the placement service treats as "splice at
+     * index 0 and reindex the rest".
+     *
      * @param positive-int|null $afterElementId
      * @return Result<GridElement>
      */
-    private function writeThenPlace(GridElement $element, DataObject $parent, ?int $afterElementId): Result
-    {
+    private function writeThenPlace(
+        GridElement $element,
+        DataObject $parent,
+        ?int $afterElementId,
+        bool $insertAtStart = false,
+    ): Result {
         $writeResult = WriteResult::from(static function () use ($element): GridElement {
             $element->write();
             return $element;
         });
 
-        if ($writeResult->isErr() || $afterElementId === null) {
+        if ($writeResult->isErr()) {
+            return $writeResult;
+        }
+
+        if ($insertAtStart) {
+            return $this->placementService->insertAfter($element, $parent, null);
+        }
+
+        if ($afterElementId === null) {
             return $writeResult;
         }
 
