@@ -1,7 +1,8 @@
-// Add-child button — Figma "Add row" / "Add section" button: outlined, brand-
-// tinted, 32px tall, plus icon + label, full width inside its parent. The
-// append variant is just the button; the empty-state variant adds a hint line
-// above it.
+// Add-child button — Figma "Add row" / "Add section" button: dashed brand
+// outline, brand-tinted fill, 32px tall, plus icon + label, full width inside
+// its parent. The append variant is just the button; the empty-state variant
+// adds a hint line above it. (Column adds use the "+" squares of
+// ColumnInsertButton instead — see _column-insert.scss.)
 
 .ssgrid-add-child {
   &--empty {
@@ -28,7 +29,7 @@
     gap: 4px;
     padding: 0 8px;
     background: var(--ssgrid-surface-selected);
-    border: 1px solid var(--ssgrid-border-focus);
+    border: 1px dashed var(--ssgrid-border-focus);
     border-radius: var(--ssgrid-radius-sm);
     color: var(--ssgrid-text-brand);
     font: inherit;
