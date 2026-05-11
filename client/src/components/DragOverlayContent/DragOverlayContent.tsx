@@ -25,9 +25,14 @@ interface PreviewProps {
 function SectionPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={node.blockSchema.icon} data-testid={`drag-overlay-${type}-icon`} />
-      <span data-testid={`drag-overlay-${type}-title`}>{node.title}</span>
-      <span data-testid={`drag-overlay-${type}-meta`}>
+      <i
+        className={`ssgrid-drag-overlay__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
+      <span className="ssgrid-drag-overlay__title" data-testid={`drag-overlay-${type}-title`}>
+        {node.title}
+      </span>
+      <span className="ssgrid-drag-overlay__meta" data-testid={`drag-overlay-${type}-meta`}>
         {pluralize(getChildCount(node), t('WeDevelopGrid.DragOverlayContent.ROW_SINGULAR', 'row'))}
       </span>
     </>
@@ -37,9 +42,14 @@ function SectionPreview({ node, type }: PreviewProps): React.JSX.Element {
 function RowPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={node.blockSchema.icon} data-testid={`drag-overlay-${type}-icon`} />
-      <span data-testid={`drag-overlay-${type}-title`}>{node.title}</span>
-      <span data-testid={`drag-overlay-${type}-meta`}>
+      <i
+        className={`ssgrid-drag-overlay__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
+      <span className="ssgrid-drag-overlay__title" data-testid={`drag-overlay-${type}-title`}>
+        {node.title}
+      </span>
+      <span className="ssgrid-drag-overlay__meta" data-testid={`drag-overlay-${type}-meta`}>
         {pluralize(
           getChildCount(node),
           t('WeDevelopGrid.DragOverlayContent.COLUMN_SINGULAR', 'column'),
@@ -52,8 +62,13 @@ function RowPreview({ node, type }: PreviewProps): React.JSX.Element {
 function ColumnPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={node.blockSchema.icon} data-testid={`drag-overlay-${type}-icon`} />
-      <span data-testid={`drag-overlay-${type}-title`}>{node.title}</span>
+      <i
+        className={`ssgrid-drag-overlay__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
+      <span className="ssgrid-drag-overlay__title" data-testid={`drag-overlay-${type}-title`}>
+        {node.title}
+      </span>
     </>
   );
 }
@@ -61,8 +76,13 @@ function ColumnPreview({ node, type }: PreviewProps): React.JSX.Element {
 function ElementPreview({ node, type }: PreviewProps): React.JSX.Element {
   return (
     <>
-      <i className={node.blockSchema.icon} data-testid={`drag-overlay-${type}-icon`} />
-      <span data-testid={`drag-overlay-${type}-title`}>{node.title}</span>
+      <i
+        className={`ssgrid-drag-overlay__icon ${node.blockSchema.icon}`}
+        data-testid={`drag-overlay-${type}-icon`}
+      />
+      <span className="ssgrid-drag-overlay__title" data-testid={`drag-overlay-${type}-title`}>
+        {node.title}
+      </span>
     </>
   );
 }
@@ -81,7 +101,7 @@ export default function DragOverlayContent({
   const Preview = PREVIEW_BY_TYPE[type];
 
   return (
-    <div data-testid={`drag-overlay-${type}`}>
+    <div className="ssgrid-drag-overlay" data-testid={`drag-overlay-${type}`}>
       <Preview node={node} type={type} />
     </div>
   );

@@ -141,7 +141,8 @@ export default function GridSettingsPicker({
         disabled={disabled}
         onClick={handleTriggerClick}
       >
-        {label}
+        <span className="ssgrid-settings-picker__label">{label}</span>
+        <i className="ssgrid-settings-picker__caret font-icon-down-open" aria-hidden="true" />
       </button>
       {isOpen && (
         <div

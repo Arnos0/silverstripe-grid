@@ -40,6 +40,7 @@ export default function ConfirmDialog({
   return (
     <dialog
       ref={dialogRef}
+      className="ssgrid-dialog"
       data-testid="confirm-dialog"
       onClose={handleClose}
       // onClick guard prevents clicks inside the dialog from bubbling to
@@ -53,23 +54,30 @@ export default function ConfirmDialog({
         e.stopPropagation();
       }}
     >
-      <div>
+      <div className="ssgrid-dialog__header">
         <h3>{title}</h3>
       </div>
-      <div>
+      <div className="ssgrid-dialog__body">
         <p>{message}</p>
       </div>
-      <div>
-        <button type="button" onClick={handleClose}>
-          {t('WeDevelopGrid.ConfirmDialog.CANCEL_BUTTON', 'Cancel')}
-        </button>
-        <button
-          type="button"
-          data-destructive={destructive ? 'true' : undefined}
-          onClick={onConfirm}
-        >
-          {confirmLabel}
-        </button>
+      <div className="ssgrid-dialog__footer">
+        <div className="ssgrid-dialog__actions">
+          <button
+            type="button"
+            className="ssgrid-button ssgrid-button--ghost"
+            onClick={handleClose}
+          >
+            {t('WeDevelopGrid.ConfirmDialog.CANCEL_BUTTON', 'Cancel')}
+          </button>
+          <button
+            type="button"
+            className={`ssgrid-button ${destructive ? 'ssgrid-button--danger' : 'ssgrid-button--primary'}`}
+            data-destructive={destructive ? 'true' : undefined}
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </button>
+        </div>
       </div>
     </dialog>
   );

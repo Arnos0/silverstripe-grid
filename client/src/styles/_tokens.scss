@@ -15,6 +15,12 @@
   // used exclusively for the "Modified=true" element card variant.
   --ssgrid-color-modified-500: #fe9a00;
 
+  // Danger — not in the Figma (which has no destructive surfaces), but the
+  // editor exposes archive/delete affordances the design never mocked. Borrow
+  // the SilverStripe admin red so it sits naturally inside the CMS.
+  --ssgrid-color-danger-500: #d72e3c;
+  --ssgrid-color-danger-tint: rgb(215 46 60 / 8%);
+
   // Neutrals — extreme ends + the single page wash.
   --ssgrid-color-neutral-0: #fff;
   --ssgrid-color-neutral-100: #f2f2f2;
@@ -71,6 +77,7 @@
 
   --ssgrid-text-default: var(--ssgrid-color-neutral-1000);
   --ssgrid-text-brand: var(--ssgrid-color-brand-500);
+  --ssgrid-text-danger: var(--ssgrid-color-danger-500);
   --ssgrid-text-on-action: var(--ssgrid-color-neutral-0);
   --ssgrid-icon-default: var(--ssgrid-color-neutral-1000);
   --ssgrid-icon-brand: var(--ssgrid-color-brand-500);

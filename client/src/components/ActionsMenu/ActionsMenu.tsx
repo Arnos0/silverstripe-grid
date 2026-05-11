@@ -123,7 +123,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
   const menuId = `${testId}-menu`;
 
   return (
-    <div ref={wrapperRef}>
+    <div ref={wrapperRef} className="ssgrid-actions-menu">
       <button
         ref={triggerRef}
         type="button"
@@ -141,6 +141,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
         <div
           id={menuId}
           ref={menuRef}
+          className="ssgrid-actions-menu__menu"
           role="menu"
           tabIndex={-1}
           aria-activedescendant={getItemId(activeIndex)}
@@ -152,6 +153,7 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
             <div
               key={action.key}
               id={getItemId(index)}
+              className="ssgrid-actions-menu__item"
               role="menuitem"
               tabIndex={index === activeIndex ? 0 : -1}
               data-destructive={action.destructive ? 'true' : undefined}

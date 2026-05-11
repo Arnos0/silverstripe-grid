@@ -43,11 +43,17 @@ export default function ElementTypePicker({
   const entries = Object.entries(allowedTypes);
 
   return (
-    <dialog ref={dialogRef} data-testid="element-type-picker" onClose={handleClose}>
-      <div>
+    <dialog
+      ref={dialogRef}
+      className="ssgrid-dialog"
+      data-testid="element-type-picker"
+      onClose={handleClose}
+    >
+      <div className="ssgrid-dialog__header">
         <h3>{t('WeDevelopGrid.ElementTypePicker.TITLE', 'Add content element')}</h3>
         <button
           type="button"
+          className="ssgrid-dialog__close"
           data-testid="element-type-picker-close"
           onClick={handleClose}
           aria-label={t('WeDevelopGrid.ElementTypePicker.CLOSE_LABEL', 'Close')}
@@ -55,24 +61,30 @@ export default function ElementTypePicker({
           &times;
         </button>
       </div>
-      <div>
+      <div className="ssgrid-dialog__body">
         {entries.length > 0 ? (
-          <div>
+          <div className="ssgrid-dialog__grid">
             {entries.map(([className, info]) => (
               <button
                 key={className}
                 type="button"
+                className="ssgrid-dialog__tile"
                 data-testid="element-type-tile"
                 onClick={() => handleTileClick(className)}
               >
-                <span className={info.icon} data-testid="element-type-icon" />
-                <span>{info.label}</span>
-                {info.description !== '' && <span>{info.description}</span>}
+                <span
+                  className={`ssgrid-dialog__tile-icon ${info.icon}`}
+                  data-testid="element-type-icon"
+                />
+                <span className="ssgrid-dialog__tile-label">{info.label}</span>
+                {info.description !== '' && (
+                  <span className="ssgrid-dialog__tile-description">{info.description}</span>
+                )}
               </button>
             ))}
           </div>
         ) : (
-          <p>
+          <p className="ssgrid-dialog__empty">
             {t(
               'WeDevelopGrid.ElementTypePicker.EMPTY_MESSAGE',
               'No content element types available',
