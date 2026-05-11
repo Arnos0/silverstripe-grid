@@ -36,6 +36,7 @@ final readonly class RequestBodyParser
         $containerTypeValue = $data['containerType'] ?? null;
         $parentData = $data['parent'] ?? null;
         $afterElementID = $data['insertAfterElementID'] ?? null;
+        $insertAtStart = $data['insertAtStart'] ?? false;
         $zone = $data['zone'] ?? 'main';
 
         if (!is_string($containerTypeValue)) {
@@ -57,12 +58,20 @@ final readonly class RequestBodyParser
             return Result::fail(new ValidationError('insertAfterElementID must be a positive integer or null.'));
         }
 
+        if (!is_bool($insertAtStart)) {
+            return Result::fail(new ValidationError('insertAtStart must be a boolean.'));
+        }
+
+        if ($insertAtStart && $afterElementID !== null) {
+            return Result::fail(new ValidationError('insertAtStart and insertAfterElementID are mutually exclusive.'));
+        }
+
         if (!is_string($zone) || $zone === '') {
             return Result::fail(new ValidationError('zone must be a non-empty string.'));
         }
 
         /** @var non-empty-string $zone Narrowed by === '' guard above */
-        return Result::ok(new CreateElementRequest($containerType, $parent, $afterElementID, $zone));
+        return Result::ok(new CreateElementRequest($containerType, $parent, $afterElementID, $zone, $insertAtStart));
     }
 
     /**

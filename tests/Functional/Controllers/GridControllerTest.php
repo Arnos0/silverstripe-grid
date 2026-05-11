@@ -1236,6 +1236,49 @@ final class GridControllerTest extends FunctionalTest
         self::assertSame((int) $sortValues[0], (int) $row1->Sort);
     }
 
+    public function testCreateColumnWithInsertAtStart(): void
+    {
+        $tree = $this->buildTree();
+        $row = $tree['row'];
+        $col1 = $tree['column'];
+        $col2 = GridTreeFactory::column($row, 2);
+
+        $response = $this->jsonPost(self::BASE_URL . '/create', [
+            'containerType' => 'column',
+            'parent' => $this->ref($row),
+            'insertAtStart' => true,
+        ]);
+
+        self::assertSame(204, $response->getStatusCode());
+
+        $columns = Column::get()->filter([
+            'ParentID' => (int) $row->ID,
+            'ParentClass' => Row::class,
+        ])->sort('Sort', 'ASC');
+        self::assertSame(3, $columns->count());
+
+        $first = $columns->first();
+        self::assertSame(1, (int) $first->Sort);
+        self::assertNotSame((int) $col1->ID, (int) $first->ID);
+        self::assertNotSame((int) $col2->ID, (int) $first->ID);
+    }
+
+    public function testCreateRejectsInsertAtStartCombinedWithInsertAfterElementId(): void
+    {
+        $tree = $this->buildTree();
+        $row = $tree['row'];
+        $col1 = $tree['column'];
+
+        $response = $this->jsonPost(self::BASE_URL . '/create', [
+            'containerType' => 'column',
+            'parent' => $this->ref($row),
+            'insertAfterElementID' => (int) $col1->ID,
+            'insertAtStart' => true,
+        ]);
+
+        self::assertSame(400, $response->getStatusCode());
+    }
+
     public function testCreateContentWithInsertAfterElementId(): void
     {
         $tree = $this->buildTree();

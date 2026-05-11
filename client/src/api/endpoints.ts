@@ -74,6 +74,8 @@ export interface CreateElementParams {
   containerType: ContainerType;
   parent: NodeRef;
   insertAfterElementID?: number;
+  /** Place the new element before all existing siblings. Mutually exclusive with `insertAfterElementID`. */
+  insertAtStart?: boolean;
   zone?: string;
 }
 
