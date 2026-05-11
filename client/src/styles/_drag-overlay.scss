@@ -1,0 +1,45 @@
+// Drag overlay — the floating "ghost" dnd-kit renders under the pointer while
+// reordering. Not in the Figma; modelled as a compact, slightly-lifted version
+// of a block toolbar row so the user keeps a sense of what's in flight.
+
+.ssgrid-drag-overlay {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 320px;
+  padding: 8px 12px;
+  background: var(--ssgrid-surface-default);
+  border: 1px solid var(--ssgrid-border-focus);
+  border-radius: var(--ssgrid-radius-md);
+  box-shadow: 0 8px 16px rgb(0 0 0 / 18%);
+  color: var(--ssgrid-text-default);
+  font-size: 14px;
+  line-height: 1.25;
+  cursor: grabbing;
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--ssgrid-radius-sm);
+    background: var(--ssgrid-surface-hover);
+    color: var(--ssgrid-text-brand);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &__title {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    flex: 0 0 auto;
+    opacity: 0.6;
+  }
+}

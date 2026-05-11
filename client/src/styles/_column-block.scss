@@ -99,8 +99,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     width: 100%;
-    height: 32px;
+    height: 40px;
     padding: 4px 8px;
     background: var(--ssgrid-surface-muted);
     border: 1px solid var(--ssgrid-border-default);
@@ -139,27 +140,29 @@
     gap: 16px;
   }
 
-  // Inline "+ Add content" trigger (opens the element type picker) — dashed
-  // outline so it reads as a placeholder slot rather than a primary action.
+  // Inline "+ Add content" trigger (opens the element type picker) — same
+  // brand-tinted dashed look as the "+ Add row/section" buttons (Figma "+ Add
+  // block"), so all the "add a child here" affordances read alike.
   &__add-content {
     display: inline-flex;
     width: 100%;
     height: 32px;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     padding: 0 8px;
-    background: transparent;
-    border: 1px dashed var(--ssgrid-border-default);
+    background: var(--ssgrid-surface-selected);
+    border: 1px dashed var(--ssgrid-border-focus);
     border-radius: var(--ssgrid-radius-sm);
-    color: var(--ssgrid-text-default);
+    color: var(--ssgrid-text-brand);
     font: inherit;
     font-size: 14px;
+    font-weight: 500;
     line-height: 1;
     cursor: pointer;
 
     &:hover {
-      border-color: var(--ssgrid-border-focus);
-      color: var(--ssgrid-text-brand);
+      background: var(--ssgrid-surface-hover);
     }
 
     &:focus-visible {

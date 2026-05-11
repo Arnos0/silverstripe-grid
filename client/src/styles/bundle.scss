@@ -6,9 +6,6 @@
 @use './column-block';
 @use './element-card';
 @use './add-child-button';
-
-.grid-editor-holder > [data-react-mount="grid-editor"] {
-  flex: 0 0 100%;
-  max-width: 100%;
-  margin-left: 0;
-}
+@use './popover';
+@use './dialog';
+@use './drag-overlay';
