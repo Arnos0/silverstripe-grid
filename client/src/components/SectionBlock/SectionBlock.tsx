@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { SectionNode } from '@/types/elements';
@@ -58,6 +58,8 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
   const style = buildSortableStyle(transform, transition, isDragging);
 
   const childKeys = useChildSortableKeys(section);
+  const rows = section.children ?? [];
+  const hasRows = rows.length > 0;
 
   return (
     <section
@@ -96,14 +98,25 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
             role="img"
           />
         )}
-        <ElementActions node={section} />
+        <ElementActions node={section} collapse={{ isCollapsed, onToggle, label: section.title }} />
       </div>
       <div className="ssgrid-section__body">
         <SortableContext items={childKeys} strategy={verticalListSortingStrategy}>
-          {section.children !== null && section.children.length > 0 ? (
+          {hasRows ? (
             <>
-              {section.children.map((row) => (
-                <RowBlock key={row.nodeKey} row={row} />
+              {rows.map((row, index) => (
+                <Fragment key={row.nodeKey}>
+                  {index > 0 && (
+                    <AddChildButton
+                      parentId={section.self.id}
+                      childType="row"
+                      childLabel="Row"
+                      variant="between"
+                      insertAfterId={rows[index - 1].self.id}
+                    />
+                  )}
+                  <RowBlock row={row} />
+                </Fragment>
               ))}
               <AddChildButton
                 parentId={section.self.id}

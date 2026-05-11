@@ -5,7 +5,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ message, variant }: EmptyStateProps) {
   return (
-    <div data-testid="empty-state" data-state={variant ?? undefined}>
+    <div className="ssgrid-empty-state" data-testid="empty-state" data-state={variant ?? undefined}>
       {message}
     </div>
   );

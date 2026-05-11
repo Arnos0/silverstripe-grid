@@ -15,10 +15,6 @@
     border-color: var(--ssgrid-border-default);
   }
 
-  & + & {
-    margin-top: 8px;
-  }
-
   &[data-collapsed] > :not(.ssgrid-row__header) {
     display: none;
   }

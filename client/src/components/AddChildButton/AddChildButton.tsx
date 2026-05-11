@@ -13,7 +13,19 @@ interface AddChildButtonProps {
   readonly parentId: number;
   readonly childType: ContainerType;
   readonly childLabel: string;
-  readonly variant: 'empty-state' | 'append';
+  /**
+   * - `empty-state` — the only child slot, shown with a hint line above it.
+   * - `append` — full-width button after the last child.
+   * - `between` — full-width button sitting in the gap between two children;
+   *   pair it with {@link insertAfterId} so the new child lands in that gap.
+   */
+  readonly variant: 'empty-state' | 'append' | 'between';
+  /**
+   * DB id of the sibling the new child should be inserted *after*. Omit to
+   * append at the end of the parent's child list (the backend has no "insert
+   * before the first child" path, so a leading slot is intentionally absent).
+   */
+  readonly insertAfterId?: number;
 }
 
 const PARENT_TYPE_FOR_CHILD: Record<ContainerType, NodeType> = {
@@ -27,6 +39,7 @@ export default function AddChildButton({
   childType,
   childLabel,
   variant,
+  insertAfterId,
 }: AddChildButtonProps) {
   const { pageId, zone } = useGridEditorContext();
   const { mutate, isPending } = useCreateElement(pageId, zone);
@@ -40,6 +53,7 @@ export default function AddChildButton({
     mutate({
       containerType: childType,
       parent,
+      ...(insertAfterId !== undefined ? { insertAfterElementID: insertAfterId } : {}),
       ...(childType === 'section' ? { zone } : {}),
     });
   }
@@ -71,6 +85,14 @@ export default function AddChildButton({
             childLabel: childLabel.toLowerCase(),
           })}
         </p>
+        {button}
+      </div>
+    );
+  }
+
+  if (variant === 'between') {
+    return (
+      <div className="ssgrid-add-child ssgrid-add-child--between" data-testid="add-child-between">
         {button}
       </div>
     );
