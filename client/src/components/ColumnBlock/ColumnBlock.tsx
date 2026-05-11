@@ -183,25 +183,39 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
         data-hidden={!settings.visible ? '' : undefined}
       >
         <div data-testid="column-header">
-          <DragHandle
-            listeners={listeners}
-            attributes={attributes}
-            label={t('WeDevelopGrid.ColumnBlock.MOVE_LABEL', 'Move {title}', {
-              title: column.title,
-            })}
-          />
-          <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-          <i className={column.blockSchema.icon} />
-          <span data-testid="column-title">
-            {column.editLink !== null ? (
-              <a href={column.editLink} data-testid="column-edit-link">
-                {column.title}
-              </a>
-            ) : (
-              column.title
+          <div data-role="column-toolbar">
+            <DragHandle
+              listeners={listeners}
+              attributes={attributes}
+              label={t('WeDevelopGrid.ColumnBlock.MOVE_LABEL', 'Move {title}', {
+                title: column.title,
+              })}
+            />
+            <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
+            <i className={column.blockSchema.icon} aria-hidden="true" />
+            <span data-testid="column-title">
+              {column.editLink !== null ? (
+                <a href={column.editLink} data-testid="column-edit-link">
+                  {column.title}
+                </a>
+              ) : (
+                column.title
+              )}
+            </span>
+            {status === 'modified' && (
+              <span
+                data-role="modified-dot"
+                data-testid="column-modified-indicator"
+                aria-label={t(
+                  'WeDevelopGrid.ColumnBlock.MODIFIED_LABEL',
+                  'Has unpublished changes',
+                )}
+                role="img"
+              />
             )}
-          </span>
-          <div>
+            <ElementActions node={column} />
+          </div>
+          <div data-role="column-layout-settings">
             <GridSettingsPicker
               label={widthLabel}
               options={widthOptions}
@@ -218,7 +232,6 @@ function EditableColumnBlock({ column }: ColumnBlockProps) {
               testId="column-offset-badge"
               onSelect={handleOffsetSelect}
             />
-            <ElementActions node={column} />
           </div>
         </div>
         <div>
@@ -271,9 +284,22 @@ function ReadonlyColumnBlock({ column }: ColumnBlockProps) {
         data-hidden={!settings.visible ? '' : undefined}
       >
         <div data-testid="column-header">
-          <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
-          <i className={column.blockSchema.icon} />
-          <span data-testid="column-title">{column.title}</span>
+          <div data-role="column-toolbar">
+            <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={column.title} />
+            <i className={column.blockSchema.icon} aria-hidden="true" />
+            <span data-testid="column-title">{column.title}</span>
+            {status === 'modified' && (
+              <span
+                data-role="modified-dot"
+                data-testid="column-modified-indicator"
+                aria-label={t(
+                  'WeDevelopGrid.ColumnBlock.MODIFIED_LABEL',
+                  'Has unpublished changes',
+                )}
+                role="img"
+              />
+            )}
+          </div>
         </div>
         <div>
           {children.length > 0 ? (
