@@ -71,7 +71,7 @@ final readonly class RequestBodyParser
         }
 
         /** @var non-empty-string $zone Narrowed by === '' guard above */
-        return Result::ok(new CreateElementRequest($containerType, $parent, $afterElementID, $zone, $insertAtStart));
+        return Result::ok(new CreateElementRequest($parent, $containerType, $zone, $afterElementID, $insertAtStart));
     }
 
     /**
