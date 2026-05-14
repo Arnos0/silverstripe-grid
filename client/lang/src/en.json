@@ -39,6 +39,7 @@
   "WeDevelopGrid.ElementActions.ARCHIVE_CONFIRM_LABEL": "Archive",
   "WeDevelopGrid.ElementActions.COLLAPSE_LABEL": "Collapse {title}",
   "WeDevelopGrid.ElementActions.EXPAND_LABEL": "Expand {title}",
+  "WeDevelopGrid.ElementActions.TOOLBAR_LABEL": "Element actions",
   "WeDevelopGrid.ElementCard.MODIFIED_LABEL": "Has unpublished changes",
   "WeDevelopGrid.ElementCard.MOVE_LABEL": "Move {title}",
   "WeDevelopGrid.ElementTypePicker.CLOSE_LABEL": "Close",
