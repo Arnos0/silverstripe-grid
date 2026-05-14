@@ -39,6 +39,7 @@
   "WeDevelopGrid.ElementActions.ARCHIVE_CONFIRM_LABEL": "Archiveren",
   "WeDevelopGrid.ElementActions.COLLAPSE_LABEL": "{title} inklappen",
   "WeDevelopGrid.ElementActions.EXPAND_LABEL": "{title} uitklappen",
+  "WeDevelopGrid.ElementActions.TOOLBAR_LABEL": "Elementacties",
   "WeDevelopGrid.ElementCard.MODIFIED_LABEL": "Heeft niet-gepubliceerde wijzigingen",
   "WeDevelopGrid.ElementCard.MOVE_LABEL": "{title} verplaatsen",
   "WeDevelopGrid.ElementTypePicker.CLOSE_LABEL": "Sluiten",

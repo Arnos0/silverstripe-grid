@@ -20,7 +20,11 @@ describe('ElementActions', () => {
 
     renderWithProviders(<ElementActions node={node} />);
 
-    expect(screen.getByTestId('element-toolbar')).toBeInTheDocument();
+    const toolbar = screen.getByTestId('element-toolbar');
+    expect(toolbar).toBeInTheDocument();
+    // Screen readers announce the toolbar landmark; mirrors ViewportSwitcher.
+    expect(toolbar).toHaveAttribute('role', 'toolbar');
+    expect(toolbar).toHaveAccessibleName('Element actions');
     expect(screen.getByTestId('element-action-duplicate')).toBeEnabled();
     expect(screen.getByTestId('element-action-archive')).toBeEnabled();
     // History links to the element's CMS edit form, so it follows `editLink`,

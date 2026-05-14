@@ -137,7 +137,12 @@ export default function ElementActions({ node, collapse, kebabOnly = false }: El
 
   return (
     <>
-      <div className="ssgrid-element-toolbar" data-testid="element-toolbar">
+      <div
+        className="ssgrid-element-toolbar"
+        data-testid="element-toolbar"
+        role="toolbar"
+        aria-label={t('WeDevelopGrid.ElementActions.TOOLBAR_LABEL', 'Element actions')}
+      >
         <ToolbarButton
           glyph="font-icon-back-in-time"
           label={t('WeDevelopGrid.ElementActions.ACTION_HISTORY', 'View history')}
