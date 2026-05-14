@@ -58,7 +58,7 @@ export default function ViewportSwitcher() {
           {reset.label}
         </button>
       )}
-      {!readonly && (
+      {!readonly && reset.isDialogOpen && (
         <ConfirmDialog
           isOpen={reset.isDialogOpen}
           title={reset.dialogTitle}

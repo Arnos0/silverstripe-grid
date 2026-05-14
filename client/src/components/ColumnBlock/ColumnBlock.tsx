@@ -301,7 +301,7 @@ function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
           )}
         </div>
       </div>
-      {hasAllowedTypes && (
+      {hasAllowedTypes && isPickerOpen && (
         <ElementTypePicker
           allowedTypes={allowedTypes}
           isOpen={isPickerOpen}
