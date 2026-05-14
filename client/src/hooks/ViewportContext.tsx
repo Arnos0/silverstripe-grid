@@ -42,8 +42,5 @@ export function useViewportContext(): ViewportContextValue {
   // Stable object reference per `activeViewport` change so consumers using the
   // return value as a prop, dependency, or memo input don't see a new identity
   // on every render of an unrelated parent.
-  return useMemo(
-    () => ({ activeViewport, setActiveViewport: storeSet }),
-    [activeViewport],
-  );
+  return useMemo(() => ({ activeViewport, setActiveViewport: storeSet }), [activeViewport]);
 }
