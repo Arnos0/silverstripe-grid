@@ -101,6 +101,8 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
     [dragState?.activeType, pendingTree],
   );
 
+  const gridEditorContextValue = useMemo(() => ({ pageId, zone }), [pageId, zone]);
+
   const hasSections = sections.length > 0;
   const anyModified = sections.some((section) => section.status === 'modified');
 
@@ -169,7 +171,7 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
         </p>
       )}
       {data !== undefined && (
-        <GridEditorProvider value={{ pageId, zone }}>
+        <GridEditorProvider value={gridEditorContextValue}>
           <ViewportProvider>
             <ReadonlyProvider value={readonly}>
               <CollapseContext.Provider value={collapseState}>

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import type { RowNode } from '@/types/elements';
@@ -26,9 +26,30 @@ interface RowBlockProps {
  * variants never call `useSortable`, so a readonly grid tree doesn't
  * need a `DndContext` ancestor.
  */
-export default function RowBlock({ row }: RowBlockProps) {
+const RowBlock = memo(function RowBlock({ row }: RowBlockProps) {
   const readonly = useReadonly();
   return readonly ? <ReadonlyRowBlock row={row} /> : <EditableRowBlock row={row} />;
+});
+
+export default RowBlock;
+
+/**
+ * Build a stable per-column lookup for the "+ insert column" gutter between
+ * adjacent columns. Recreated only when the children array (or row id)
+ * changes — so the `insertBefore` prop passed to memoised `ColumnBlock`s is
+ * reference-stable across unrelated re-renders.
+ */
+function useInsertBeforeByColumnKey(
+  row: RowNode,
+): ReadonlyMap<NodeKey, { rowId: number; afterColumnId: number }> {
+  return useMemo(() => {
+    const map = new Map<NodeKey, { rowId: number; afterColumnId: number }>();
+    const cols = row.children ?? [];
+    for (let i = 1; i < cols.length; i++) {
+      map.set(cols[i].nodeKey, { rowId: row.self.id, afterColumnId: cols[i - 1].self.id });
+    }
+    return map;
+  }, [row.children, row.self.id]);
 }
 
 function useRowCollapse(row: RowNode) {
@@ -58,6 +79,7 @@ function EditableRowBlock({ row }: RowBlockProps) {
   const childKeys = useChildColumnKeys(row);
   const columns = row.children ?? [];
   const hasColumns = columns.length > 0;
+  const insertBeforeByKey = useInsertBeforeByColumnKey(row);
 
   return (
     <div
@@ -119,15 +141,11 @@ function EditableRowBlock({ row }: RowBlockProps) {
             strategy={pendingActive ? noopSortingStrategy : horizontalListSortingStrategy}
           >
             {hasColumns ? (
-              columns.map((column, index) => (
+              columns.map((column) => (
                 <ColumnBlock
                   key={column.nodeKey}
                   column={column}
-                  insertBefore={
-                    index > 0
-                      ? { rowId: row.self.id, afterColumnId: columns[index - 1].self.id }
-                      : undefined
-                  }
+                  insertBefore={insertBeforeByKey.get(column.nodeKey)}
                 />
               ))
             ) : (

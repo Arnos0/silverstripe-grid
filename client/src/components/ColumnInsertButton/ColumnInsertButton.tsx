@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useGridEditorContext } from '@/hooks/GridEditorContext';
 import { useCreateElement } from '@/hooks/useElementMutations';
 import { t } from '@/i18n';
@@ -35,7 +36,7 @@ type ColumnInsertButtonProps =
       readonly gutterShiftPct?: number;
     };
 
-export default function ColumnInsertButton(props: ColumnInsertButtonProps) {
+const ColumnInsertButton = memo(function ColumnInsertButton(props: ColumnInsertButtonProps) {
   const { pageId, zone } = useGridEditorContext();
   const { mutate, isPending } = useCreateElement(pageId, zone);
 
@@ -76,4 +77,6 @@ export default function ColumnInsertButton(props: ColumnInsertButtonProps) {
       <i className="ssgrid-column-insert__icon font-icon-plus" aria-hidden="true" />
     </button>
   );
-}
+});
+
+export default ColumnInsertButton;

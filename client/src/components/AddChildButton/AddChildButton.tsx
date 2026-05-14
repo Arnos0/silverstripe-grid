@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ContainerType } from '@/types/elements';
 import { useGridEditorContext } from '@/hooks/GridEditorContext';
 import { useCreateElement } from '@/hooks/useElementMutations';
@@ -34,7 +35,7 @@ const PARENT_TYPE_FOR_CHILD: Record<ContainerType, NodeType> = {
   column: 'row',
 };
 
-export default function AddChildButton({
+const AddChildButton = memo(function AddChildButton({
   parentId,
   childType,
   childLabel,
@@ -103,4 +104,6 @@ export default function AddChildButton({
       {button}
     </div>
   );
-}
+});
+
+export default AddChildButton;

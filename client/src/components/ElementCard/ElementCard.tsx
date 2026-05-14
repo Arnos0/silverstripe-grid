@@ -1,4 +1,4 @@
-import type { MouseEvent, ReactNode } from 'react';
+import { memo, type MouseEvent, type ReactNode } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import type { SimpleElementNode } from '@/types/elements';
 import { useReadonly } from '@/hooks/ReadonlyContext';
@@ -17,14 +17,16 @@ interface ElementCardProps {
  * `useSortable`, navigation callbacks, and interactive controls —
  * just renders the icon and title inside the status-colored border.
  */
-export default function ElementCard({ element }: ElementCardProps) {
+const ElementCard = memo(function ElementCard({ element }: ElementCardProps) {
   const readonly = useReadonly();
   return readonly ? (
     <ReadonlyElementCard element={element} />
   ) : (
     <EditableElementCard element={element} />
   );
-}
+});
+
+export default ElementCard;
 
 function EditableElementCard({ element }: ElementCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
