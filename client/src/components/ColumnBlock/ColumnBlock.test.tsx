@@ -554,11 +554,9 @@ describe('ColumnBlock', () => {
 
       renderWithProviders(<ColumnBlock column={column} />, { viewport: 'md' });
 
-      // Open the type picker
+      // Open the type picker (component is React.lazy, so await its mount)
       await user.click(screen.getByTestId('add-content-button'));
-
-      // The type picker dialog should be open
-      expect(screen.getByTestId('element-type-picker')).toBeInTheDocument();
+      await screen.findByTestId('element-type-picker');
 
       // Click the tile
       await user.click(screen.getByTestId('element-type-tile'));
@@ -623,16 +621,17 @@ describe('ColumnBlock', () => {
 
     renderWithProviders(<ColumnBlock column={column} />);
 
-    // Open the picker
+    // Open the picker (component is React.lazy, so await its mount)
     await user.click(screen.getByTestId('add-content-button'));
-    expect(screen.getByTestId('element-type-picker')).toBeInTheDocument();
+    await screen.findByTestId('element-type-picker');
 
-    // Close it via the close button
+    // Close it via the close button — the picker is mounted only while open,
+    // so closing unmounts it.
     await user.click(screen.getByTestId('element-type-picker-close'));
 
-    // The dialog should be closed (no open attribute)
-    const dialog = screen.getByTestId('element-type-picker');
-    expect(dialog).not.toHaveAttribute('open');
+    await waitFor(() => {
+      expect(screen.queryByTestId('element-type-picker')).not.toBeInTheDocument();
+    });
   });
 
   it('renders edit link when editLink is set', () => {
