@@ -7,15 +7,19 @@ namespace WeDevelop\Grid\Value;
 final readonly class CreateElementRequest
 {
     /**
-     * @param positive-int|null $insertAfterElementID Place the new element directly after this sibling; null = append at the end
+     * Field order mirrors {@see \WeDevelop\Grid\Service\GridElementService::createElement()}
+     * so the controller can forward the DTO with the same positional layout
+     * and a future rename catches both sides at once.
+     *
      * @param non-empty-string $zone
+     * @param positive-int|null $insertAfterElementID Place the new element directly after this sibling; null = append at the end
      * @param bool $insertAtStart Place the new element before all existing siblings. Mutually exclusive with $insertAfterElementID.
      */
     public function __construct(
-        public ContainerType $containerType,
         public NodeRef $parent,
-        public ?int $insertAfterElementID,
+        public ContainerType $containerType,
         public string $zone,
+        public ?int $insertAfterElementID,
         public bool $insertAtStart = false,
     ) {
     }
