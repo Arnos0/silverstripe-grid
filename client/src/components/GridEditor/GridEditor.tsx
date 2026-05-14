@@ -75,9 +75,13 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
 
   const reorderMutation = useReorderElement(pageId, zone);
 
-  const { dndContextProps, dragState, pendingTree } = useDragAndDrop({
-    tree: data ?? { rootParent: { type: 'page', id: pageId }, nodes: [] },
-    onReorder: (element: NodeRef, parent: NodeRef, after: NodeRef | null, clearPendingTree) => {
+  // useDragAndDrop puts onReorder in its handleDragEnd useCallback deps. An
+  // inline arrow here would burn that memoisation on every parent render and
+  // re-create dndContextProps → DndContext props — defeating the perf work in
+  // this PR. handleDragEnd already invalidates on `tree`, so adding `data`
+  // here doesn't widen the bust footprint.
+  const onReorder = useCallback(
+    (element: NodeRef, parent: NodeRef, after: NodeRef | null, clearPendingTree: () => void) => {
       if (data === undefined) return;
       reorderMutation.mutate({
         params: { element, parent, after },
@@ -85,6 +89,12 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
         clearPendingTree,
       });
     },
+    [data, reorderMutation],
+  );
+
+  const { dndContextProps, dragState, pendingTree } = useDragAndDrop({
+    tree: data ?? { rootParent: { type: 'page', id: pageId }, nodes: [] },
+    onReorder,
   });
 
   // Use pending tree during cross-container drags for visual feedback
@@ -156,7 +166,7 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
       data-page-id={pageId}
       data-zone={zone}
       data-testid="grid-editor"
-      data-state={readonly ? 'readonly' : undefined}
+      data-readonly={readonly ? '' : undefined}
     >
       {isLoading && (
         <p className="ssgrid-editor__notice" data-testid="grid-editor-loading">
