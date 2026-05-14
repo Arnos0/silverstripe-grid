@@ -82,7 +82,6 @@ function EditableSectionBlock({ section }: SectionBlockProps) {
           })}
         />
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={`ssgrid-section__icon ${section.blockSchema.icon}`} aria-hidden="true" />
         <h2 className="ssgrid-section__title" data-testid="section-title">
           {section.editLink !== null ? (
             <a href={section.editLink} data-testid="section-edit-link">
@@ -157,7 +156,6 @@ function ReadonlySectionBlock({ section }: SectionBlockProps) {
     >
       <div className="ssgrid-section__header" data-testid="section-header">
         <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggle} label={section.title} />
-        <i className={`ssgrid-section__icon ${section.blockSchema.icon}`} aria-hidden="true" />
         <h2 className="ssgrid-section__title" data-testid="section-title">
           {section.title}
         </h2>
