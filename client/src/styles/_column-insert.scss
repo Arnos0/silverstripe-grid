@@ -89,7 +89,7 @@
     &:hover,
     &:focus-visible {
       background: var(--ssgrid-surface-action);
-      box-shadow: 0 4px 8px var(--ssgrid-color-overlay-black-15);
+      box-shadow: var(--ssgrid-shadow-2);
 
       .ssgrid-column-insert__dot {
         background: var(--ssgrid-border-focus);
