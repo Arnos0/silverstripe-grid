@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useLayoutEffect } from 'react';
+import { useMemo, useSyncExternalStore, useLayoutEffect } from 'react';
 import type { ReactNode } from 'react';
 import {
   getActiveViewport,
@@ -39,5 +39,11 @@ export function useViewportContext(): ViewportContextValue {
     getActiveViewport,
   );
 
-  return { activeViewport, setActiveViewport: storeSet };
+  // Stable object reference per `activeViewport` change so consumers using the
+  // return value as a prop, dependency, or memo input don't see a new identity
+  // on every render of an unrelated parent.
+  return useMemo(
+    () => ({ activeViewport, setActiveViewport: storeSet }),
+    [activeViewport],
+  );
 }

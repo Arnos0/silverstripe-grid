@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { DraggableAttributes, DraggableSyntheticListeners } from '@dnd-kit/core';
 import { t } from '@/i18n';
 
@@ -7,7 +8,7 @@ interface DragHandleProps {
   readonly label?: string;
 }
 
-export default function DragHandle({
+const DragHandle = memo(function DragHandle({
   listeners,
   attributes,
   label = t('WeDevelopGrid.DragHandle.DEFAULT_LABEL', 'Drag to reorder'),
@@ -28,4 +29,6 @@ export default function DragHandle({
       />
     </button>
   );
-}
+});
+
+export default DragHandle;

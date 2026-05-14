@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { ColumnNode, ViewportSettings } from '@/types/elements';
@@ -58,14 +58,16 @@ function useChildElementKeys(column: ColumnNode): NodeKey[] {
  * `resolveViewportSettings` so that viewport switching in the history
  * viewer still re-layouts the readonly tree.
  */
-export default function ColumnBlock({ column, insertBefore }: ColumnBlockProps) {
+const ColumnBlock = memo(function ColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const readonly = useReadonly();
   return readonly ? (
     <ReadonlyColumnBlock column={column} />
   ) : (
     <EditableColumnBlock column={column} insertBefore={insertBefore} />
   );
-}
+});
+
+export default ColumnBlock;
 
 function buildColumnStyle(
   settings: ViewportSettings,
@@ -95,7 +97,12 @@ function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const { activeViewport } = useViewportContext();
   const { pageId, zone } = useGridEditorContext();
   const columnCount = getColumnCount();
-  const settings = resolveViewportSettings(column.gridSettings, activeViewport);
+  // Stabilise `settings` so downstream useCallback/useMemo dependencies don't
+  // see a fresh object identity on every render of an unrelated parent.
+  const settings = useMemo(
+    () => resolveViewportSettings(column.gridSettings, activeViewport),
+    [column.gridSettings, activeViewport],
+  );
   const status = column.status;
   const { isCollapsed, onToggle } = useColumnCollapse(column);
   const { activeType, pendingActive } = useDragContext();
@@ -112,8 +119,10 @@ function EditableColumnBlock({ column, insertBefore }: ColumnBlockProps) {
   const isDragActive = activeType !== null;
   const isPickerDisabled = isDragActive || updateGridSettings.isPending;
 
-  const sortableStyle = buildSortableStyle(transform, transition, isDragging);
-  const columnStyle = buildColumnStyle(settings, sortableStyle);
+  const columnStyle = useMemo(
+    () => buildColumnStyle(settings, buildSortableStyle(transform, transition, isDragging)),
+    [settings, transform, transition, isDragging],
+  );
 
   // A margin offset before this column widens the gutter the "+ insert here"
   // handle sits in; shift the handle (as a % of the column width) back to that

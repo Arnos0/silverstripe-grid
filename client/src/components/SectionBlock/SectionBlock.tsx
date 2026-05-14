@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useMemo } from 'react';
+import { Fragment, memo, useCallback, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { SectionNode } from '@/types/elements';
@@ -25,14 +25,16 @@ interface SectionBlockProps {
  * hook — meaning the readonly grid tree doesn't need a `DndContext`
  * ancestor at all.
  */
-export default function SectionBlock({ section }: SectionBlockProps) {
+const SectionBlock = memo(function SectionBlock({ section }: SectionBlockProps) {
   const readonly = useReadonly();
   return readonly ? (
     <ReadonlySectionBlock section={section} />
   ) : (
     <EditableSectionBlock section={section} />
   );
-}
+});
+
+export default SectionBlock;
 
 function useSectionCollapse(section: SectionNode) {
   const { isCollapsed: isCollapsedFn, toggle } = useCollapse();
