@@ -100,8 +100,13 @@ test.describe('Duplicate element', () => {
       await page.goto(`/admin/pages/edit/show/${targetPageId}`);
       await expect(page.getByTestId('grid-editor-loading')).toHaveCount(0, { timeout: 15_000 });
 
-      // Identify the sidebar zone editor
-      const sidebarZone = page.locator('[data-testid="grid-editor"][data-zone="sidebar"]');
+      // Identify the sidebar zone editor — a page can host multiple grid
+      // editors (one per zone), so combine the testid match with the
+      // zone attribute via Playwright's `and()` instead of a raw compound
+      // CSS selector.
+      const sidebarZone = page
+        .getByTestId('grid-editor')
+        .and(page.locator('[data-zone="sidebar"]'));
       await expect(sidebarZone).toBeVisible();
 
       // Sidebar should now have 2 sections: original + copy
