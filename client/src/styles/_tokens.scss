@@ -47,7 +47,15 @@
   // Primitives — elevation
   // ---------------------------------------------------------------------------
 
+  // -1 — registered card resting elevation (Figma).
   --ssgrid-shadow-1: 0 2px 2px 0 rgb(0 0 0 / 10%);
+
+  // -2 — gutter handle bloom on the "+" between-columns affordance (Figma).
+  --ssgrid-shadow-2: 0 4px 8px var(--ssgrid-color-overlay-black-15);
+
+  // -3 — dnd-kit drag overlay. Not in the Figma; carries the in-flight
+  //   "ghost" so it reads as picked-up. Heavier than -1/-2 by intent.
+  --ssgrid-shadow-3: 0 8px 16px rgb(0 0 0 / 18%);
 
   // ---------------------------------------------------------------------------
   // Semantics — surfaces

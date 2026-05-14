@@ -11,7 +11,7 @@
   background: var(--ssgrid-surface-default);
   border: 1px solid var(--ssgrid-border-focus);
   border-radius: var(--ssgrid-radius-md);
-  box-shadow: 0 8px 16px rgb(0 0 0 / 18%);
+  box-shadow: var(--ssgrid-shadow-3);
   color: var(--ssgrid-text-default);
   font-size: 14px;
   line-height: 1.25;
