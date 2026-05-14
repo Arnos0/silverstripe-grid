@@ -317,9 +317,14 @@ export function createTypedCollisionDetection(
     // dnd-kit v6 does not exclude the active item from droppableContainers.
     // Its original-position rect remains registered as a droppable, so
     // closestCenter can return it as the closest target — causing a no-op drop.
-    const nonActiveContainers = args.droppableContainers.filter(
-      (container) => container.id !== args.active.id,
-    );
+    // Build a single id→container index here and reuse it for the winner lookup
+    // below (O(1) instead of an O(n) find on every collision cycle).
+    const nonActiveContainers: DroppableContainer[] = [];
+    const containerById = new Map<string | number, DroppableContainer>();
+    for (const container of args.droppableContainers) {
+      if (container.id !== args.active.id) nonActiveContainers.push(container);
+      containerById.set(container.id, container);
+    }
 
     /**
      * Store the winning collision's DOM node for direction comparison at drop time.
@@ -332,7 +337,7 @@ export function createTypedCollisionDetection(
     const captureWinnerNode = (collisions: Collision[]) => {
       if (options.overRectRef && collisions.length > 0) {
         const winnerId = collisions[0].id;
-        const container = args.droppableContainers.find((c) => c.id === winnerId);
+        const container = containerById.get(winnerId);
         if (container?.node.current) {
           options.overRectRef.current = {
             id: winnerId,

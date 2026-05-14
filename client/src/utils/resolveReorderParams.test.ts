@@ -13,6 +13,7 @@ function mapsFrom(nodes: ElementNode[]): ElementMaps {
   return {
     nodeMap,
     childrenByParentKey: new Map(),
+    indexByNodeKey: new Map(),
   };
 }
 

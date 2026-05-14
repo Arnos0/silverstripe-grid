@@ -13,19 +13,28 @@ export interface ElementMaps {
    * collision-free across the polymorphic parent namespace.
    */
   childrenByParentKey: Map<NodeKey, ElementNode[]>;
+  /**
+   * Position of each node within its parent's children array. Lets reorder,
+   * drop-placement and collision code do O(1) sibling-index lookups instead of
+   * O(n) `findIndex(...)` scans on every drag-over frame.
+   */
+  indexByNodeKey: Map<NodeKey, number>;
 }
 
 function walkNodes(
   nodes: ElementNode[],
   nodeMap: Map<NodeKey, ElementNode>,
   childrenByParentKey: Map<NodeKey, ElementNode[]>,
+  indexByNodeKey: Map<NodeKey, number>,
 ): void {
-  for (const node of nodes) {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
     nodeMap.set(node.nodeKey, node);
+    indexByNodeKey.set(node.nodeKey, i);
 
     if (isContainerNode(node) && node.children) {
       childrenByParentKey.set(node.nodeKey, node.children);
-      walkNodes(node.children, nodeMap, childrenByParentKey);
+      walkNodes(node.children, nodeMap, childrenByParentKey, indexByNodeKey);
     }
   }
 }
@@ -36,16 +45,18 @@ function walkNodes(
  * - `nodeMap`: every non-page node by {@link NodeKey} for O(1) lookup.
  * - `childrenByParentKey`: parent key → children array for O(1) sibling lookup.
  *   The root entry (page → sections) is keyed by the page's NodeKey.
+ * - `indexByNodeKey`: node key → position within its parent's children array.
  */
 export function buildMaps(tree: TreeApiResponse): ElementMaps {
   const nodeMap = new Map<NodeKey, ElementNode>();
   const childrenByParentKey = new Map<NodeKey, ElementNode[]>();
+  const indexByNodeKey = new Map<NodeKey, number>();
 
   const rootKey = NodeIdentity.toKey(tree.rootParent);
   childrenByParentKey.set(rootKey, tree.nodes);
-  walkNodes(tree.nodes, nodeMap, childrenByParentKey);
+  walkNodes(tree.nodes, nodeMap, childrenByParentKey, indexByNodeKey);
 
-  return { nodeMap, childrenByParentKey };
+  return { nodeMap, childrenByParentKey, indexByNodeKey };
 }
 
 /**
