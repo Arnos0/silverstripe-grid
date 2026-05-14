@@ -45,9 +45,11 @@ test.describe('Multi-zone isolation', () => {
     await expect(page.getByTestId('grid-editor-loading')).toHaveCount(0, { timeout: 15_000 });
     await expect(gridEditors).toHaveCount(2);
 
-    // Identify zones by data-zone attribute
-    const mainZone = page.locator('[data-testid="grid-editor"][data-zone="main"]');
-    const sidebarZone = page.locator('[data-testid="grid-editor"][data-zone="sidebar"]');
+    // Identify zones by data-zone attribute — combine the testid locator
+    // with the zone attribute via `and()` instead of a raw compound CSS
+    // selector so the locator stays role/testid-shaped.
+    const mainZone = gridEditors.and(page.locator('[data-zone="main"]'));
+    const sidebarZone = gridEditors.and(page.locator('[data-zone="sidebar"]'));
 
     // --- Phase 1: Verify both zones render independently ---
     const mainSections = mainZone.getByTestId('section-block');
