@@ -38,16 +38,18 @@ export function resolveDropPlacement(ctx: DropContext): ReorderElementParams | n
     const targetParent = overNode.parent;
     const targetParentKey = overNode.parentKey;
     const siblings = maps.childrenByParentKey.get(targetParentKey) ?? [];
-    const compositeIds: NodeKey[] = siblings.map((n) => n.nodeKey);
-    const filtered = compositeIds.filter((id) => id !== activeKey);
+    const filtered = collectSiblingKeysExcept(siblings, activeKey);
 
     let insertIndex: number;
     if (sourceParentKey === targetParentKey) {
       // Same container: use the over element's index in the full list.
-      const overOriginalIdx = compositeIds.indexOf(overKey);
+      // O(1) via the precomputed index map.
+      const overOriginalIdx = maps.indexByNodeKey.get(overKey) ?? -1;
       insertIndex = overOriginalIdx === -1 ? filtered.length : overOriginalIdx;
       filtered.splice(insertIndex, 0, activeKey);
     } else {
+      // Cross-container: overKey is not the active key, so its index in the
+      // filtered list equals its index in the (already filtered) siblings.
       const overIdx = filtered.indexOf(overKey);
       if (overIdx === -1) {
         insertIndex = filtered.length;
@@ -85,8 +87,7 @@ export function resolveDropPlacement(ctx: DropContext): ReorderElementParams | n
   const targetParent = containerNode.self;
   const targetParentKey = NodeIdentity.toKey(targetParent);
   const children = containerNode.children ?? [];
-  const compositeIds = children.map((n) => n.nodeKey);
-  const filtered = compositeIds.filter((id) => id !== activeKey);
+  const filtered = collectSiblingKeysExcept(children, activeKey);
 
   filtered.push(activeKey);
 
@@ -100,4 +101,19 @@ export function resolveDropPlacement(ctx: DropContext): ReorderElementParams | n
     sourceIndex,
     maps,
   });
+}
+
+/**
+ * Single-pass collection of sibling NodeKeys with one excluded. Replaces a
+ * `.map().filter()` pair so the array is allocated and walked only once.
+ */
+function collectSiblingKeysExcept(
+  siblings: readonly { readonly nodeKey: NodeKey }[],
+  excludedKey: NodeKey,
+): NodeKey[] {
+  const out: NodeKey[] = [];
+  for (const sibling of siblings) {
+    if (sibling.nodeKey !== excludedKey) out.push(sibling.nodeKey);
+  }
+  return out;
 }

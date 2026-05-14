@@ -33,7 +33,7 @@ describe('buildMaps', () => {
     });
     const tree = createTreeApiResponse({ pageId: 99, sections: [section] });
 
-    const { nodeMap, childrenByParentKey } = buildMaps(tree);
+    const { nodeMap, childrenByParentKey, indexByNodeKey } = buildMaps(tree);
 
     // Every grid node indexed by its composite key.
     expect(nodeMap.get(NodeIdentity.toKey('section', 1))).toBe(section);
@@ -51,6 +51,33 @@ describe('buildMaps', () => {
     expect(childrenByParentKey.get(NodeIdentity.toKey('section', 1))).toEqual([row]);
     expect(childrenByParentKey.get(NodeIdentity.toKey('row', 20))).toEqual([column]);
     expect(childrenByParentKey.get(NodeIdentity.toKey('column', 30))).toEqual([element]);
+
+    // Each node knows its position in its parent's children array.
+    expect(indexByNodeKey.get(NodeIdentity.toKey('section', 1))).toBe(0);
+    expect(indexByNodeKey.get(NodeIdentity.toKey('row', 20))).toBe(0);
+    expect(indexByNodeKey.get(NodeIdentity.toKey('column', 30))).toBe(0);
+    expect(indexByNodeKey.get(NodeIdentity.toKey('element', 10))).toBe(0);
+  });
+
+  it('records sibling positions for nodes that share a parent', () => {
+    resetIdCounter();
+    const e1 = createSimpleElement({ id: 10, parent: { type: 'column', id: 30 } });
+    const e2 = createSimpleElement({ id: 11, parent: { type: 'column', id: 30 } });
+    const e3 = createSimpleElement({ id: 12, parent: { type: 'column', id: 30 } });
+    const column = createColumnNode({ id: 30, children: [e1, e2, e3] });
+    const row = createRowNode({ id: 20, children: [column] });
+    const section = createSectionNode({
+      id: 1,
+      parent: { type: 'page', id: 1 },
+      children: [row],
+    });
+    const tree = createTreeApiResponse({ pageId: 1, sections: [section] });
+
+    const { indexByNodeKey } = buildMaps(tree);
+
+    expect(indexByNodeKey.get(NodeIdentity.toKey('element', 10))).toBe(0);
+    expect(indexByNodeKey.get(NodeIdentity.toKey('element', 11))).toBe(1);
+    expect(indexByNodeKey.get(NodeIdentity.toKey('element', 12))).toBe(2);
   });
 
   /**

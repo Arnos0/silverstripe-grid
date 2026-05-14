@@ -153,10 +153,13 @@ export function useDragAndDrop({ tree, onReorder }: UseDragAndDropOptions): UseD
 
       const siblings = maps.childrenByParentKey.get(node.parentKey) ?? [];
       // Stryker disable next-line all: Equivalent — sourceContainerItemsRef is consumed only by collision detection (not exercised in synthetic DragEvent tests) and is not exposed on the hook's public API
-      const filteredSiblings = siblings.filter((n) => n.nodeKey !== parsed.key);
-      pending.setSourceSiblings(
-        new Set(filteredSiblings.map((n) => buildDraggableId(parsed.type, n.self.id))),
-      );
+      const sourceSiblingIds = new Set<string>();
+      for (const sibling of siblings) {
+        if (sibling.nodeKey !== parsed.key) {
+          sourceSiblingIds.add(buildDraggableId(parsed.type, sibling.self.id));
+        }
+      }
+      pending.setSourceSiblings(sourceSiblingIds);
 
       setDragState({
         activeId,
@@ -196,7 +199,7 @@ export function useDragAndDrop({ tree, onReorder }: UseDragAndDropOptions): UseD
           resolveInsertDirection(pointer, over.rect, activeParsed.type) === 'before'
         ) {
           const siblings = effectiveMaps.childrenByParentKey.get(overNode.parentKey) ?? [];
-          const overIdx = siblings.findIndex((n) => n.nodeKey === overParsed.key);
+          const overIdx = effectiveMaps.indexByNodeKey.get(overParsed.key) ?? -1;
           after = overIdx > 0 ? siblings[overIdx - 1].self : null;
         } else {
           after = overNode.self;
@@ -251,7 +254,7 @@ export function useDragAndDrop({ tree, onReorder }: UseDragAndDropOptions): UseD
         pending.clear();
         return;
       }
-      const sourceIndex = sourceChildren.findIndex((n) => n.nodeKey === activeParsed.key);
+      const sourceIndex = maps.indexByNodeKey.get(activeParsed.key) ?? -1;
 
       const { maps: effectiveMaps } = pending.getEffective(tree, maps);
 

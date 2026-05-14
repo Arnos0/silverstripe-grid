@@ -1,5 +1,5 @@
 import type { ElementNode, TreeApiResponse } from '@/types/elements';
-import { buildMaps } from '@/hooks/useElementMaps';
+import { buildMaps, type ElementMaps } from '@/hooks/useElementMaps';
 import { NodeIdentity, type NodeKey } from '@/types/identity';
 
 /**
@@ -24,11 +24,11 @@ export function applyReorder(
   const sourceChildren = maps.childrenByParentKey.get(sourceParentKey);
   if (!sourceChildren) return tree;
 
-  const sourceIndex = sourceChildren.findIndex((n) => n.nodeKey === elementKey);
-  // Stryker disable next-line ConditionalExpression: Equivalent — unreachable in well-formed trees (buildMaps derives childrenByParentKey from node.parentKey, so a node present in nodeMap is always found in its parent's children)
-  if (sourceIndex === -1) return tree;
+  const sourceIndex = maps.indexByNodeKey.get(elementKey);
+  // Stryker disable next-line ConditionalExpression: Equivalent — unreachable in well-formed trees (buildMaps derives indexByNodeKey alongside childrenByParentKey, so a node present in nodeMap is always indexed)
+  if (sourceIndex === undefined) return tree;
 
-  if (isNoOp(sourceParentKey, sourceIndex, sourceChildren, parentKey, afterKey)) {
+  if (isNoOp(sourceParentKey, sourceIndex, parentKey, afterKey, maps)) {
     return tree;
   }
 
@@ -42,9 +42,19 @@ export function applyReorder(
   const clonedSourceChildren = clonedMaps.childrenByParentKey.get(sourceParentKey);
   if (!clonedSourceChildren) return tree;
 
-  const clonedSourceIndex = clonedSourceChildren.findIndex((n) => n.nodeKey === elementKey);
-  // Stryker disable next-line ConditionalExpression: Equivalent — unreachable after structuredClone + buildMaps rebuild (same invariant as line 29)
-  if (clonedSourceIndex === -1) return tree;
+  const clonedSourceIndex = clonedMaps.indexByNodeKey.get(elementKey);
+  // Stryker disable next-line ConditionalExpression: Equivalent — unreachable after structuredClone + buildMaps rebuild (same invariant as the original tree lookup above)
+  if (clonedSourceIndex === undefined) return tree;
+
+  // Resolve afterKey's position in the target parent BEFORE the splice runs.
+  // The splice can invalidate positions when source and target share a parent.
+  const afterIndexInTarget = resolveAfterIndexInTarget(
+    clonedMaps,
+    parentKey,
+    afterKey,
+    sourceParentKey,
+    clonedSourceIndex,
+  );
 
   const [movedElement] = clonedSourceChildren.splice(clonedSourceIndex, 1);
 
@@ -60,17 +70,50 @@ export function applyReorder(
   const clonedTargetChildren = clonedMaps.childrenByParentKey.get(parentKey);
   if (!clonedTargetChildren) return tree;
 
-  insertIntoArray(clonedTargetChildren, repositionedElement, afterKey);
+  if (afterKey === null) {
+    clonedTargetChildren.unshift(repositionedElement);
+  } else if (afterIndexInTarget === null) {
+    clonedTargetChildren.push(repositionedElement);
+  } else {
+    clonedTargetChildren.splice(afterIndexInTarget + 1, 0, repositionedElement);
+  }
 
   return cloned;
+}
+
+/**
+ * Returns afterKey's index in the target parent's children, adjusted for an
+ * imminent splice on the source. Returns `null` when afterKey is not a sibling
+ * of the target (caller should append).
+ */
+function resolveAfterIndexInTarget(
+  maps: ElementMaps,
+  targetParentKey: NodeKey,
+  afterKey: NodeKey | null,
+  sourceParentKey: NodeKey,
+  sourceIndexBeforeSplice: number,
+): number | null {
+  if (afterKey === null) return null;
+
+  const afterNode = maps.nodeMap.get(afterKey);
+  if (afterNode === undefined || afterNode.parentKey !== targetParentKey) return null;
+
+  const afterIndex = maps.indexByNodeKey.get(afterKey);
+  // Stryker disable next-line ConditionalExpression: Equivalent — afterKey is in nodeMap, so it must also be in indexByNodeKey (both populated by the same walk)
+  if (afterIndex === undefined) return null;
+
+  if (sourceParentKey === targetParentKey && afterIndex > sourceIndexBeforeSplice) {
+    return afterIndex - 1;
+  }
+  return afterIndex;
 }
 
 function isNoOp(
   sourceParentKey: NodeKey,
   sourceIndex: number,
-  sourceChildren: ElementNode[],
   parentKey: NodeKey,
   afterKey: NodeKey | null,
+  maps: ElementMaps,
 ): boolean {
   if (sourceParentKey !== parentKey) return false;
 
@@ -78,23 +121,13 @@ function isNoOp(
     return sourceIndex === 0;
   }
 
-  const afterIndex = sourceChildren.findIndex((n) => n.nodeKey === afterKey);
-  if (afterIndex === -1) return false;
+  // afterKey must be a sibling of the source for the "already in place" check
+  // to be meaningful — otherwise the move is genuinely cross-position.
+  if (maps.nodeMap.get(afterKey)?.parentKey !== sourceParentKey) return false;
+
+  const afterIndex = maps.indexByNodeKey.get(afterKey);
+  // Stryker disable next-line ConditionalExpression: Equivalent — afterKey is in nodeMap (checked above), so it must also be in indexByNodeKey (both populated by the same walk)
+  if (afterIndex === undefined) return false;
 
   return afterIndex + 1 === sourceIndex;
-}
-
-function insertIntoArray(arr: ElementNode[], element: ElementNode, afterKey: NodeKey | null): void {
-  if (afterKey === null) {
-    arr.unshift(element);
-    return;
-  }
-
-  const afterIndex = arr.findIndex((n) => n.nodeKey === afterKey);
-  if (afterIndex === -1) {
-    arr.push(element);
-    return;
-  }
-
-  arr.splice(afterIndex + 1, 0, element);
 }
