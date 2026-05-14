@@ -1,18 +1,24 @@
-// Row block — rendered inside a Section. No card chrome in the Figma design;
-// it's a vertical stack of a header toolbar and a columns body. The drop-target
-// hover state matches the Figma drop-indicator rectangle.
+// Row block — rendered inside a Section. Figma "Row" card chrome: muted
+// surface inside the section's muted surface (stacks to a slightly darker
+// shade), 15% black hairline, 8px radius, 16px padding. The status border
+// swaps to modified-orange and the drop-target highlight switches the
+// hairline to brand purple — same pattern as the section/column cards.
 
 .ssgrid-row {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 8px;
-  border: 1px solid transparent;
+  padding: 16px;
+  background: var(--ssgrid-surface-muted);
+  border: 1px solid var(--ssgrid-border-default);
   border-radius: var(--ssgrid-radius-md);
 
+  &[data-status='modified'] {
+    border-color: var(--ssgrid-border-modified);
+  }
+
   &[data-drop-target] {
-    background: var(--ssgrid-color-overlay-black-2);
-    border-color: var(--ssgrid-border-default);
+    border-color: var(--ssgrid-border-focus);
   }
 
   &[data-collapsed] > :not(.ssgrid-row__header) {
