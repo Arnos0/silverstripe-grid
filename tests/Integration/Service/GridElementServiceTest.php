@@ -15,7 +15,10 @@ use WeDevelop\Grid\Model\ContentElement;
 use WeDevelop\Grid\Model\GridElement;
 use WeDevelop\Grid\Model\Row;
 use WeDevelop\Grid\Model\Section;
+use WeDevelop\Grid\Repository\GridElementRepositoryInterface;
+use WeDevelop\Grid\Service\ElementPlacementService;
 use WeDevelop\Grid\Service\GridElementService;
+use WeDevelop\Grid\Tests\Integration\Support\AlwaysFailingReorderValidator;
 use WeDevelop\Grid\Tests\Integration\Support\GridTreeFactory;
 use WeDevelop\Grid\Validation\ReorderValidator;
 use WeDevelop\Grid\Value\ContainerType;
@@ -335,6 +338,50 @@ final class GridElementServiceTest extends SapphireTest
             $countBefore,
             $countAfter,
             'failed placement must roll back the write — no new Section should exist',
+        );
+    }
+
+    public function testCreateElementWithInsertAtStartRollsBackWriteWhenPlacementFails(): void
+    {
+        // Parallel coverage for the insertAtStart branch of writeAndPlace.
+        // Unlike the afterElementID=999999 case, insertAtStart routes through
+        // insertAfter($element, $parent, null) — null short-circuits in
+        // resolveInsertionIndex (returns 0), so there is no natural placement
+        // failure to provoke without substituting a collaborator.
+        //
+        // The hierarchy validator is identical at write time and placement
+        // time (shared ElementAllowanceTrait), so a hierarchy violation would
+        // be rejected by the write before placement is reached.
+        //
+        // Construct the service chain by hand with a TestOnly validator that
+        // always fails — that lets placement return an err Result, which the
+        // writeAndPlace transaction wrapper must still roll back. Wiring is
+        // manual rather than Injector-driven because ElementPlacementService
+        // is a class-bound singleton: a `registerService` on the validator
+        // alone would not propagate to the already-cached placement service.
+        $failingValidator = new AlwaysFailingReorderValidator();
+        $placement = new ElementPlacementService(
+            $failingValidator,
+            Injector::inst()->get(GridElementRepositoryInterface::class),
+        );
+        $service = new GridElementService($failingValidator, $placement);
+
+        $page = $this->objFromFixture(Page::class, 'test_page');
+
+        $countBefore = Section::get()->filter(['ParentID' => $page->ID, 'ParentClass' => Page::class])->count();
+
+        $result = $service->createElement($page, ContainerType::Section, 'main', null, insertAtStart: true);
+
+        self::assertTrue(
+            $result->isErr(),
+            'createElement insertAtStart with a failing placement validator must fail',
+        );
+
+        $countAfter = Section::get()->filter(['ParentID' => $page->ID, 'ParentClass' => Page::class])->count();
+        self::assertSame(
+            $countBefore,
+            $countAfter,
+            'failed placement on the insertAtStart branch must roll back the write — no new Section should exist',
         );
     }
 
