@@ -36,8 +36,18 @@
     opacity: 0.3;
   }
 
+  // The Figma renders every grip-vertical handle at 25% opacity so it reads as
+  // a passive grab affordance until interacted with; hover restores it.
   &--drag {
     cursor: grab;
+  }
+
+  &--drag > .ssgrid-icon-button__glyph {
+    opacity: 0.25;
+  }
+
+  &--drag:hover:not(:disabled) > .ssgrid-icon-button__glyph {
+    opacity: 1;
   }
 }
 
