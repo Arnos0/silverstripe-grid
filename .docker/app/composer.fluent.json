@@ -21,17 +21,18 @@
             "src/"
         ]
     },
+    "_comment_require_dev": "QA toolchain is pinned to exact versions so CI's lock-less `composer install` cannot silently float into a rule/behavior change that breaks the build. Runtime deps (recipe-cms, fluent) stay on ranges so the module keeps testing against the latest SS6.x. Bump these manually when adopting a new tool release.",
     "require-dev": {
-        "cambis/silverstan": "^2.1",
-        "infection/infection": "^0.32",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpunit/phpcov": "^10.0",
-        "phpunit/phpunit": "^11.3",
-        "rregeer/phpunit-coverage-check": "^0.3",
-        "tomasvotruba/type-coverage": "^2.2",
-        "wernerkrauss/silverstripe-rector": "^1.0"
+        "cambis/silverstan": "2.1.9",
+        "infection/infection": "0.32.7",
+        "phpstan/extension-installer": "1.4.3",
+        "phpstan/phpstan": "2.2.1",
+        "phpstan/phpstan-deprecation-rules": "2.0.4",
+        "phpunit/phpcov": "10.0.1",
+        "phpunit/phpunit": "11.5.55",
+        "rregeer/phpunit-coverage-check": "0.3.1",
+        "tomasvotruba/type-coverage": "2.2.1",
+        "wernerkrauss/silverstripe-rector": "1.3.0"
     },
     "autoload-dev": {
         "psr-4": {
