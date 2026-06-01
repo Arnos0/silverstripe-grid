@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 
 import GridEditorErrorBoundary from '@/components/GridEditorErrorBoundary/GridEditorErrorBoundary';
@@ -73,14 +73,23 @@ export function mountGridEditor(element: HTMLElement, schemaData: unknown): void
     mountedRoots.set(element, root);
     element.setAttribute(MOUNTED_ATTR, 'true');
 
+    // StrictMode documents the intent to run under React's strict checks, but
+    // is inert in the CMS: `react-dom` is externalized to silverstripe/admin's
+    // *production* React global, whose reconciler has no double-invoke logic.
+    // It only activates if a development React build is ever provided (e.g. the
+    // Vitest suite, which uses react-dom.development).
     root.render(
       createElement(
-        GridQueryProvider,
+        StrictMode,
         null,
         createElement(
-          GridEditorErrorBoundary,
+          GridQueryProvider,
           null,
-          createElement(GridEditor, { pageId, zone, readonly, version }),
+          createElement(
+            GridEditorErrorBoundary,
+            null,
+            createElement(GridEditor, { pageId, zone, readonly, version }),
+          ),
         ),
       ),
     );

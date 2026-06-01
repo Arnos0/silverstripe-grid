@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import CmsPreviewViewportSelector from '@/components/CmsPreviewViewportSelector/CmsPreviewViewportSelector';
 import { getActiveViewport, subscribeActiveViewport } from '@/state/activeViewport';
@@ -43,7 +43,12 @@ function attemptMount(): void {
 
   try {
     mountedRoot = createRoot(mountedHost);
-    mountedRoot.render(createElement(CmsPreviewViewportSelector));
+    // StrictMode documents the intent to run under React's strict checks, but
+    // is inert in the CMS: `react-dom` is externalized to silverstripe/admin's
+    // *production* React global, whose reconciler has no double-invoke logic.
+    // It only activates if a development React build is ever provided (e.g. the
+    // Vitest suite, which uses react-dom.development).
+    mountedRoot.render(createElement(StrictMode, null, createElement(CmsPreviewViewportSelector)));
   } catch (error: unknown) {
     console.warn('[GridEditor] Failed to mount CMS preview viewport selector.', error);
     teardownMount({ restoreVendor: false });

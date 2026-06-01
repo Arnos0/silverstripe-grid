@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, type RenderResult } from '@testing-library/react';
-import type { ReactNode } from 'react';
+import { StrictMode, type ReactNode } from 'react';
 import { vi } from 'vitest';
 import { GridEditorProvider } from '@/hooks/GridEditorContext';
 import { ViewportProvider } from '@/hooks/ViewportContext';
@@ -80,13 +80,15 @@ export function renderWithProviders(
     collapseState ?? createCollapseStateStub(collapsedKeys ?? []);
 
   const result = render(
-    <QueryClientProvider client={queryClient}>
-      <GridEditorProvider value={{ pageId, zone }}>
-        <ViewportProvider initialViewport={viewport}>
-          <CollapseContext.Provider value={resolvedCollapse}>{ui}</CollapseContext.Provider>
-        </ViewportProvider>
-      </GridEditorProvider>
-    </QueryClientProvider>,
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <GridEditorProvider value={{ pageId, zone }}>
+          <ViewportProvider initialViewport={viewport}>
+            <CollapseContext.Provider value={resolvedCollapse}>{ui}</CollapseContext.Provider>
+          </ViewportProvider>
+        </GridEditorProvider>
+      </QueryClientProvider>
+    </StrictMode>,
   );
 
   return { ...result, queryClient };
@@ -110,13 +112,17 @@ export function createProviderWrapper(options: RenderOptions = {}) {
 
   function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        <GridEditorProvider value={{ pageId, zone }}>
-          <ViewportProvider initialViewport={viewport}>
-            <CollapseContext.Provider value={resolvedCollapse}>{children}</CollapseContext.Provider>
-          </ViewportProvider>
-        </GridEditorProvider>
-      </QueryClientProvider>
+      <StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <GridEditorProvider value={{ pageId, zone }}>
+            <ViewportProvider initialViewport={viewport}>
+              <CollapseContext.Provider value={resolvedCollapse}>
+                {children}
+              </CollapseContext.Provider>
+            </ViewportProvider>
+          </GridEditorProvider>
+        </QueryClientProvider>
+      </StrictMode>
     );
   }
 
