@@ -39,6 +39,23 @@ class FixtureLoader
     private const string URL_SEGMENT_PREFIX = 'e2e-';
 
     /**
+     * Page ClassNames the E2E fixtures are allowed to create.
+     *
+     * {@see reset()} only archives SiteTree records whose ClassName is one of
+     * these AND whose URLSegment starts with {@see URL_SEGMENT_PREFIX}. The
+     * URLSegment prefix alone is too weak an ownership marker on a shared dev
+     * DB — a human-authored page that merely happens to start with "e2e-" must
+     * never be archived. Both fixture page classes (the project base `Page` and
+     * the dev-only {@see MultiZonePage}) appear here as exact ClassName matches.
+     *
+     * @var list<class-string<SiteTree>>
+     */
+    private const array FIXTURE_PAGE_CLASSES = [
+        Page::class,
+        MultiZonePage::class,
+    ];
+
+    /**
      * Map of fixture names to YAML file paths or config arrays.
      *
      * String value: 'vendor/package:path/to/file.yml'
@@ -113,7 +130,13 @@ class FixtureLoader
     }
 
     /**
-     * Remove all E2E pages (identified by URLSegment prefix).
+     * Remove all E2E fixture pages.
+     *
+     * Fixture pages are identified by BOTH an "e2e-" URLSegment prefix AND a
+     * ClassName the fixtures are known to create ({@see FIXTURE_PAGE_CLASSES}).
+     * Requiring both constraints prevents collateral archiving of unrelated
+     * content on a shared dev DB — a hand-authored page that merely shares the
+     * "e2e-" prefix but is a different page type is left untouched.
      *
      * Uses doArchive() which cascades through cascade_deletes,
      * removing from both Draft and Live.
@@ -123,7 +146,10 @@ class FixtureLoader
         Versioned::withVersionedMode(static function (): void {
             Versioned::set_stage(Versioned::DRAFT);
 
-            $pages = SiteTree::get()->filter(['URLSegment:StartsWith' => self::URL_SEGMENT_PREFIX]);
+            $pages = SiteTree::get()->filter([
+                'URLSegment:StartsWith' => self::URL_SEGMENT_PREFIX,
+                'ClassName' => self::FIXTURE_PAGE_CLASSES,
+            ]);
 
             foreach ($pages as $page) {
                 $page->doArchive();

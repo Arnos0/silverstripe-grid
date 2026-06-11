@@ -8,9 +8,12 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\View\Parsers\URLSegmentFilter;
 use WeDevelop\Grid\Dev\FixtureController;
+use WeDevelop\Grid\Dev\FixtureLoader;
 
 #[CoversClass(FixtureController::class)]
+#[CoversClass(FixtureLoader::class)]
 final class FixtureControllerTest extends FunctionalTest
 {
     protected $usesDatabase = true;
@@ -104,6 +107,48 @@ final class FixtureControllerTest extends FunctionalTest
 
         $json = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertTrue($json['success']);
+    }
+
+    public function testResetRequiresConfirmQueryParam(): void
+    {
+        $response = $this->post(self::BASE_URL . '/reset', []);
+
+        self::assertSame(400, $response->getStatusCode());
+
+        $json = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertFalse($json['success']);
+        self::assertStringContainsString('confirm', $json['error']);
+    }
+
+    public function testResetDoesNotArchiveNonFixturePageSharingPrefix(): void
+    {
+        // A plain SiteTree (neither Page nor MultiZonePage) that merely shares
+        // the "e2e-" URLSegment prefix represents unrelated content on a shared
+        // dev DB. reset() must leave it untouched: the ClassName constraint, not
+        // the prefix alone, decides ownership.
+        $unrelatedId = Versioned::withVersionedMode(static function (): int {
+            Versioned::set_stage(Versioned::DRAFT);
+
+            $page = SiteTree::create();
+            $page->Title = 'Unrelated e2e-prefixed page';
+            $page->URLSegment = URLSegmentFilter::create()->filter('e2e-unrelated');
+            $page->ClassName = SiteTree::class;
+
+            return (int) $page->write();
+        });
+
+        self::assertSame(
+            SiteTree::class,
+            SiteTree::get()->byID($unrelatedId)?->ClassName,
+            'Test setup must produce a bare SiteTree, not a Page subclass',
+        );
+
+        FixtureLoader::create()->reset();
+
+        self::assertNotNull(
+            SiteTree::get()->byID($unrelatedId),
+            'reset() must not archive a non-fixture SiteTree that only shares the e2e- prefix',
+        );
     }
 
     public function testResetRemovesLoadedFixtures(): void
