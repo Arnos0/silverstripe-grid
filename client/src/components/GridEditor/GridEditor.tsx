@@ -100,7 +100,14 @@ function GridEditorBody({ pageId, zone, readonly, version }: GridEditorBodyProps
   // Use pending tree during cross-container drags for visual feedback
   const effectiveData = pendingTree ?? data
 
-  const sections = effectiveData === undefined ? [] : effectiveData.nodes.filter(isSectionNode)
+  // Memoise the section derivation: filtering inline rebuilds a fresh array
+  // every render, which gives `sectionIds` (and thus DndContext/SortableContext
+  // props) a new identity each time and defeats their memoisation. Keying on
+  // `effectiveData` keeps both `sections` and the derived ids stable.
+  const sections = useMemo(
+    () => (effectiveData === undefined ? [] : effectiveData.nodes.filter(isSectionNode)),
+    [effectiveData],
+  )
 
   const collapseState = useCollapseState(pageId)
 

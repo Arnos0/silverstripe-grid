@@ -19,7 +19,6 @@ describe('refreshPreview', () => {
   })
 
   it('does nothing when jQuery is not available', () => {
-    // @ts-expect-error — testing missing global
     delete window.jQuery
 
     expect(() => refreshPreview()).not.toThrow()
