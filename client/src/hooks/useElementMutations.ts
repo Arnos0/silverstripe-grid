@@ -93,9 +93,22 @@ export function useDuplicateElement(pageId: number, zone: string) {
 }
 
 export function useDuplicateToElement(pageId: number, zone: string) {
+  const queryClient = useQueryClient()
+  const standardOptions = useStandardMutationOptions(pageId, zone)
+
   return useMutation<void, ApiError, DuplicateToParams>({
     mutationFn: duplicateToElement,
-    ...useStandardMutationOptions(pageId, zone),
+    ...standardOptions,
+    // A cross-page/zone duplicate writes into the DESTINATION tree, which the
+    // shared onSuccess (source-only) never invalidates — so the duplicate
+    // wouldn't appear without a manual refetch. Invalidate the destination too,
+    // reading the target from the mutation variables.
+    onSuccess: (_data, variables) => {
+      standardOptions.onSuccess()
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.elementTree.byPage(variables.targetPageId, variables.targetZone),
+      })
+    },
   })
 }
 
@@ -123,7 +136,10 @@ export function useReorderElement(pageId: number, zone: string) {
   const queryClient = useQueryClient()
   const queryKey = queryKeys.elementTree.byPage(pageId, zone)
 
-  return useMutation<void, ApiError, ReorderMutationVariables, TreeApiResponse | undefined>({
+  // onMutate (applyReorder) can throw a plain Error/TypeError, which TanStack
+  // routes to onError — so the error channel is `Error | ApiError`, not just
+  // ApiError. showToast(error.message) works for both (message is on Error).
+  return useMutation<void, Error | ApiError, ReorderMutationVariables, TreeApiResponse | undefined>({
     mutationFn: ({ params }) => reorderElement(params),
     onMutate: async ({ params, tree, clearPendingTree }) => {
       await queryClient.cancelQueries({ queryKey })
