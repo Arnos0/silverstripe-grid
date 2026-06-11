@@ -228,7 +228,13 @@ export default function DuplicateToDialog({
                     onKeyDown={
                       page.hasGridZones
                         ? (e) => {
-                            if (e.key === 'Enter' || e.key === ' ') handlePageSelect(page.id)
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              // Cancel Space-scroll / stray <dialog> submit before
+                              // running the select handler (matches ActionsMenu /
+                              // GridSettingsPicker).
+                              e.preventDefault()
+                              handlePageSelect(page.id)
+                            }
                           }
                         : undefined
                     }
@@ -264,7 +270,10 @@ export default function DuplicateToDialog({
                     data-testid="duplicate-to-zone-item"
                     onClick={() => handleZoneSelect(zone)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') handleZoneSelect(zone)
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleZoneSelect(zone)
+                      }
                     }}
                     tabIndex={0}
                   >
@@ -309,7 +318,10 @@ export default function DuplicateToDialog({
                     data-testid="duplicate-to-container-item"
                     onClick={() => handleContainerSelect(container.id)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') handleContainerSelect(container.id)
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleContainerSelect(container.id)
+                      }
                     }}
                     tabIndex={0}
                   >

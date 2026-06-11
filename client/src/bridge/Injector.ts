@@ -25,7 +25,7 @@ export function getInjector(): InjectorContainer {
 export function loadComponent(
   name: string,
   context?: Record<string, unknown>,
-): ReturnType<typeof window.Injector.loadComponent> {
+): ReturnType<NonNullable<Window['Injector']>['loadComponent']> {
   if (typeof window.Injector?.loadComponent !== 'function') {
     throw new TypeError(
       'SilverStripe Injector is not available. ' +
