@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { createEvent, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
@@ -643,6 +643,53 @@ describe('DuplicateToDialog', () => {
       await user.type(row1Item, ' ');
 
       expect(row1Item).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('calls preventDefault on Space for a page option (no scroll / stray submit)', async () => {
+      mockApiRoutes();
+      renderDialog();
+
+      await goToPageStep();
+
+      const aboutItem = screen.getByText('About').closest('[role="option"]')!;
+      const spaceEvent = createEvent.keyDown(aboutItem, { key: ' ' });
+      fireEvent(aboutItem, spaceEvent);
+
+      expect(spaceEvent.defaultPrevented).toBe(true);
+    });
+
+    it('calls preventDefault on Space for a zone option', async () => {
+      const user = userEvent.setup();
+      mockApiRoutes();
+      renderDialog();
+
+      await goToZoneStep(user);
+      await waitFor(() => {
+        expect(screen.getByTestId('duplicate-to-zone-list')).toBeInTheDocument();
+      });
+
+      const sidebarItem = screen.getByText('sidebar').closest('[role="option"]')!;
+      const spaceEvent = createEvent.keyDown(sidebarItem, { key: ' ' });
+      fireEvent(sidebarItem, spaceEvent);
+
+      expect(spaceEvent.defaultPrevented).toBe(true);
+    });
+
+    it('calls preventDefault on Space for a container option', async () => {
+      const user = userEvent.setup();
+      mockApiRoutes();
+      renderDialog({ elementType: 'row' });
+
+      await goToContainerStep(user);
+      await waitFor(() => {
+        expect(screen.getByTestId('duplicate-to-container-list')).toBeInTheDocument();
+      });
+
+      const row1Item = screen.getByText('Row 1').closest('[role="option"]')!;
+      const spaceEvent = createEvent.keyDown(row1Item, { key: ' ' });
+      fireEvent(row1Item, spaceEvent);
+
+      expect(spaceEvent.defaultPrevented).toBe(true);
     });
   });
 

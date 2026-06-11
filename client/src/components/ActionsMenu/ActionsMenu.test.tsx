@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -339,6 +339,60 @@ describe('ActionsMenu', () => {
       await user.keyboard('{ArrowDown}{Enter}');
 
       expect(onAction).toHaveBeenCalledOnce();
+    });
+
+    it('clamps active item when the actions list shrinks while open', async () => {
+      const user = userEvent.setup();
+
+      const threeActions: ActionItem[] = [
+        { key: 'a', label: 'Alpha', onAction: vi.fn() },
+        { key: 'b', label: 'Beta', onAction: vi.fn() },
+        { key: 'c', label: 'Gamma', onAction: vi.fn() },
+      ];
+
+      const { rerender } = render(<ActionsMenu actions={threeActions} />);
+
+      await user.click(screen.getByTestId('actions-menu-trigger'));
+
+      // Move active to the last (index 2) item.
+      await user.keyboard('{End}');
+
+      const menu = screen.getByRole('menu');
+      const lastId = screen.getAllByRole('menuitem')[2].id;
+      expect(menu.getAttribute('aria-activedescendant')).toBe(lastId);
+
+      // Shrink the list to a single action — index 2 is now stale.
+      rerender(<ActionsMenu actions={[threeActions[0]]} />);
+
+      const remaining = screen.getAllByRole('menuitem');
+      expect(remaining).toHaveLength(1);
+
+      // aria-activedescendant must reference the surviving item, not a dead id.
+      const activeId = menu.getAttribute('aria-activedescendant');
+      expect(activeId).toBe(remaining[0].id);
+      expect(within(menu).queryByText('Alpha')).toBeInTheDocument();
+    });
+
+    it('Enter fires the surviving action after the list shrinks past the active index', async () => {
+      const user = userEvent.setup();
+      const onAlpha = vi.fn();
+
+      const threeActions: ActionItem[] = [
+        { key: 'a', label: 'Alpha', onAction: onAlpha },
+        { key: 'b', label: 'Beta', onAction: vi.fn() },
+        { key: 'c', label: 'Gamma', onAction: vi.fn() },
+      ];
+
+      const { rerender } = render(<ActionsMenu actions={threeActions} />);
+
+      await user.click(screen.getByTestId('actions-menu-trigger'));
+      await user.keyboard('{End}');
+
+      rerender(<ActionsMenu actions={[threeActions[0]]} />);
+
+      await user.keyboard('{Enter}');
+
+      expect(onAlpha).toHaveBeenCalledOnce();
     });
 
     it('Escape returns focus to the trigger', async () => {

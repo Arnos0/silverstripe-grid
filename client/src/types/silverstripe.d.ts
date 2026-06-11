@@ -93,8 +93,8 @@ declare global {
   }
 
   interface Window {
-    Injector: InjectorGlobal;
-    jQuery: JQueryStatic;
+    Injector?: InjectorGlobal;
+    jQuery?: JQueryStatic;
     ss?: {
       config: SilverStripeConfig;
       i18n: SilverStripeI18n;
