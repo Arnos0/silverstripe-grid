@@ -34,9 +34,9 @@ const blockSchemaSchema = z.object({
   title: z.string(),
 });
 
-const viewportSettingsSchema = z.object({
-  width: z.number(),
-  offset: z.number(),
+export const viewportSettingsSchema = z.object({
+  width: z.number().int().positive(),
+  offset: z.number().int().nonnegative(),
   visible: z.boolean(),
 });
 
