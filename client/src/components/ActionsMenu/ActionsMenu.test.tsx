@@ -342,58 +342,58 @@ describe('ActionsMenu', () => {
     })
 
     it('clamps active item when the actions list shrinks while open', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       const threeActions: ActionItem[] = [
         { key: 'a', label: 'Alpha', onAction: vi.fn() },
         { key: 'b', label: 'Beta', onAction: vi.fn() },
         { key: 'c', label: 'Gamma', onAction: vi.fn() },
-      ];
+      ]
 
-      const { rerender } = render(<ActionsMenu actions={threeActions} />);
+      const { rerender } = render(<ActionsMenu actions={threeActions} />)
 
-      await user.click(screen.getByTestId('actions-menu-trigger'));
+      await user.click(screen.getByTestId('actions-menu-trigger'))
 
       // Move active to the last (index 2) item.
-      await user.keyboard('{End}');
+      await user.keyboard('{End}')
 
-      const menu = screen.getByRole('menu');
-      const lastId = screen.getAllByRole('menuitem')[2].id;
-      expect(menu.getAttribute('aria-activedescendant')).toBe(lastId);
+      const menu = screen.getByRole('menu')
+      const lastId = screen.getAllByRole('menuitem')[2].id
+      expect(menu.getAttribute('aria-activedescendant')).toBe(lastId)
 
       // Shrink the list to a single action — index 2 is now stale.
-      rerender(<ActionsMenu actions={[threeActions[0]]} />);
+      rerender(<ActionsMenu actions={[threeActions[0]]} />)
 
-      const remaining = screen.getAllByRole('menuitem');
-      expect(remaining).toHaveLength(1);
+      const remaining = screen.getAllByRole('menuitem')
+      expect(remaining).toHaveLength(1)
 
       // aria-activedescendant must reference the surviving item, not a dead id.
-      const activeId = menu.getAttribute('aria-activedescendant');
-      expect(activeId).toBe(remaining[0].id);
-      expect(within(menu).queryByText('Alpha')).toBeInTheDocument();
-    });
+      const activeId = menu.getAttribute('aria-activedescendant')
+      expect(activeId).toBe(remaining[0].id)
+      expect(within(menu).queryByText('Alpha')).toBeInTheDocument()
+    })
 
     it('Enter fires the surviving action after the list shrinks past the active index', async () => {
-      const user = userEvent.setup();
-      const onAlpha = vi.fn();
+      const user = userEvent.setup()
+      const onAlpha = vi.fn()
 
       const threeActions: ActionItem[] = [
         { key: 'a', label: 'Alpha', onAction: onAlpha },
         { key: 'b', label: 'Beta', onAction: vi.fn() },
         { key: 'c', label: 'Gamma', onAction: vi.fn() },
-      ];
+      ]
 
-      const { rerender } = render(<ActionsMenu actions={threeActions} />);
+      const { rerender } = render(<ActionsMenu actions={threeActions} />)
 
-      await user.click(screen.getByTestId('actions-menu-trigger'));
-      await user.keyboard('{End}');
+      await user.click(screen.getByTestId('actions-menu-trigger'))
+      await user.keyboard('{End}')
 
-      rerender(<ActionsMenu actions={[threeActions[0]]} />);
+      rerender(<ActionsMenu actions={[threeActions[0]]} />)
 
-      await user.keyboard('{Enter}');
+      await user.keyboard('{Enter}')
 
-      expect(onAlpha).toHaveBeenCalledOnce();
-    });
+      expect(onAlpha).toHaveBeenCalledOnce()
+    })
 
     it('Escape returns focus to the trigger', async () => {
       const user = userEvent.setup()

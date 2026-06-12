@@ -548,13 +548,13 @@ describe('useElementMutations', () => {
     it('invalidates both the source and destination tree on a cross-target duplicate', async () => {
       const queryClient = new QueryClient({
         defaultOptions: { queries: { retry: false, gcTime: 0 } },
-      });
-      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
-      mockFetchSuccess({});
+      })
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+      mockFetchSuccess({})
 
-      const { wrapper } = createProviderWrapper({ queryClient });
+      const { wrapper } = createProviderWrapper({ queryClient })
       // Source: page 1 / 'main'. Destination: page 9 / 'sidebar'.
-      const { result } = renderHook(() => useDuplicateToElement(1, 'main'), { wrapper });
+      const { result } = renderHook(() => useDuplicateToElement(1, 'main'), { wrapper })
 
       await act(async () => {
         await result.current.mutateAsync({
@@ -562,20 +562,20 @@ describe('useElementMutations', () => {
           targetPageId: 9,
           targetZone: 'sidebar',
           targetParent: { type: 'page', id: 9 },
-        });
-      });
+        })
+      })
 
       // Source tree (from the hook args).
       expect(invalidateSpy).toHaveBeenCalledWith({
         queryKey: queryKeys.elementTree.byPage(1, 'main'),
-      });
+      })
       // Destination tree (from the mutation variables) — without this the
       // duplicate would not appear on the target page without a manual refetch.
       expect(invalidateSpy).toHaveBeenCalledWith({
         queryKey: queryKeys.elementTree.byPage(9, 'sidebar'),
-      });
-    });
-  });
+      })
+    })
+  })
 
   // ─── Shared onSuccess defaults (useStandardMutationOptions) ──────
   //
