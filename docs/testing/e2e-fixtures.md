@@ -51,7 +51,7 @@ Failure response: `400 { success: false, error: "..." }`.
 
 ### `POST /dev/grid-fixtures/reset?confirm=1`
 
-Archives every page whose `URLSegment` starts with `e2e-`. The `confirm=1` query parameter is required so an accidental curl or browser visit cannot wipe the dev database.
+Archives every page whose `URLSegment` starts with `e2e-` **and** whose `ClassName` is one of the fixture page types (`FixtureLoader::FIXTURE_PAGE_CLASSES`). Requiring both prevents collateral archiving of a hand-authored page that merely shares the `e2e-` prefix on a shared dev DB. The `confirm=1` query parameter is required so an accidental curl or browser visit cannot wipe the dev database.
 
 ### Gate
 
@@ -145,7 +145,9 @@ The `Parent` field resolves to the `ParentID` column. YamlFixture also sets `Par
 
 ### The `e2e-` URLSegment prefix
 
-Every page created by a fixture **must** use a `URLSegment` that starts with `e2e-`. `FixtureLoader::reset()` and `POST /reset` both query `URLSegment:StartsWith => 'e2e-'` and archive matching pages via `doArchive()` (which cascades through `cascade_deletes` and removes from Draft + Live). Without the prefix your fixture pages will leak across test runs.
+Every page created by a fixture **must** use a `URLSegment` that starts with `e2e-`. `FixtureLoader::reset()` and `POST /reset` archive matching pages via `doArchive()` (which cascades through `cascade_deletes` and removes from Draft + Live). Without the prefix your fixture pages will leak across test runs.
+
+Cleanup matches on `URLSegment:StartsWith => 'e2e-'` **and** `ClassName` ∈ `FixtureLoader::FIXTURE_PAGE_CLASSES`, and the `ClassName` filter is non-polymorphic (exact match). So if you add a fixture that creates a **new** `SiteTree`/`Page` subclass, you **must** also add that class to `FIXTURE_PAGE_CLASSES` — otherwise `reset()` silently leaves those pages behind. The `testFixturePageClassesCoversEveryFixturePageType` guard test fails loudly if you forget.
 
 ### GridSettings inline
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WeDevelop\Grid\Tests\Functional\Dev;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use ReflectionClass;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Versioned\Versioned;
@@ -28,7 +29,11 @@ final class FixtureControllerTest extends FunctionalTest
 
     protected function tearDown(): void
     {
-        // Clean up any E2E pages created during tests
+        // Clean up any E2E pages created during tests. This filters on the
+        // "e2e-" prefix ALONE — deliberately broader than FixtureLoader::reset(),
+        // which also constrains ClassName — because testResetDoesNotArchiveNonFixturePageSharingPrefix()
+        // creates a bare SiteTree that reset() (correctly) refuses to touch, and
+        // tearDown must still remove it. Do not narrow this to match reset().
         Versioned::withVersionedMode(static function (): void {
             Versioned::set_stage(Versioned::DRAFT);
 
@@ -149,6 +154,59 @@ final class FixtureControllerTest extends FunctionalTest
             SiteTree::get()->byID($unrelatedId),
             'reset() must not archive a non-fixture SiteTree that only shares the e2e- prefix',
         );
+    }
+
+    public function testFixturePageClassesCoversEveryFixturePageType(): void
+    {
+        // reset() matches ClassName exactly (SilverStripe's ClassName filter is
+        // non-polymorphic), so any SiteTree page type used as a top-level key in
+        // a fixture MUST be listed in FixtureLoader::FIXTURE_PAGE_CLASSES — or
+        // reset() silently leaves those pages behind, polluting a shared dev DB.
+        // This guard fails loudly the moment a fixture introduces a new page type
+        // that the constant does not cover.
+        $declared = (new ReflectionClass(FixtureLoader::class))->getConstant('FIXTURE_PAGE_CLASSES');
+        self::assertIsArray($declared, 'FIXTURE_PAGE_CLASSES must be an array constant');
+
+        $fixtureDir = dirname(__DIR__, 2) . '/E2E/Fixture';
+        $files = glob($fixtureDir . '/*.yml');
+        self::assertNotFalse($files, sprintf('Could not list fixtures in %s', $fixtureDir));
+        self::assertNotEmpty($files, sprintf('Expected at least one fixture in %s', $fixtureDir));
+
+        /** @var array<class-string<SiteTree>, string> $pageTypesInFixtures Page class => first fixture file using it */
+        $pageTypesInFixtures = [];
+        foreach ($files as $file) {
+            $contents = file_get_contents($file);
+            self::assertIsString($contents, sprintf('Could not read fixture %s', $file));
+
+            // Top-level YAML keys (column 0, ending in a colon) are class names.
+            preg_match_all('/^([A-Za-z\\\\][A-Za-z0-9_\\\\]*):[ \t]*$/m', $contents, $matches);
+
+            foreach ($matches[1] as $class) {
+                if (is_a($class, SiteTree::class, true)) {
+                    $pageTypesInFixtures[$class] ??= basename($file);
+                }
+            }
+        }
+
+        self::assertNotEmpty(
+            $pageTypesInFixtures,
+            'Expected the E2E fixtures to create at least one SiteTree page type',
+        );
+
+        foreach ($pageTypesInFixtures as $class => $file) {
+            self::assertContains(
+                $class,
+                $declared,
+                sprintf(
+                    'Fixture "%s" creates page type %s, which is missing from '
+                    . 'FixtureLoader::FIXTURE_PAGE_CLASSES. reset() matches ClassName exactly, '
+                    . 'so it would silently leave these pages behind. Add %s to the constant.',
+                    $file,
+                    $class,
+                    $class,
+                ),
+            );
+        }
     }
 
     public function testResetRemovesLoadedFixtures(): void

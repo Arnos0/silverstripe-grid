@@ -48,6 +48,11 @@ class FixtureLoader
      * never be archived. Both fixture page classes (the project base `Page` and
      * the dev-only {@see MultiZonePage}) appear here as exact ClassName matches.
      *
+     * Adding a fixture under tests/E2E/Fixture/ that introduces a new SiteTree
+     * page type means adding that class here too — `FixtureControllerTest::
+     * testFixturePageClassesCoversEveryFixturePageType()` guards this and fails
+     * loudly if a fixture page type is missing from this list.
+     *
      * @var list<class-string<SiteTree>>
      */
     private const array FIXTURE_PAGE_CLASSES = [
