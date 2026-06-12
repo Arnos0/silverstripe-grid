@@ -9,6 +9,11 @@ export declare const nodeRefSchema: z.ZodObject<{
     }>;
     id: z.ZodNumber;
 }, z.core.$strip>;
+export declare const viewportSettingsSchema: z.ZodObject<{
+    width: z.ZodNumber;
+    offset: z.ZodNumber;
+    visible: z.ZodBoolean;
+}, z.core.$strip>;
 declare const gridSettingsSchema: z.ZodObject<{
     default: z.ZodObject<{
         width: z.ZodNumber;

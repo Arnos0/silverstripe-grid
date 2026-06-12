@@ -139,43 +139,45 @@ export function useReorderElement(pageId: number, zone: string) {
   // onMutate (applyReorder) can throw a plain Error/TypeError, which TanStack
   // routes to onError — so the error channel is `Error | ApiError`, not just
   // ApiError. showToast(error.message) works for both (message is on Error).
-  return useMutation<void, Error | ApiError, ReorderMutationVariables, TreeApiResponse | undefined>({
-    mutationFn: ({ params }) => reorderElement(params),
-    onMutate: async ({ params, tree, clearPendingTree }) => {
-      await queryClient.cancelQueries({ queryKey })
+  return useMutation<void, Error | ApiError, ReorderMutationVariables, TreeApiResponse | undefined>(
+    {
+      mutationFn: ({ params }) => reorderElement(params),
+      onMutate: async ({ params, tree, clearPendingTree }) => {
+        await queryClient.cancelQueries({ queryKey })
 
-      const snapshot = queryClient.getQueryData<TreeApiResponse>(queryKey)
+        const snapshot = queryClient.getQueryData<TreeApiResponse>(queryKey)
 
-      const elementKey = NodeIdentity.toKey(params.element)
-      const parentKey = NodeIdentity.toKey(params.parent)
-      const afterKey = params.after === null ? null : NodeIdentity.toKey(params.after)
+        const elementKey = NodeIdentity.toKey(params.element)
+        const parentKey = NodeIdentity.toKey(params.parent)
+        const afterKey = params.after === null ? null : NodeIdentity.toKey(params.after)
 
-      const optimistic = applyReorder(tree, elementKey, parentKey, afterKey)
+        const optimistic = applyReorder(tree, elementKey, parentKey, afterKey)
 
-      queryClient.setQueryData<TreeApiResponse>(queryKey, optimistic)
+        queryClient.setQueryData<TreeApiResponse>(queryKey, optimistic)
 
-      // Clear pending tree after optimistic data is in the cache,
-      // preventing a 1-frame snap-back to the original tree.
-      clearPendingTree?.()
+        // Clear pending tree after optimistic data is in the cache,
+        // preventing a 1-frame snap-back to the original tree.
+        clearPendingTree?.()
 
-      return snapshot
+        return snapshot
+      },
+      onError: (error, { clearPendingTree }, snapshot) => {
+        // Safety net: clear pending tree if onMutate threw before reaching
+        // the clearPendingTree call above.
+        clearPendingTree?.()
+
+        if (snapshot !== undefined) {
+          queryClient.setQueryData<TreeApiResponse>(queryKey, snapshot)
+        }
+        showToast(error.message)
+      },
+      // Invalidate only on success: on error we've already restored the
+      // snapshot locally, and a refetch would cause a second tree swap
+      // (flicker) after the rollback has settled visually.
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey })
+        refreshPreview()
+      },
     },
-    onError: (error, { clearPendingTree }, snapshot) => {
-      // Safety net: clear pending tree if onMutate threw before reaching
-      // the clearPendingTree call above.
-      clearPendingTree?.()
-
-      if (snapshot !== undefined) {
-        queryClient.setQueryData<TreeApiResponse>(queryKey, snapshot)
-      }
-      showToast(error.message)
-    },
-    // Invalidate only on success: on error we've already restored the
-    // snapshot locally, and a refetch would cause a second tree swap
-    // (flicker) after the rollback has settled visually.
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey })
-      refreshPreview()
-    },
-  })
+  )
 }

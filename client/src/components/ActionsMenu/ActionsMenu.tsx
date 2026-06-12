@@ -38,8 +38,8 @@ export default function ActionsMenu({ actions, testId = 'actions-menu' }: Action
   // past the last item — aria-activedescendant would then reference a dead id
   // and Enter/Space would resolve to undefined. Clamp it back into range.
   useEffect(() => {
-    setActiveIndex((i) => Math.min(i, Math.max(0, actions.length - 1)));
-  }, [actions.length]);
+    setActiveIndex((i) => Math.min(i, Math.max(0, actions.length - 1)))
+  }, [actions.length])
 
   useEffect(() => {
     if (!isOpen) return
