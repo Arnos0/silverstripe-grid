@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { loadFixture, loadAndNavigate, resetFixtures } from '../helpers/fixtures';
 import { selectChosenValue } from '../helpers/forms';
 
-test.describe('Content elements', () => {
+test.describe('Content elements — add, edit, publish, render', () => {
   test.afterAll(async ({ request }) => {
     await resetFixtures(request);
   });
@@ -91,8 +91,9 @@ test.describe('Content elements', () => {
     // Save the element
     await page.getByRole('button', { name: /Save/ }).first().click();
 
-    // Wait for save to complete — toast notification confirms success
-    await expect(page.locator('.toast__content')).toContainText('Saved', { timeout: 15_000 });
+    // Wait for save to complete — the SilverStripe admin's own toast (third-party
+    // markup) confirms success; assert on its visible "Saved" message.
+    await expect(page.getByText(/Saved/).first()).toBeVisible({ timeout: 15_000 });
 
     // --- Step 6: Navigate back to page editor via breadcrumb ---
     await page.getByRole('link', { name: 'E2E Content Elements Page' }).click();
@@ -119,6 +120,12 @@ test.describe('Content elements', () => {
 
     // Verify title configuration: edited element title renders as h4 (set in CMS form)
     await expect(page.getByRole('heading', { level: 4, name: 'My Edited Element' })).toBeVisible();
+  });
+});
+
+test.describe('Content elements — edit container titles via title links', () => {
+  test.afterAll(async ({ request }) => {
+    await resetFixtures(request);
   });
 
   test('content editor navigates to container edit forms via title links and updates titles', async ({ page }) => {
