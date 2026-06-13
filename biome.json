@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -39,9 +39,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
-        "noUselessUndefined": "error"
+        "noUselessUndefined": "error",
+        "noUselessReturn": "error"
       },
       "correctness": {
         "useExhaustiveDependencies": "warn",
@@ -75,28 +76,26 @@
         "noSkippedTests": "error",
         "noExportsInTest": "error",
         "noMisplacedAssertion": "error",
-        "noConsole": "warn"
+        "noConsole": "warn",
+        "noDuplicatedSpreadProps": "error",
+        "noProto": "error",
+        "noUnnecessaryConditions": "warn",
+        "noShadow": "error",
+        "useArraySortCompare": "error"
       },
       "nursery": {
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
         "noUnsafePlusOperands": "error",
-        "noDuplicatedSpreadProps": "error",
         "noJsxLeakedDollar": "error",
         "noReactStringRefs": "error",
         "noComponentHookFactories": "error",
         "noUselessTypeConversion": "error",
         "noUnnecessaryTemplateExpression": "error",
-        "noUselessReturn": "error",
         "noImpliedEval": "error",
-        "noScriptUrl": "error",
-        "noProto": "error",
         "noIdenticalTestTitle": "error",
         "noConditionalExpect": "error",
-        "noUnnecessaryConditions": "error",
-        "noShadow": "error",
         "useAwaitThenable": "error",
-        "useArraySortCompare": "error",
         "useNullishCoalescing": "error",
         "noPlaywrightWaitForTimeout": "warn",
         "noPlaywrightNetworkidle": "error",
@@ -108,6 +107,9 @@
         "noPlaywrightPagePause": "error",
         "noPlaywrightEval": "error",
         "noPlaywrightUselessAwait": "error"
+      },
+      "security": {
+        "noScriptUrl": "error"
       }
     }
   },
