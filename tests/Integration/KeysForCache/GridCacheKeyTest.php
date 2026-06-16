@@ -84,7 +84,9 @@ final class GridCacheKeyTest extends SapphireTest
         self::assertNotNull($section->getCacheKey());
         self::assertNotSame('', $section->getCacheKey());
         self::assertNotNull($row->getCacheKey());
+        self::assertNotSame('', $row->getCacheKey());
         self::assertNotNull($column->getCacheKey());
+        self::assertNotSame('', $column->getCacheKey());
     }
 
     public function testDescendantChangeInvalidatesAncestorKeys(): void
