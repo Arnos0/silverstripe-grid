@@ -120,23 +120,17 @@ class GridNodeMapper
         }
 
         $containerType = $container->getContainerType();
-        $allowedChild = $containerType->allowedChildClass();
 
         $types = [];
 
-        if ($allowedChild !== null) {
-            // Section/Row: single allowed child class (+ subclasses)
-            foreach (ClassInfo::subclassesFor($allowedChild, true) as $class) {
-                /** @var class-string<GridElement> $class */
+        // ContainerType::isChildAllowed() encodes the full hierarchy rule for
+        // every container type (Section/Row: the allowed child class + subclasses;
+        // Column: any non-container GridElement), so a single filtered pass over
+        // all GridElement subclasses covers all cases.
+        foreach (ClassInfo::subclassesFor(GridElement::class, false) as $class) {
+            /** @var class-string<GridElement> $class */
+            if ($containerType->isChildAllowed($class)) {
                 $types[$class] = $this->getElementTypeInfo($class);
-            }
-        } else {
-            // Column: any GridElement except containers
-            foreach (ClassInfo::subclassesFor(GridElement::class, false) as $class) {
-                /** @var class-string<GridElement> $class */
-                if ($containerType->isChildAllowed($class)) {
-                    $types[$class] = $this->getElementTypeInfo($class);
-                }
             }
         }
 
